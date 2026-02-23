@@ -59,12 +59,10 @@ class User extends Authenticatable
 
     public function getPictureAttribute($value)
     {
-        // Verifica se existe valor e se o arquivo físico existe na nova pasta
         if ($value && file_exists(public_path('uploads/author/' . $value))) {
             return asset('uploads/author/' . $value);
         }
         
-        // Retorna a imagem padrão caso não tenha foto ou o arquivo não seja encontrado
         return asset('uploads/author/default.png'); 
     }
 

@@ -56,4 +56,52 @@ class Menu extends Model
     {
         return $query->where('type', 'footer');
     }
+
+    public static function limiteRaizAtingido($type, $ignoreId = null)
+    {
+        $query = self::where('type', $type)
+            ->whereNull('parent_id');
+
+        if ($ignoreId) {
+            $query->where('id', '!=', $ignoreId);
+        }
+
+        return $query->count() >= 7;
+    }
+
+    public static function limiteFilhoAtingido(int $parentId, ?int $ignoreId = null, int $limite = 5): bool
+    {
+        $query = self::where('parent_id', $parentId);
+
+        if ($ignoreId) {
+            $query->where('id', '!=', $ignoreId);
+        }
+
+        return $query->count() >= $limite;
+    }
+
+    public function deactivateDescendants(): void
+    {
+        foreach ($this->children as $child) {
+            if ($child->is_active) {
+                $child->update(['is_active' => false]);
+            }
+
+            $child->deactivateDescendants();
+        }
+    }
+
+    protected static function booted()
+    {
+        static::updating(function (Menu $menu) {
+
+            // Se está sendo desativado
+            if ($menu->isDirty('is_active') && $menu->is_active === false) {
+                $menu->load('children.children.children');
+                $menu->deactivateDescendants();
+            }
+        });
+    }
+
+    
 }

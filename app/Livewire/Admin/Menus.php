@@ -114,6 +114,49 @@ class Menus extends Component
     {
         $this->validate();
 
+        // ✅ Verifica limite de raiz
+        if (is_null($this->parent_id)) {
+            $totalRaiz = Menu::where('type', $this->type)
+                ->whereNull('parent_id')
+                ->when($this->editingId, fn($q) => $q->where('id', '!=', $this->editingId))
+                ->count();
+
+            if ($totalRaiz >= 7) {
+                $this->dispatch('notify', type: 'error', message: 'Limite de 7 itens no menu raiz atingido.');
+                return;
+            }
+        }
+
+        // ✅ Verifica limite de filhos antes de salvar
+        if ($this->parent_id) {
+
+            if (Menu::limiteFilhoAtingido($this->parent_id, $this->editingId)) {
+                $this->dispatch('notify', 
+                    type: 'error',
+                    message: 'Limite de filhos atingido para este menu.'
+                );
+                return;
+            }
+        }
+
+        
+        if (! $this->editingId && is_null($this->parent_id)) {
+            $totalRaiz = Menu::where('type', $this->type)
+                ->whereNull('parent_id')
+                ->count();
+
+            if ($totalRaiz >= 7) {
+                $this->dispatch('notify', 
+                    type: 'error',
+                    message: 'Limite de 7 itens no menu raiz atingido. Não é possível criar mais itens raiz.'
+                );
+                $this->showForm = false;
+                return;
+            }
+        }
+
+        
+
         $maxOrder = Menu::where('type', $this->type)
             ->where('parent_id', $this->parent_id)
             ->max('order') ?? -1;
@@ -127,7 +170,10 @@ class Menus extends Component
                 'parent_id' => $this->parent_id,
                 'is_active' => $this->is_active,
             ]);
-            session()->flash('success', 'Item atualizado com sucesso!');
+            $this->dispatch('notify', 
+                type: 'success',
+                message: 'Item atualizado com sucesso!'
+            );
         } else {
             Menu::create([
                 'type'      => $this->type,
@@ -138,7 +184,10 @@ class Menus extends Component
                 'is_active' => $this->is_active,
                 'order'     => $maxOrder + 1,
             ]);
-            session()->flash('success', 'Item adicionado com sucesso!');
+            $this->dispatch('notify', 
+                type: 'success',
+                message: 'Item criado com sucesso!'
+            );
         }
 
         $this->cancelForm();
@@ -151,19 +200,35 @@ class Menus extends Component
 
         // Impede exclusão se tiver filhos (está com restrictOnDelete na migration)
         if ($item->children()->exists()) {
-            session()->flash('error', 'Remova os subitens antes de excluir este item.');
+            $this->dispatch('notify', 
+                type: 'error',
+                message: 'Não é possível excluir um item que possui subitens. Exclua os subitens primeiro.'
+            );
             return;
         }
 
         $item->delete();
-        session()->flash('success', 'Item excluído com sucesso!');
+        $this->dispatch('notify', 
+            type: 'success',
+            message: 'Item excluído com sucesso.'
+        );
     }
 
     // ─── Toggle ativo/inativo ────────────────────────────────────────────────────
     public function toggleActive(int $id): void
     {
         $item = Menu::findOrFail($id);
-        $item->update(['is_active' => ! $item->is_active]);
+
+        $item->update([
+            'is_active' => ! $item->is_active,
+        ]);
+
+        $this->dispatch('notify',
+            type: 'success',
+            message: $item->is_active
+                ? 'Item ativado com sucesso.'
+                : 'Item e subitens desativados com sucesso.'
+        );
     }
 
     // ─── Reordenação via SortableJS ──────────────────────────────────────────────
@@ -171,11 +236,44 @@ class Menus extends Component
     public function updateOrder(array $orderedItems): void
     {
         foreach ($orderedItems as $orderedItem) {
+
+            $menu = Menu::find($orderedItem['id']);
+
+            // Está tentando virar raiz
+            if (is_null($orderedItem['parent_id']) && ! is_null($menu->parent_id)) {
+
+                $totalRaiz = Menu::where('type', $menu->type)
+                    ->whereNull('parent_id')
+                    ->count();
+
+                if ($totalRaiz >= 7) {
+
+                    // 🔥 dispara toast
+                    $this->dispatch('notify', 
+                        type: 'error',
+                        message: 'Limite máximo de 7 menus raiz atingido.'
+                    );
+
+                    // 🔥 força Livewire re-renderizar para restaurar estrutura original
+                    $this->dispatch('$refresh');
+
+                    return;
+                }
+            }
+        }
+
+        // Se passou validação → salva
+        foreach ($orderedItems as $orderedItem) {
             Menu::where('id', $orderedItem['id'])->update([
                 'parent_id' => $orderedItem['parent_id'],
                 'order'     => $orderedItem['order'],
             ]);
         }
+
+        $this->dispatch('notify', 
+            type: 'success',
+            message: 'Ordem atualizada com sucesso.'
+        );
     }
 
     // ─── Helper privado ──────────────────────────────────────────────────────────

@@ -1,7 +1,7 @@
 <li class="
     {{ $depth === 0 
         ? ($item->activeChildren->isNotEmpty() ? 'nav-item dropdown' : 'nav-item')
-        : ($item->activeChildren->isNotEmpty() ? 'dropdown-submenu' : '')
+        : ($item->activeChildren->isNotEmpty() ? 'dropdown-submenu ' : '')
     }}
 ">
 
@@ -14,9 +14,6 @@
        @if ($item->activeChildren->isNotEmpty())
            @if ($depth === 0)
                data-toggle="dropdown"
-           @else
-               data-toggle="dropdown"
-               data-submenu
            @endif
            aria-haspopup="true"
            aria-expanded="false"

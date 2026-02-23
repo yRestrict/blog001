@@ -115,7 +115,7 @@
                             </a>
                             <ul class="submenu child">
                                 <li><a href="{{ route('admin.header') }}">Header</a></li>
-                                <li><a href="javascript:;">Fotter</a></li>
+                                <li><a href="javascript:;">Footer</a></li>
                             </ul>
                         </li>
                     </ul>

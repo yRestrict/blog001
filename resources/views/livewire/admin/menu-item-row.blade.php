@@ -1,81 +1,139 @@
-{{--
-    Partial: livewire/admin/menu-item-row.blade.php
-    Variáveis: $item, $depth (int, começa em 0)
---}}
-
-<div class="mir-row"
+<div class="mir-row depth-{{ $depth }}"
      wire:key="menu-item-{{ $item->id }}"
      data-item-id="{{ $item->id }}">
 
-    {{-- ── Cabeçalho ─────────────────────────────────────────────── --}}
-    <div class="mir-header">
+    <div class="mir-card-inner">
 
-        {{-- Handle de drag --}}
-        <span class="mir-handle" title="Arrastar para reordenar">
-            <i class="fa fa-ellipsis-v"></i><i class="fa fa-ellipsis-v"></i>
-        </span>
+        {{-- ── Faixa lateral de profundidade ────────────────────────────── --}}
+        <div class="mir-depth-stripe"></div>
 
-        @switch($depth)
-            @case(0)
-                <span class="mir-depth-badge badge-depth-1">Raiz</span>
-                @break
-            @case(1)
-                <span class="mir-depth-badge badge-depth-2">Sub 1</span>
-                @break
-            @case(2)
-                <span class="mir-depth-badge badge-depth-3">Sub 2</span>
-                @break
-            @default
-                <span class="mir-depth-badge badge-depth-{{ $depth + 1 }}">Sub {{ $depth }}</span>
-        @endswitch
-
-        {{-- Título + URL --}}
-        <div class="mir-meta">
-            <div class="mir-title">
-                {{ $item->title }}
-                @if ($item->target === '_blank')
-                    <i class="fa fa-external-link-alt mir-ext-icon" title="Abre em nova aba"></i>
-                @endif
-            </div>
-            <div class="mir-url">
-                <i class="fa fa-link"></i>
-                <span>{{ $item->url ?: '#' }}</span>
-            </div>
+        {{-- ── Handle ──────────────────────────────────────────────────── --}}
+        <div class="mir-handle" title="Arrastar para reordenar">
+            <svg width="8" height="14" viewBox="0 0 8 14" fill="none">
+                <circle cx="2" cy="2"  r="1.5" fill="currentColor"/>
+                <circle cx="6" cy="2"  r="1.5" fill="currentColor"/>
+                <circle cx="2" cy="7"  r="1.5" fill="currentColor"/>
+                <circle cx="6" cy="7"  r="1.5" fill="currentColor"/>
+                <circle cx="2" cy="12" r="1.5" fill="currentColor"/>
+                <circle cx="6" cy="12" r="1.5" fill="currentColor"/>
+            </svg>
         </div>
 
-        {{-- Status toggle --}}
-        <button class="mir-status-btn {{ $item->is_active ? 'mir-status-active' : 'mir-status-inactive' }}"
-                wire:click="toggleActive({{ $item->id }})"
-                title="Clique para {{ $item->is_active ? 'desativar' : 'ativar' }}">
-            <span class="mir-status-dot"></span>
-            {{ $item->is_active ? 'Ativo' : 'Inativo' }}
-        </button>
+        {{-- ── Conteúdo principal ────────────────────────────────────────── --}}
+        <div class="mir-body">
 
-        {{-- Ações --}}
-        <div class="mir-actions">
+            {{-- Linha superior: badge + título --}}
+            <div class="mir-top-row">
+                @switch($depth)
+                    @case(0)
+                        <span class="mir-badge mir-badge-root">
+                            <svg width="8" height="8" viewBox="0 0 8 8"><circle cx="4" cy="4" r="3.5" fill="currentColor" opacity=".9"/></svg>
+                            Raiz
+                        </span>
+                        @break
+                    @case(1)
+                        <span class="mir-badge mir-badge-sub1">
+                            <svg width="8" height="8" viewBox="0 0 8 8"><circle cx="4" cy="4" r="3.5" fill="currentColor" opacity=".9"/></svg>
+                            Sub 1
+                        </span>
+                        @break
+                    @case(2)
+                        <span class="mir-badge mir-badge-sub2">
+                            <svg width="8" height="8" viewBox="0 0 8 8"><circle cx="4" cy="4" r="3.5" fill="currentColor" opacity=".9"/></svg>
+                            Sub 2
+                        </span>
+                        @break
+                    @case(3)
+                        <span class="mir-badge mir-badge-sub3">
+                            <svg width="8" height="8" viewBox="0 0 8 8">
+                                <circle cx="4" cy="4" r="3.5" fill="currentColor" opacity=".9"/>
+                            </svg>
+                            Sub 3
+                        </span>
+                        @break
 
-            @if ($depth < 2)
-                <button class="mir-btn mir-btn-add"
-                        wire:click="openAddForm({{ $item->id }})"
-                        title="Adicionar subitem">
-                    <i class="fa fa-plus"></i>
-                    <span class="mir-btn-label">Subitem</span>
+                    @case(4)
+                        <span class="mir-badge mir-badge-sub4">
+                            <svg width="8" height="8" viewBox="0 0 8 8">
+                                <circle cx="4" cy="4" r="3.5" fill="currentColor" opacity=".9"/>
+                            </svg>
+                            Sub 4
+                        </span>
+                        @break
+
+                    @case(5)
+                        <span class="mir-badge mir-badge-sub5">
+                            <svg width="8" height="8" viewBox="0 0 8 8">
+                                <circle cx="4" cy="4" r="3.5" fill="currentColor" opacity=".9"/>
+                            </svg>
+                            Sub 5
+                        </span>
+                        @break
+                @endswitch
+
+                <span class="mir-title">
+                    {{ $item->title }}
+                    @if ($item->target === '_blank')
+                        <svg class="mir-newtab" width="10" height="10" viewBox="0 0 10 10" fill="none" title="Abre em nova aba">
+                            <path d="M4 2H2a1 1 0 00-1 1v5a1 1 0 001 1h5a1 1 0 001-1V6M6 1h3m0 0v3M9 1L4.5 5.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    @endif
+                </span>
+            </div>
+
+            {{-- Linha inferior: URL --}}
+            <div class="mir-url-row">
+                <svg width="9" height="9" viewBox="0 0 10 10" fill="none">
+                    <path d="M4 6.5a2.5 2.5 0 003.5 0l1.5-1.5a2.5 2.5 0 00-3.5-3.5L4.8 2.3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+                    <path d="M6 3.5a2.5 2.5 0 00-3.5 0L1 5a2.5 2.5 0 003.5 3.5l.7-.7" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+                </svg>
+                <span>{{ $item->url ?: '#' }}</span>
+            </div>
+
+        </div>
+
+        {{-- ── Lado direito: status + ações ─────────────────────────────── --}}
+        <div class="mir-right">
+
+            {{-- Status pill --}}
+            <button class="mir-status {{ $item->is_active ? 'is-active' : 'is-inactive' }}"
+                    wire:click="toggleActive({{ $item->id }})"
+                    title="{{ $item->is_active ? 'Clique para desativar' : 'Clique para ativar' }}">
+                <span class="mir-status-ring"></span>
+                <span>{{ $item->is_active ? 'Ativo' : 'Inativo' }}</span>
+            </button>
+
+            {{-- Divider vertical --}}
+            <div class="mir-divider"></div>
+
+            {{-- Botões de ação --}}
+            <div class="mir-actions">
+                @if ($depth < 4)
+                    <button class="mir-action-btn mir-action-add"
+                            wire:click="openAddForm({{ $item->id }})"
+                            title="Adicionar subitem">
+                        <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                        <span>Sub</span>
+                    </button>
+                @endif
+
+                <button class="mir-action-btn mir-action-icon mir-action-edit"
+                        wire:click="edit({{ $item->id }})"
+                        title="Editar">
+                    <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+                        <path d="M9 2l2 2-7.5 7.5H1.5v-2L9 2z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>
+                    </svg>
                 </button>
-            @endif
 
-            <button class="mir-btn mir-btn-edit"
-                    wire:click="edit({{ $item->id }})"
-                    title="Editar">
-                <i class="fa fa-edit"></i>
-            </button>
-
-            <button class="mir-btn mir-btn-delete"
-                    wire:click="delete({{ $item->id }})"
-                    wire:confirm="Tem certeza que deseja excluir '{{ $item->title }}'?"
-                    title="Excluir">
-                <i class="fa fa-trash"></i>
-            </button>
-
+                <button class="mir-action-btn mir-action-icon mir-action-delete"
+                        wire:click="delete({{ $item->id }})"
+                        wire:confirm="Tem certeza que deseja excluir '{{ $item->title }}'?"
+                        title="Excluir">
+                    <svg width="12" height="13" viewBox="0 0 12 14" fill="none">
+                        <path d="M1 3.5h10M4 3.5V2.5h4v1M2 3.5l.8 8a1 1 0 001 .9h4.4a1 1 0 001-.9l.8-8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </button>
+            </div>
         </div>
     </div>
 
@@ -91,260 +149,16 @@
                 ])
             @endforeach
         </div>
-
-    @elseif ($depth < 2)
-        {{-- Container vazio para drop zone --}}
+    @elseif ($depth < 4)
         <div class="mir-children mir-children-empty"
              data-sortable
              data-parent-id="{{ $item->id }}">
+            <div class="mir-dropzone-hint">
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                    <path d="M6 1v7M3 5l3 3 3-3M2 11h8" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                Arraste um item aqui para criar subitem
+            </div>
         </div>
     @endif
-
 </div>
-
-{{-- ================================================================ --}}
-{{-- ESTILOS — renderizado apenas uma vez graças ao @once             --}}
-{{-- ================================================================ --}}
-@once
-<style>
-/* ─── Variáveis ──────────────────────────────────────────────────── */
-.mir-row {
-    --mir-border:    #e3e8ef;
-    --mir-bg:        #ffffff;
-    --mir-bg-sub:    #f8fafc;
-    --mir-text:      #1a2332;
-    --mir-muted:     #8494a9;
-    --mir-handle:    #c8d3df;
-    --mir-radius:    9px;
-    --mir-radius-sm: 6px;
-    --mir-indent:    36px;
-    --mir-gap:       6px;
-    --mir-ease:      160ms ease;
-}
-
-/* ─── Row container ──────────────────────────────────────────────── */
-.mir-row {
-    background: var(--mir-bg);
-    border: 1px solid var(--mir-border);
-    border-radius: var(--mir-radius);
-    margin-bottom: var(--mir-gap);
-    transition: box-shadow var(--mir-ease), border-color var(--mir-ease);
-    overflow: hidden;
-}
-
-.mir-row:hover {
-    border-color: #c0cad8;
-    box-shadow: 0 2px 10px rgba(59,130,246,.08), 0 1px 3px rgba(0,0,0,.05);
-}
-
-/* ─── Header ─────────────────────────────────────────────────────── */
-.mir-header {
-    display: flex;
-    align-items: center;
-    padding: 10px 14px;
-    gap: 8px;
-}
-
-/* ─── Handle ─────────────────────────────────────────────────────── */
-.mir-handle {
-    cursor: grab;
-    color: var(--mir-handle);
-    font-size: .75rem;
-    flex-shrink: 0;
-    padding: 2px 3px;
-    border-radius: 4px;
-    transition: color var(--mir-ease);
-    letter-spacing: -3px;
-    display: inline-flex;
-}
-.mir-handle:active { cursor: grabbing; }
-.mir-row:hover .mir-handle { color: var(--mir-muted); }
-
-/* ─── Depth badge ────────────────────────────────────────────────── */
-.mir-depth-badge {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: .3px;
-    padding: 2px 7px;
-    border-radius: 20px;
-    flex-shrink: 0;
-    line-height: 1.4;
-}
-.badge-depth-1 { background: #f0fdf4; color: #15803d; }
-.badge-depth-2 { background: #fef3c7; color: #b45309; }
-
-/* ─── Meta (title + url) ─────────────────────────────────────────── */
-.mir-meta {
-    flex: 1 1 auto;
-    min-width: 0;
-    overflow: hidden;
-}
-
-.mir-title {
-    font-size: .875rem;
-    font-weight: 600;
-    color: var(--mir-text);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    line-height: 1.35;
-}
-
-.mir-ext-icon {
-    font-size: .6rem;
-    color: var(--mir-muted);
-    margin-left: 4px;
-    vertical-align: middle;
-}
-
-.mir-url {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    font-size: .73rem;
-    color: var(--mir-muted);
-    margin-top: 2px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-.mir-url .fa { font-size: .6rem; flex-shrink: 0; }
-
-/* ─── Status button ──────────────────────────────────────────────── */
-.mir-status-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    font-size: .72rem;
-    font-weight: 600;
-    padding: 4px 10px;
-    border-radius: 20px;
-    border: none;
-    cursor: pointer;
-    flex-shrink: 0;
-    transition: background var(--mir-ease);
-    line-height: 1;
-}
-
-.mir-status-dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    flex-shrink: 0;
-}
-
-.mir-status-active              { background: #dcfce7; color: #166534; }
-.mir-status-active .mir-status-dot  { background: #16a34a; }
-.mir-status-active:hover        { background: #bbf7d0; }
-
-.mir-status-inactive             { background: #f1f5f9; color: #64748b; }
-.mir-status-inactive .mir-status-dot { background: #94a3b8; }
-.mir-status-inactive:hover       { background: #e2e8f0; }
-
-/* ─── Action buttons ─────────────────────────────────────────────── */
-.mir-actions {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    flex-shrink: 0;
-}
-
-.mir-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 5px;
-    height: 30px;
-    padding: 0 10px;
-    border-radius: var(--mir-radius-sm);
-    font-size: .75rem;
-    font-weight: 600;
-    border: 1px solid transparent;
-    cursor: pointer;
-    white-space: nowrap;
-    transition: all var(--mir-ease);
-    line-height: 1;
-    background: none;
-}
-
-.mir-btn-add {
-    background: #eff6ff;
-    color: #2563eb;
-    border-color: #bfdbfe;
-}
-.mir-btn-add:hover {
-    background: #2563eb;
-    color: #fff;
-    border-color: #2563eb;
-}
-
-.mir-btn-edit {
-    background: #f8fafc;
-    color: var(--mir-muted);
-    border-color: var(--mir-border);
-    width: 30px;
-    padding: 0;
-}
-.mir-btn-edit:hover {
-    background: #f1f5f9;
-    color: var(--mir-text);
-    border-color: #c8d0dc;
-}
-
-.mir-btn-delete {
-    background: #f8fafc;
-    color: #fca5a5;
-    border-color: var(--mir-border);
-    width: 30px;
-    padding: 0;
-}
-.mir-btn-delete:hover {
-    background: #fef2f2;
-    color: #ef4444;
-    border-color: #fecaca;
-}
-
-/* Label "Subitem" — some em mobile */
-.mir-btn-label { display: none; }
-@media (min-width: 768px) {
-    .mir-btn-label { display: inline; }
-}
-
-/* ─── Children container ─────────────────────────────────────────── */
-.mir-children {
-    border-top: 1px solid var(--mir-border);
-    background: var(--mir-bg-sub);
-    padding: 10px var(--mir-indent) 10px var(--mir-indent);
-    position: relative;
-}
-
-.mir-children::before {
-    content: '';
-    position: absolute;
-    left: 20px;
-    top: 0;
-    bottom: 8px;
-    width: 2px;
-    background: linear-gradient(to bottom, #e2e8f0 60%, transparent);
-    border-radius: 2px;
-}
-
-.mir-children-empty {
-    min-height: 8px;
-    padding-top: 4px;
-    padding-bottom: 4px;
-}
-
-/* ─── Drag states ─────────────────────────────────────────────────── */
-.sortable-ghost { opacity: .35; }
-.sortable-ghost .mir-header { background: #eff6ff; }
-
-.sortable-chosen .mir-row {
-    box-shadow: 0 6px 20px rgba(59,130,246,.15);
-    border-color: #93c5fd;
-}
-</style>
-@endonce

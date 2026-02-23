@@ -5,22 +5,16 @@
 <div>
 
     {{-- ================================================================ --}}
-    {{-- ALERTAS DE FEEDBACK                                              --}}
+    {{-- TOAST DE FEEDBACK (substitui os alertas antigos)                 --}}
     {{-- ================================================================ --}}
+    <div id="mir-toast-container" aria-live="polite"></div>
 
-    @if (session()->has('success'))
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            <i class="fa fa-check-circle mr-2"></i>{{ session('success') }}
-            <button type="button" class="close" data-dismiss="alert"><span>&times;</span></button>
-        </div>
-    @endif
-
-    @if (session()->has('error'))
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            <i class="fa fa-exclamation-triangle mr-2"></i>{{ session('error') }}
-            <button type="button" class="close" data-dismiss="alert"><span>&times;</span></button>
-        </div>
-    @endif
+    {{-- Dispara toasts a partir de eventos Livewire --}}
+    <script>
+        document.addEventListener('livewire:initialized', () => {
+            Livewire.on('notify', ({ type, message }) => showToast(type, message));
+        });
+    </script>
 
 
     {{-- ================================================================ --}}
@@ -123,12 +117,17 @@
 
                         {{-- Ativo --}}
                         <div class="col-md-4 d-flex align-items-center">
-                            <div class="custom-control custom-switch mt-3">
+                            <div class="mir-switch-wrap mt-3">
                                 <input type="checkbox"
-                                    class="custom-control-input"
+                                    class="mir-switch-input"
                                     id="is_active"
                                     wire:model="is_active">
-                                <label class="custom-control-label" for="is_active">Item ativo</label>
+                                <label class="mir-switch-label" for="is_active">
+                                    <span class="mir-switch-track">
+                                        <span class="mir-switch-thumb"></span>
+                                    </span>
+                                    <span class="mir-switch-text">Item ativo</span>
+                                </label>
                             </div>
                         </div>
 
@@ -175,248 +174,18 @@
         </div>
 
     @else
-
         <div class="mir-card">
-            <ul class="mir-tree" data-sortable data-parent-id="">
+            <div class="mir-tree" data-sortable data-parent-id="">
                 @foreach ($items as $item)
                     @include('livewire.admin.menu-item-row', [
                         'item'  => $item,
                         'depth' => 0,
                     ])
                 @endforeach
-            </ul>
+            </div>
         </div>
-
     @endif
 
-
-    {{-- ================================================================ --}}
-    {{-- ESTILOS                                                          --}}
-    {{-- ================================================================ --}}
-    <style>
-    /* ─── Card wrapper ───────────────────────────────────────────────── */
-    .mir-card {
-        background: #fff;
-        border-radius: 12px;
-        padding: 20px;
-        box-shadow: 0 1px 4px rgba(0,0,0,.08);
-    }
-
-    .mir-tree {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-    }
-
-    /* ─── Botão primário grande ──────────────────────────────────────── */
-    .mir-btn-primary-lg {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        height: 36px;
-        padding: 0 16px;
-        background: #2563eb;
-        color: #fff;
-        border: none;
-        border-radius: 8px;
-        font-size: .8rem;
-        font-weight: 600;
-        cursor: pointer;
-        transition: background 160ms ease, box-shadow 160ms ease;
-    }
-    .mir-btn-primary-lg:hover {
-        background: #1d4ed8;
-        box-shadow: 0 4px 12px rgba(37,99,235,.3);
-        color: #fff;
-        text-decoration: none;
-    }
-
-    /* ─── Botão ghost ────────────────────────────────────────────────── */
-    .mir-btn-ghost {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        height: 36px;
-        padding: 0 16px;
-        background: #f1f5f9;
-        color: #64748b;
-        border: 1px solid #e3e8ef;
-        border-radius: 8px;
-        font-size: .8rem;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 160ms ease;
-    }
-    .mir-btn-ghost:hover {
-        background: #e2e8f0;
-        color: #1a2332;
-    }
-
-    /* ─── Modal ──────────────────────────────────────────────────────── */
-    .mir-modal-overlay {
-        position: fixed;
-        inset: 0;
-        background: rgba(15, 23, 42, .55);
-        z-index: 1050;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 16px;
-        backdrop-filter: blur(2px);
-    }
-
-    .mir-modal-dialog {
-        width: 100%;
-        max-width: 640px;
-    }
-
-    .mir-modal-content {
-        background: #fff;
-        border-radius: 14px;
-        box-shadow: 0 24px 64px rgba(0,0,0,.18);
-        overflow: hidden;
-    }
-
-    .mir-modal-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 20px 24px 16px;
-        border-bottom: 1px solid #f1f5f9;
-    }
-
-    .mir-modal-title {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-    }
-
-    .mir-modal-icon {
-        width: 36px;
-        height: 36px;
-        border-radius: 9px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: .9rem;
-        flex-shrink: 0;
-    }
-
-    .mir-modal-icon-add  { background: #dcfce7; color: #16a34a; }
-    .mir-modal-icon-edit { background: #dbeafe; color: #2563eb; }
-
-    .mir-modal-title-text {
-        font-size: .95rem;
-        font-weight: 700;
-        color: #1a2332;
-        line-height: 1.2;
-    }
-
-    .mir-modal-subtitle {
-        font-size: .75rem;
-        color: #8494a9;
-        margin-top: 2px;
-    }
-
-    .mir-modal-close {
-        width: 32px;
-        height: 32px;
-        border-radius: 8px;
-        border: 1px solid #e3e8ef;
-        background: #f8fafc;
-        color: #8494a9;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        transition: all 160ms ease;
-        flex-shrink: 0;
-    }
-    .mir-modal-close:hover { background: #fee2e2; color: #ef4444; border-color: #fecaca; }
-
-    .mir-modal-body { padding: 20px 24px; }
-
-    .mir-modal-footer {
-        display: flex;
-        align-items: center;
-        justify-content: flex-end;
-        gap: 8px;
-        padding: 16px 24px 20px;
-        border-top: 1px solid #f1f5f9;
-    }
-
-    /* ─── Form inputs ────────────────────────────────────────────────── */
-    .mir-label {
-        display: block;
-        font-size: .8rem;
-        font-weight: 600;
-        color: #374151;
-        margin-bottom: 5px;
-    }
-
-    .mir-required { color: #ef4444; }
-
-    .mir-input {
-        display: block;
-        width: 100%;
-        height: 38px;
-        padding: 0 12px;
-        background: #f8fafc;
-        border: 1px solid #e3e8ef;
-        border-radius: 8px;
-        font-size: .85rem;
-        color: #1a2332;
-        transition: border-color 160ms ease, box-shadow 160ms ease;
-        appearance: none;
-    }
-
-    select.mir-input { height: 38px; }
-
-    .mir-input:focus {
-        outline: none;
-        border-color: #93c5fd;
-        background: #fff;
-        box-shadow: 0 0 0 3px rgba(59,130,246,.12);
-    }
-
-    .mir-input.is-invalid {
-        border-color: #fca5a5;
-    }
-
-    /* ─── Empty state ────────────────────────────────────────────────── */
-    .mir-empty-state {
-        border: 2px dashed #e3e8ef;
-        border-radius: 14px;
-        background: #f8fafc;
-        padding: 52px 24px;
-        text-align: center;
-    }
-
-    .mir-empty-icon {
-        width: 60px;
-        height: 60px;
-        background: #eff6ff;
-        border-radius: 14px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin: 0 auto 18px;
-        font-size: 1.5rem;
-        color: #93c5fd;
-    }
-
-    .mir-empty-title {
-        font-weight: 700;
-        color: #1a2332;
-        margin-bottom: 6px;
-    }
-
-    .mir-empty-desc {
-        font-size: .85rem;
-        color: #8494a9;
-        margin-bottom: 20px;
-    }
-    </style>
 
 
     {{-- ================================================================ --}}
@@ -425,43 +194,122 @@
 
     @push('scripts')
     <script>
+    /* ─── Toast ─────────────────────────────────────────────────────── */
+    function showToast(type, message) {
+        const container = document.getElementById('mir-toast-container');
+        const icons = { success: 'fa-check-circle', error: 'fa-exclamation-circle', info: 'fa-info-circle' };
+        const toast = document.createElement('div');
+        toast.className = `mir-toast mir-toast-${type}`;
+        toast.innerHTML = `
+            <i class="fa ${icons[type] || icons.info} mir-toast-icon"></i>
+            <span class="mir-toast-msg">${message}</span>
+        `;
+        container.appendChild(toast);
+        setTimeout(() => {
+            toast.style.animation = 'mir-toast-out 200ms ease forwards';
+            setTimeout(() => toast.remove(), 210);
+        }, 3500);
+    }
+
+    /* ─── Sortable ──────────────────────────────────────────────────── */
     document.addEventListener('livewire:initialized', () => {
         initSortable();
+
+        // Ouve eventos do backend
+        Livewire.on('notify', ({ type, message }) => showToast(type, message));
+
         Livewire.hook('morph.updated', () => { initSortable(); });
     });
 
     function initSortable() {
         document.querySelectorAll('[data-sortable]').forEach(container => {
             if (container._sortable) container._sortable.destroy();
+
             container._sortable = new Sortable(container, {
-                group:       'menu-items',
-                animation:   150,
-                handle:      '.mir-handle',
-                ghostClass:  'sortable-ghost',
+                group: 'menu-items',
+                animation: 150,
+                handle: '.mir-handle',
+                ghostClass: 'sortable-ghost',
                 chosenClass: 'sortable-chosen',
+
+                onMove(evt) {
+                    const item = evt.dragged;
+                    const newContainer = evt.to;
+
+                    const parentRow = newContainer.closest('[data-item-id]');
+                    let newDepth = 0;
+
+                    if (parentRow) {
+                        const depthClass = Array.from(parentRow.classList)
+                            .find(c => c.startsWith('depth-'));
+                        if (depthClass) {
+                            newDepth = parseInt(depthClass.replace('depth-', '')) + 1;
+                        }
+                    }
+
+                    // 🔹 Atualiza classe depth
+                    item.className = item.className.replace(/depth-\d+/g, '');
+                    item.classList.add(`depth-${newDepth}`);
+
+                    // 🔹 Atualiza badge visualmente
+                    updateBadge(item, newDepth);
+                },
+
                 onEnd() {
-                    const orderedItems = collectAllItems();
-                    @this.dispatch('items-reordered', { orderedItems });
+                    requestAnimationFrame(() => {
+                        const orderedItems = collectAllItems();
+                        @this.dispatch('items-reordered', { orderedItems });
+                        showToast('info', 'Ordem atualizada');
+                    });
                 }
             });
         });
     }
 
+    function updateBadge(item, depth) {
+        const badge = item.querySelector('.mir-badge');
+        if (!badge) return;
+
+        // Remove classes antigas
+        badge.className = 'mir-badge';
+
+        let label = 'Raiz';
+        let className = 'mir-badge-root';
+
+        if (depth > 0) {
+            label = `Sub ${depth}`;
+            className = `mir-badge-sub${depth}`;
+        }
+
+        badge.classList.add(className);
+
+        badge.innerHTML = `
+            <svg width="8" height="8" viewBox="0 0 8 8">
+                <circle cx="4" cy="4" r="3.5" fill="currentColor" opacity=".9"/>
+            </svg>
+            ${label}
+        `;
+    }
+
     function collectAllItems() {
         const result = [];
+        const seen   = new Set(); // evita duplicatas quando um item aparece em múltiplos containers
+
+        // Percorre do container raiz para os filhos — a ordem importa
         document.querySelectorAll('[data-sortable]').forEach(container => {
             const rawParent = container.dataset.parentId;
             const parentId  = rawParent !== '' ? parseInt(rawParent) : null;
+
             Array.from(container.children)
                 .filter(el => el.dataset.itemId)
                 .forEach((el, index) => {
-                    result.push({
-                        id:        parseInt(el.dataset.itemId),
-                        parent_id: parentId,
-                        order:     index,
-                    });
+                    const id = parseInt(el.dataset.itemId);
+                    if (seen.has(id)) return; // pula se já registrado
+                    seen.add(id);
+                    result.push({ id, parent_id: parentId, order: index });
                 });
         });
+
         return result;
     }
     </script>
