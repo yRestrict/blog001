@@ -4,6 +4,9 @@ use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Support\Facades\App;
+use App\Http\Middleware\CheckRole;
+use App\Http\Middleware\PreventBackHistory;
+
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -13,7 +16,8 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
-            'preventBackHistory'=>\App\Http\Middleware\PreventBackHistory::class,
+            'preventBackHistory'=>PreventBackHistory::class,
+            'role'               =>CheckRole::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

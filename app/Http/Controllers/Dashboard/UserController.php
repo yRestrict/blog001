@@ -4,12 +4,8 @@ namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use App\UserRole;
-use App\UserStatus;
 use Illuminate\Http\Request;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-
-
 
 class UserController extends Controller
 {
@@ -17,16 +13,16 @@ class UserController extends Controller
 
     public function index()
     {
-        $this->authorize('viewAny', User::class);
-
-        $users = User::latest()->paginate(20);
-        return view('dashboard.users.index', compact('users'));
+        $data = [
+            'pageTitle' => 'Usuários',
+        ];
+        return view('dashboard.user.index', $data); 
     }
 
     public function create()
     {
         $this->authorize('create', User::class);
-        return view('dashboard.users.create');
+        return view('dashboard.user.create');
     }
 
     public function store(Request $request)
@@ -43,13 +39,13 @@ class UserController extends Controller
 
         User::create($data);
 
-        return redirect()->route('users.index')->with('success', 'Usuário criado!');
+        return redirect()->route('admin.users.index')->with('success', 'Usuário criado!');
     }
 
     public function edit(User $user)
     {
         $this->authorize('update', $user);
-        return view('dashboard.users.edit', compact('user'));
+        return view('dashboard.user.edit', compact('user'));
     }
 
     public function update(Request $request, User $user)
@@ -61,37 +57,11 @@ class UserController extends Controller
             'email'    => 'required|email|unique:users,email,' . $user->id,
             'username' => 'required|string|unique:users,username,' . $user->id,
             'bio'      => 'nullable|string',
+            'role'     => 'sometimes|in:owner,author,visitor',
         ]);
 
         $user->update($data);
 
-        return redirect()->route('users.index')->with('success', 'Usuário atualizado!');
-    }
-
-    public function destroy(User $user)
-    {
-        $this->authorize('delete', $user);
-
-        $user->delete();
-
-        return redirect()->route('users.index')->with('success', 'Usuário removido!');
-    }
-
-    public function ban(User $user)
-    {
-        $this->authorize('ban', $user);
-
-        $user->update(['status' => UserStatus::Banned]);
-
-        return back()->with('success', 'Usuário banido!');
-    }
-
-    public function promote(User $user)
-    {
-        $this->authorize('promote', User::class);
-
-        $user->update(['role' => UserRole::Author]);
-
-        return back()->with('success', 'Usuário promovido a autor!');
+        return redirect()->route('admin.users.index')->with('success', 'Usuário atualizado!');
     }
 }

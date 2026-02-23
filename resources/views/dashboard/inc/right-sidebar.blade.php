@@ -91,7 +91,7 @@
                     </a>
                 </li>
                 <li>
-                    <a href="" target="_blank" class="dropdown-toggle no-arrow">
+                    <a href="{{ route('admin.users.index') }}" class="dropdown-toggle no-arrow">
                         <span class="micon fa fa-users"></span>
                         <span class="mtext">Users
                     </a>
