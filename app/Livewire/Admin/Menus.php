@@ -12,8 +12,9 @@ class Menus extends Component
     public string $type;
 
     // ─── Controle do formulário ──────────────────────────────────────────────────
-    public bool   $showForm  = false;
-    public ?int   $editingId = null;
+    public bool   $showForm          = false;
+    public ?int   $editingId         = null;
+    public bool   $editingHasChildren = false;  // URL fica inativa quando true
 
     // ─── Campos do formulário ────────────────────────────────────────────────────
     public string  $title     = '';
@@ -27,7 +28,8 @@ class Menus extends Component
     {
         return [
             'title'     => 'required|string|max:100',
-            'url'       => 'required|string|max:255',
+            // Se o item sendo editado já tem filhos, a URL é irrelevante (será '#')
+            'url'       => $this->editingHasChildren ? 'nullable|string|max:255' : 'required|string|max:255',
             'target'    => 'required|in:_self,_blank',
             'parent_id' => [
                 'nullable',
@@ -93,13 +95,14 @@ class Menus extends Component
     {
         $item = Menu::findOrFail($id);
 
-        $this->editingId = $item->id;
-        $this->title     = $item->title;
-        $this->url       = $item->url;
-        $this->target    = $item->target;
-        $this->parent_id = $item->parent_id;
-        $this->is_active = (bool) $item->is_active;
-        $this->showForm  = true;
+        $this->editingId          = $item->id;
+        $this->editingHasChildren = $item->hasChildren();
+        $this->title              = $item->title;
+        $this->url                = $item->url;
+        $this->target             = $item->target;
+        $this->parent_id          = $item->parent_id;
+        $this->is_active          = (bool) $item->is_active;
+        $this->showForm           = true;
     }
 
     // ─── Formulário: Cancelar ────────────────────────────────────────────────────
@@ -163,9 +166,13 @@ class Menus extends Component
 
         if ($this->editingId) {
             $item = Menu::findOrFail($this->editingId);
+
+            // Se o item tem filhos, a URL é descartada e mantida como '#'
+            $urlToSave = $item->hasChildren() ? '#' : $this->url;
+
             $item->update([
                 'title'     => $this->title,
-                'url'       => $this->url,
+                'url'       => $urlToSave,
                 'target'    => $this->target,
                 'parent_id' => $this->parent_id,
                 'is_active' => $this->is_active,
@@ -175,7 +182,7 @@ class Menus extends Component
                 message: 'Item atualizado com sucesso!'
             );
         } else {
-            Menu::create([
+            $newItem = Menu::create([
                 'type'      => $this->type,
                 'title'     => $this->title,
                 'url'       => $this->url,
@@ -184,6 +191,14 @@ class Menus extends Component
                 'is_active' => $this->is_active,
                 'order'     => $maxOrder + 1,
             ]);
+
+            // Quando um item ganha o primeiro filho, sua URL passa a ser '#'
+            if ($this->parent_id) {
+                $parent = Menu::find($this->parent_id);
+                if ($parent && $parent->url !== '#') {
+                    $parent->update(['url' => '#']);
+                }
+            }
             $this->dispatch('notify', 
                 type: 'success',
                 message: 'Item criado com sucesso!'
@@ -270,6 +285,21 @@ class Menus extends Component
             ]);
         }
 
+        // Garante que qualquer item que agora tem filhos tenha url = '#'
+        // e que itens que ficaram sem filhos possam recuperar sua URL (mantemos '#' por segurança,
+        // o admin pode editar manualmente para restaurar a URL real)
+        $affectedParentIds = collect($orderedItems)
+            ->pluck('parent_id')
+            ->filter()
+            ->unique();
+
+        foreach ($affectedParentIds as $pid) {
+            $parent = Menu::find($pid);
+            if ($parent && $parent->url !== '#') {
+                $parent->update(['url' => '#']);
+            }
+        }
+
         $this->dispatch('notify', 
             type: 'success',
             message: 'Ordem atualizada com sucesso.'
@@ -279,7 +309,8 @@ class Menus extends Component
     // ─── Helper privado ──────────────────────────────────────────────────────────
     private function resetForm(): void
     {
-        $this->editingId = null;
+        $this->editingId          = null;
+        $this->editingHasChildren = false;
         $this->title     = '';
         $this->url       = '#';
         $this->target    = '_self';

@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('password');
             $table->string('picture')->nullable();
             $table->text('bio')->nullable();
-            $table->string('role')->default('admin');
+            $table->string('role')->default('visitor');
             $table->string('status')->default('pending');
             $table->rememberToken();
             $table->timestamps();

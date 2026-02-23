@@ -9,6 +9,7 @@ use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\Dashboard\ProfileController;
 use App\Http\Controllers\Dashboard\SettingController;
 use App\Http\Controllers\Dashboard\MenuController;
+use App\Http\Controllers\Dashboard\UserController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -55,6 +56,22 @@ Route::prefix('admin')->name('admin.')->group(function () {
         // Menus
         Route::get('/header', [MenuController::class, 'headerMenu'])->name('header');
         Route::get('/footer', [MenuController::class, 'footerMenu'])->name('footer');
+
+
+        // Usuários — só owner acessa
+        Route::middleware(['role:owner'])->prefix('users')->name('users.')->group(function () {
+            Route::get('/', [UserController::class, 'index'])->name('index');
+            Route::get('/create', [UserController::class, 'create'])->name('create');
+            Route::post('/', [UserController::class, 'store'])->name('store');
+            Route::get('/{user}/edit', [UserController::class, 'edit'])->name('edit');
+            Route::put('/{user}', [UserController::class, 'update'])->name('update');
+            Route::delete('/{user}', [UserController::class, 'destroy'])->name('destroy');
+            Route::patch('/{user}/ban', [UserController::class, 'ban'])->name('ban');
+            Route::patch('/{user}/promote', [UserController::class, 'promote'])->name('promote');
+        });
+
+
+
 
 
     });

@@ -103,6 +103,7 @@
                         <span class="mtext">Sidebars
                     </a>
                 </li>
+                
                 <li>
                     <a href="javascript:;" class="dropdown-toggle">
                         <span class="micon fa fa-cogs"></span><span class="mtext">General</span>

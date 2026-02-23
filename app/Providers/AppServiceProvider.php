@@ -6,6 +6,10 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Auth\Middleware\RedirectIfAuthenticated;
 use Illuminate\Auth\Middleware\Authenticate;
 use Illuminate\Support\Facades\Session;
+use App\Policies\UserPolicy;
+use Illuminate\Support\Facades\Gate;
+use App\Models\User;
+
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -31,5 +35,7 @@ class AppServiceProvider extends ServiceProvider
             Session::flash('fail', __('auth.login_required'));
             return route('admin.login');
         });
+
+        Gate::policy(User::class, UserPolicy::class);
     }
 }

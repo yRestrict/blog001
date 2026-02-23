@@ -82,12 +82,19 @@
             </div>
 
             {{-- Linha inferior: URL --}}
-            <div class="mir-url-row">
-                <svg width="9" height="9" viewBox="0 0 10 10" fill="none">
-                    <path d="M4 6.5a2.5 2.5 0 003.5 0l1.5-1.5a2.5 2.5 0 00-3.5-3.5L4.8 2.3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
-                    <path d="M6 3.5a2.5 2.5 0 00-3.5 0L1 5a2.5 2.5 0 003.5 3.5l.7-.7" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
-                </svg>
-                <span>{{ $item->url ?: '#' }}</span>
+            <div class="mir-url-row {{ $item->children->isNotEmpty() ? 'mir-url-row-inactive' : '' }}">
+                @if ($item->children->isNotEmpty())
+                    <svg width="9" height="9" viewBox="0 0 12 12" fill="none" title="URL inativa — item com subitens">
+                        <path d="M2 2l8 8M5.5 3A4.5 4.5 0 0110 7.5M6.5 9A4.5 4.5 0 012 4.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+                    </svg>
+                    <span class="mir-url-inactive-text">URL inativa (tem subitens)</span>
+                @else
+                    <svg width="9" height="9" viewBox="0 0 10 10" fill="none">
+                        <path d="M4 6.5a2.5 2.5 0 003.5 0l1.5-1.5a2.5 2.5 0 00-3.5-3.5L4.8 2.3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+                        <path d="M6 3.5a2.5 2.5 0 00-3.5 0L1 5a2.5 2.5 0 003.5 3.5l.7-.7" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+                    </svg>
+                    <span>{{ $item->url ?: '#' }}</span>
+                @endif
             </div>
 
         </div>
@@ -126,8 +133,7 @@
                 </button>
 
                 <button class="mir-action-btn mir-action-icon mir-action-delete"
-                        wire:click="delete({{ $item->id }})"
-                        wire:confirm="Tem certeza que deseja excluir '{{ $item->title }}'?"
+                        wire:click="$dispatch('confirm-delete', { id: {{ $item->id }}, title: '{{ addslashes($item->title) }}' })"
                         title="Excluir">
                     <svg width="12" height="13" viewBox="0 0 12 14" fill="none">
                         <path d="M1 3.5h10M4 3.5V2.5h4v1M2 3.5l.8 8a1 1 0 001 .9h4.4a1 1 0 001-.9l.8-8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>

@@ -80,6 +80,15 @@ class Menu extends Model
         return $query->count() >= $limite;
     }
 
+    /**
+     * Retorna true se o item possui filhos diretos.
+     * Usado para desativar a URL no painel admin quando o item age como container.
+     */
+    public function hasChildren(): bool
+    {
+        return $this->children()->exists();
+    }
+
     public function deactivateDescendants(): void
     {
         foreach ($this->children as $child) {

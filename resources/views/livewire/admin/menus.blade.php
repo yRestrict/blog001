@@ -4,6 +4,49 @@
 
 <div>
 
+    {{-- ─── Estilos: URL inativa quando item tem subitens ─────────────── --}}
+    <style>
+        /* URL inativa na row da árvore */
+        .mir-url-row-inactive { opacity: .55; }
+        .mir-url-inactive-text { font-style: italic; color: #9ca3af; }
+
+        /* Campo URL desabilitado no modal */
+        .mir-input-disabled {
+            background: #f3f4f6 !important;
+            color: #9ca3af !important;
+            cursor: not-allowed;
+            border-color: #e5e7eb !important;
+        }
+
+        /* Badge "Inativa" ao lado do label URL */
+        .mir-url-inactive-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+            font-size: .68rem;
+            font-weight: 600;
+            color: #f59e0b;
+            background: rgba(245,158,11,.12);
+            border: 1px solid rgba(245,158,11,.25);
+            border-radius: 4px;
+            padding: 1px 6px;
+            margin-left: 6px;
+            vertical-align: middle;
+        }
+
+        /* Hint abaixo do campo URL desabilitado */
+        .mir-url-hint {
+            display: flex;
+            align-items: flex-start;
+            gap: 5px;
+            margin-top: 5px;
+            font-size: .78rem;
+            color: #f59e0b;
+            line-height: 1.4;
+        }
+        .mir-url-hint svg { flex-shrink: 0; margin-top: 2px; }
+    </style>
+
     {{-- ================================================================ --}}
     {{-- TOAST DE FEEDBACK (substitui os alertas antigos)                 --}}
     {{-- ================================================================ --}}
@@ -77,14 +120,34 @@
 
                         {{-- URL --}}
                         <div class="col-md-6 mb-3">
-                            <label class="mir-label">URL <span class="mir-required">*</span></label>
+                            <label class="mir-label">
+                                URL <span class="mir-required">*</span>
+                                @if ($editingHasChildren)
+                                    <span class="mir-url-inactive-badge" title="Este item possui subitens — a URL é desativada automaticamente">
+                                        <svg width="10" height="10" viewBox="0 0 12 12" fill="none" style="vertical-align:-.1em">
+                                            <path d="M6 1a5 5 0 100 10A5 5 0 006 1zm0 4v3m0-5v.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                                        </svg>
+                                        Inativa
+                                    </span>
+                                @endif
+                            </label>
                             <input type="text"
-                                class="mir-input @error('url') is-invalid @enderror"
+                                class="mir-input @error('url') is-invalid @enderror {{ $editingHasChildren ? 'mir-input-disabled' : '' }}"
                                 wire:model="url"
-                                placeholder="/sobre ou https://...">
-                            @error('url')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
+                                placeholder="/sobre ou https://..."
+                                @if ($editingHasChildren) disabled title="Este item possui subitens. A URL só fica ativa quando o item não tiver filhos." @endif>
+                            @if ($editingHasChildren)
+                                <div class="mir-url-hint">
+                                    <svg width="11" height="11" viewBox="0 0 12 12" fill="none">
+                                        <path d="M5 3.5L3.5 5 5 6.5M7 3.5L8.5 5 7 6.5M1 6a5 5 0 1010 0A5 5 0 001 6z" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                    Este item tem subitens — a URL fica inativa. Remova todos os subitens para ativá-la novamente.
+                                </div>
+                            @else
+                                @error('url')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            @endif
                         </div>
 
                         {{-- Abrir em --}}
@@ -154,6 +217,60 @@
         </div>
     </div>
     @endif
+
+
+
+    {{-- ── Modal de confirmação de exclusão ──────────────────────── --}}
+    <div x-data="{ show: false, itemId: null, itemTitle: '' }"
+        x-on:confirm-delete.window="itemId = $event.detail.id; itemTitle = $event.detail.title; show = true"
+        x-show="show"
+        x-cloak
+        class="mir-modal-overlay"
+        tabindex="-1">
+
+        <div class="mir-modal-dialog">
+            <div class="mir-modal-content">
+
+                {{-- HEADER --}}
+                <div class="mir-modal-header">
+                    <div class="mir-modal-title">
+                        <span class="mir-modal-icon" style="background: rgba(239,68,68,.15); color: #ef4444;">
+                            <i class="fa fa-trash"></i>
+                        </span>
+                        <div>
+                            <div class="mir-modal-title-text">Excluir Item do Menu</div>
+                            <div class="mir-modal-subtitle">Esta ação não pode ser desfeita</div>
+                        </div>
+                    </div>
+                    <button type="button" class="mir-modal-close" x-on:click="show = false">
+                        <i class="fa fa-times"></i>
+                    </button>
+                </div>
+
+                {{-- BODY --}}
+                <div class="mir-modal-body">
+                    <p style="color: #6d7279; font-size: .9rem; line-height: 1.6; margin: 0;">
+                        Tem certeza que deseja excluir o item
+                        <strong style="color: #ee0b0b;" x-text="itemTitle"></strong>?
+                    </p>
+                </div>
+
+                {{-- FOOTER --}}
+                <div class="mir-modal-footer">
+                    <button class="mir-btn-ghost" x-on:click="show = false">
+                        Cancelar
+                    </button>
+                    <button class="mir-btn-primary-lg"
+                            style="background: #ef4444;"
+                            x-on:click="$wire.delete(itemId); show = false">
+                        <i class="fa fa-trash"></i>
+                        Sim, excluir
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </div>
 
 
     {{-- ================================================================ --}}
