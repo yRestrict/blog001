@@ -4,6 +4,8 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+
 
 class CheckRole
 {
@@ -18,7 +20,10 @@ class CheckRole
 
         // Se estiver banido
         if ($user->isBanned()) {
-            abort(403, 'Sua conta foi banida.');
+            Auth::logout();
+            request()->session()->invalidate();
+            request()->session()->regenerateToken();
+            return redirect()->route('admin.login')->with('fail', 'Sua conta foi banida.');
         }
 
         // Se o role do usuário não está na lista permitida

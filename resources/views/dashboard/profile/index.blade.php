@@ -23,6 +23,6 @@
     </div>
 </div>
 @livewire('admin.profile')
-{{-- <livewire:admin.profile> --}}
+
 
 @endsection

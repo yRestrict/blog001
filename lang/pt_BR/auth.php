@@ -21,6 +21,8 @@ return [
     'login_email' => 'Digite um e-mail válido.',
     'login_not_found_email' => 'Nenhuma conta encontrada com este e-mail.',
     'login_not_found_username' => 'Nenhuma conta encontrada com este usuário.',
+    'account_banned' => 'Sua conta foi banida.',
+
     
     // Password Validation
     'password_required' => 'Informe sua senha.',

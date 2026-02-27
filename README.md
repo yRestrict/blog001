@@ -23,3 +23,7 @@ public function mount($userId = null)
     $user = $userId ? User::find($userId) : Auth::user();
     // ... resto do código
 } 
+
+
+
+Dashboard -> Menu = arruma adicionar menu e padraonizar 

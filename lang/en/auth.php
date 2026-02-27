@@ -21,6 +21,7 @@ return [
     'login_email' => 'Please enter a valid email address.',
     'login_not_found_email' => 'No account found with this email.',
     'login_not_found_username' => 'No account found with this username.',
+    'account_banned' => 'Your account has been banned.',    
     
     // Password Validation
     'password_required' => 'Please enter your password.',
