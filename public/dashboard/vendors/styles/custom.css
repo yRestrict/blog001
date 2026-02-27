@@ -1,32 +1,59 @@
+/* =============================================================
+   CUSTOM.CSS — Dashboard DeskApp
+   Organizado por seção | Sem variáveis :root | Valores fixos
+   =============================================================
+   Seções:
+   01. Utilitários de Formulário
+   02. Mensagens de Campo (Validação)
+   03. Menu Item Row — Estrutura e Layout
+   04. Menu Item Row — Badges de Profundidade
+   05. Menu Item Row — Título, URL e Ícones
+   06. Menu Item Row — Status (Ativo / Inativo)
+   07. Menu Item Row — Ações (Botões)
+   08. Menu Item Row — Hierarquia de Filhos
+   09. Menu Item Row — Drag & Drop
+   10. Botões Globais (Primary, Ghost)
+   11. Modal — Sobreposição e Estrutura
+   12. Modal — Cabeçalho, Ícone e Título
+   13. Modal — Corpo, Rodapé e Formulário
+   14. Modal — Confirmação (Dark Mode)
+   15. Switch Customizado
+   16. Empty State
+   17. Toast Notifications
+   ============================================================= */
+
+
+/* =============================================================
+   01. UTILITÁRIOS DE FORMULÁRIO
+   ============================================================= */
+
+/* Reseta o input-group-text do Bootstrap para aparência limpa */
 .input-group-text {
-    background-color: transparent !important;
-    border: none !important;
-    padding: 0 !important;
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-align: center;
+    align-items: center;
+    padding: .375rem .75rem;
+    margin-bottom: 0;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #495057;
+    text-align: center;
+    white-space: nowrap;
+    background-color: #e9ecef;
+    border: 1px solid #ced4da;
+    border-radius: .25rem;
 }
 
 
-.input-group-text {
-    display: -ms-flexbox !important;
-    display: flex !important;
-    -ms-flex-align: center !important;
-    align-items: center !important;
-    padding: .375rem .75rem!important;
-    margin-bottom: 0 !important;
-    font-size: 1rem !important;
-    font-weight: 400 !important;
-    line-height: 1.5 !important;
-    color: #495057 !important;
-    text-align: center !important;
-    white-space: nowrap !important;
-    background-color: #e9ecef !important;
-    border: 1px solid #ced4da !important;
-    border-radius: .25rem !important;
-}
+/* =============================================================
+   02. MENSAGENS DE CAMPO (VALIDAÇÃO)
+   ============================================================= */
 
-    
 .field-message {
     margin-top: -14px;
-    min-height: 16px; /* reserva espaço e não pula layout */
+    min-height: 16px;
     font-size: 14px;
 }
 
@@ -38,64 +65,59 @@
     color: #dc3545;
 }
 
-/* ═══════════════════════════════════════════════════════════
-   MENU ITEM ROW — Design refinado
-   ═══════════════════════════════════════════════════════════ */
 
-/* ── Tokens ──────────────────────────────────────────────── */
-:root {
-    --mir-ease:   140ms cubic-bezier(.4,0,.2,1);
-    --mir-r:      10px;
-    --mir-r-sm:   7px;
+/* =============================================================
+   03. MENU ITEM ROW — ESTRUTURA E LAYOUT
+   Transição padrão: 140ms cubic-bezier(.4,0,.2,1)
+   Border-radius padrão: 10px | small: 7px
+   ============================================================= */
+
+/* Card externo do template (wrapper da lista) */
+.mir-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, .08);
 }
 
-/* ── Row wrapper ─────────────────────────────────────────── */
+/* Lista raiz sem estilos padrão */
+.mir-tree {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+/* Linha individual de item de menu */
 .mir-row {
     margin-bottom: 7px;
     position: relative;
-    border-radius: var(--mir-r);
-    transition: transform var(--mir-ease);
+    border-radius: 10px;
+    transition: transform 140ms cubic-bezier(.4, 0, .2, 1);
 }
 
-/* ── Card inner ─────────────────────────────────────────── */
+/* Card interno: layout flexível com borda e sombra */
 .mir-card-inner {
     display: flex;
     align-items: center;
     background: #fff;
     border: 1.5px solid #e8ecf2;
-    border-radius: var(--mir-r);
+    border-radius: 10px;
     overflow: hidden;
     gap: 0;
     transition:
-        border-color var(--mir-ease),
-        box-shadow var(--mir-ease);
+        border-color 140ms cubic-bezier(.4, 0, .2, 1),
+        box-shadow 140ms cubic-bezier(.4, 0, .2, 1);
     position: relative;
 }
 
 .mir-row:hover .mir-card-inner {
     border-color: #c7d2e4;
     box-shadow:
-        0 0 0 3px rgba(59,130,246,.06),
-        0 4px 16px rgba(0,0,0,.06);
+        0 0 0 3px rgba(59, 130, 246, .06),
+        0 4px 16px rgba(0, 0, 0, .06);
 }
 
-/* ── Faixa lateral colorida por profundidade ─────────────── */
-.mir-depth-stripe {
-    width: 4px;
-    align-self: stretch;
-    flex-shrink: 0;
-    background: #e8ecf2;
-    transition: background var(--mir-ease);
-}
-
-.depth-0 .mir-depth-stripe { background: #22c55e; }
-.depth-1 .mir-depth-stripe { background: #f59e0b; }
-.depth-2 .mir-depth-stripe { background: #a78bfa; }
-.depth-3 .mir-depth-stripe { background: #ec4899; }  /* Rosa */
-.depth-4 .mir-depth-stripe { background: #06b6d4; }  /* Ciano */
-.depth-5 .mir-depth-stripe { background: #f97316; }  /* Laranja forte */
-
-/* ── Handle ──────────────────────────────────────────────── */
+/* Handle de arrastar */
 .mir-handle {
     cursor: grab;
     color: #d1d5db;
@@ -105,18 +127,26 @@
     justify-content: center;
     width: 32px;
     height: 52px;
-    transition: color var(--mir-ease), background var(--mir-ease);
+    transition: color 140ms cubic-bezier(.4, 0, .2, 1), background 140ms cubic-bezier(.4, 0, .2, 1);
 }
-.mir-handle:active { cursor: grabbing; }
-.mir-row:hover .mir-handle { color: #9ca3af; background: #f9fafb; }
 
-/* ── Body (título + url) ─────────────────────────────────── */
+.mir-handle:active {
+    cursor: grabbing;
+}
+
+.mir-row:hover .mir-handle {
+    color: #9ca3af;
+    background: #f9fafb;
+}
+
+/* Corpo do item: título + URL */
 .mir-body {
     flex: 1 1 auto;
     min-width: 0;
     padding: 10px 12px;
 }
 
+/* Linha superior: badge + título */
 .mir-top-row {
     display: flex;
     align-items: center;
@@ -124,7 +154,69 @@
     min-width: 0;
 }
 
-/* ── Badges ──────────────────────────────────────────────── */
+/* Lado direito: status + ações */
+.mir-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0 12px 0 8px;
+    flex-shrink: 0;
+}
+
+/* Divider vertical entre status e botões */
+.mir-divider {
+    width: 1px;
+    height: 24px;
+    background: #e5e7eb;
+    flex-shrink: 0;
+}
+
+
+/* =============================================================
+   04. MENU ITEM ROW — FAIXA LATERAL E BADGES DE PROFUNDIDADE
+   ============================================================= */
+
+/* Faixa colorida à esquerda do card, indica nível de hierarquia */
+.mir-depth-stripe {
+    width: 4px;
+    align-self: stretch;
+    flex-shrink: 0;
+    background: #e8ecf2;
+    transition: background 140ms cubic-bezier(.4, 0, .2, 1);
+}
+
+.depth-0 .mir-depth-stripe {
+    background: #22c55e;
+}
+
+/* Verde   — raiz */
+.depth-1 .mir-depth-stripe {
+    background: #f59e0b;
+}
+
+/* Âmbar  — nível 1 */
+.depth-2 .mir-depth-stripe {
+    background: #a78bfa;
+}
+
+/* Violeta — nível 2 */
+.depth-3 .mir-depth-stripe {
+    background: #ec4899;
+}
+
+/* Rosa    — nível 3 */
+.depth-4 .mir-depth-stripe {
+    background: #06b6d4;
+}
+
+/* Ciano   — nível 4 */
+.depth-5 .mir-depth-stripe {
+    background: #f97316;
+}
+
+/* Laranja — nível 5 */
+
+/* Badge base */
 .mir-badge {
     display: inline-flex;
     align-items: center;
@@ -141,6 +233,7 @@
     border: 1px solid transparent;
 }
 
+/* Badges por nível — correspondem às faixas laterais */
 .mir-badge-root {
     background: #f0fdf4;
     color: #16a34a;
@@ -160,24 +253,29 @@
 }
 
 .mir-badge-sub3 {
-    background: #fdf2f8;   /* rosa bem claro */
-    color: #db2777;        /* rosa forte */
+    background: #fdf2f8;
+    color: #db2777;
     border-color: #fbcfe8;
 }
 
 .mir-badge-sub4 {
-    background: #ecfeff;   /* ciano bem claro */
-    color: #0891b2;        /* ciano forte */
+    background: #ecfeff;
+    color: #0891b2;
     border-color: #a5f3fc;
 }
 
 .mir-badge-sub5 {
-    background: #fff7ed;   /* laranja claro */
-    color: #ea580c;        /* laranja forte */
+    background: #fff7ed;
+    color: #ea580c;
     border-color: #fed7aa;
 }
 
-/* ── Título ──────────────────────────────────────────────── */
+
+/* =============================================================
+   05. MENU ITEM ROW — TÍTULO, URL E ÍCONES
+   ============================================================= */
+
+/* Título principal do item */
 .mir-title {
     font-size: .875rem;
     font-weight: 600;
@@ -191,13 +289,14 @@
     line-height: 1.3;
 }
 
+/* Ícone de "abre em nova aba" */
 .mir-newtab {
     color: #9ca3af;
     flex-shrink: 0;
     opacity: .7;
 }
 
-/* ── URL ─────────────────────────────────────────────────── */
+/* Linha de URL abaixo do título */
 .mir-url-row {
     display: flex;
     align-items: center;
@@ -210,23 +309,23 @@
     text-overflow: ellipsis;
 }
 
-.mir-url-row svg { flex-shrink: 0; opacity: .7; }
+.mir-url-row svg {
+    flex-shrink: 0;
+    opacity: .7;
+}
+
 .mir-url-row span {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
 
-/* ── Lado direito ────────────────────────────────────────── */
-.mir-right {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 0 12px 0 8px;
-    flex-shrink: 0;
-}
 
-/* ── Status pill ─────────────────────────────────────────── */
+/* =============================================================
+   06. MENU ITEM ROW — STATUS (ATIVO / INATIVO)
+   ============================================================= */
+
+/* Pill de status — clicável para alternar */
 .mir-status {
     display: inline-flex;
     align-items: center;
@@ -239,63 +338,66 @@
     border: 1.5px solid transparent;
     cursor: pointer;
     white-space: nowrap;
-    transition: all var(--mir-ease);
+    transition: all 140ms cubic-bezier(.4, 0, .2, 1);
     position: relative;
 }
 
+/* Bolinha indicadora de status */
 .mir-status-ring {
     width: 7px;
     height: 7px;
     border-radius: 50%;
     flex-shrink: 0;
-    transition: all var(--mir-ease);
+    transition: all 140ms cubic-bezier(.4, 0, .2, 1);
 }
 
-/* Ativo */
+/* Estado: Ativo */
 .mir-status.is-active {
     background: #f0fdf4;
     color: #15803d;
     border-color: #bbf7d0;
 }
+
 .mir-status.is-active .mir-status-ring {
     background: #22c55e;
     box-shadow: 0 0 0 2.5px #dcfce7;
 }
+
 .mir-status.is-active:hover {
     background: #dcfce7;
     border-color: #86efac;
 }
 
-/* Inativo */
+/* Estado: Inativo */
 .mir-status.is-inactive {
     background: #f9fafb;
     color: #6b7280;
     border-color: #e5e7eb;
 }
+
 .mir-status.is-inactive .mir-status-ring {
     background: #d1d5db;
 }
+
 .mir-status.is-inactive:hover {
     background: #f3f4f6;
     border-color: #d1d5db;
     color: #374151;
 }
 
-/* ── Divider vertical ────────────────────────────────────── */
-.mir-divider {
-    width: 1px;
-    height: 24px;
-    background: #e5e7eb;
-    flex-shrink: 0;
-}
 
-/* ── Botões de ação ──────────────────────────────────────── */
+/* =============================================================
+   07. MENU ITEM ROW — AÇÕES (BOTÕES)
+   ============================================================= */
+
+/* Container dos botões de ação */
 .mir-actions {
     display: flex;
     align-items: center;
     gap: 4px;
 }
 
+/* Botão base de ação */
 .mir-action-btn {
     display: inline-flex;
     align-items: center;
@@ -303,68 +405,77 @@
     gap: 5px;
     height: 30px;
     padding: 0 10px;
-    border-radius: var(--mir-r-sm);
+    border-radius: 7px;
     font-size: .74rem;
     font-weight: 600;
     border: 1.5px solid transparent;
     cursor: pointer;
     white-space: nowrap;
-    transition: all var(--mir-ease);
+    transition: all 140ms cubic-bezier(.4, 0, .2, 1);
     background: none;
     line-height: 1;
 }
 
+/* Botão somente ícone (quadrado) */
 .mir-action-icon {
     width: 30px;
     padding: 0;
 }
 
-/* Adicionar subitem */
+/* Botão: Adicionar subitem */
 .mir-action-add {
     background: #eff6ff;
     color: #2563eb;
     border-color: #bfdbfe;
     padding: 0 10px;
 }
+
 .mir-action-add:hover {
     background: #2563eb;
     color: #fff;
     border-color: #2563eb;
-    box-shadow: 0 2px 8px rgba(37,99,235,.25);
+    box-shadow: 0 2px 8px rgba(37, 99, 235, .25);
 }
 
-/* Editar */
+/* Botão: Editar */
 .mir-action-edit {
     background: #f9fafb;
     color: #6b7280;
     border-color: #e5e7eb;
 }
+
 .mir-action-edit:hover {
     background: #f3f4f6;
     color: #111827;
     border-color: #c8d0dc;
 }
 
-/* Excluir */
+/* Botão: Excluir */
 .mir-action-delete {
     background: #f9fafb;
     color: #d1d5db;
     border-color: #e5e7eb;
 }
+
 .mir-action-delete:hover {
     background: #fef2f2;
     color: #ef4444;
     border-color: #fecaca;
 }
 
-/* ── Área de filhos ──────────────────────────────────────── */
+
+/* =============================================================
+   08. MENU ITEM ROW — HIERARQUIA DE FILHOS
+   ============================================================= */
+
+/* Container dos itens filhos com recuo */
 .mir-children {
     margin-top: 6px;
     padding-left: 28px;
     position: relative;
 }
 
-/* Linha vertical de hierarquia */
+/* Linha vertical de hierarquia (guia visual) */
 .mir-children::before {
     content: '';
     position: absolute;
@@ -376,8 +487,8 @@
     background: linear-gradient(to bottom, #e5e7eb 70%, transparent);
 }
 
-/* Linha horizontal conectora */
-.mir-children > .mir-row::before {
+/* Linha horizontal conectora para cada item filho */
+.mir-children>.mir-row::before {
     content: '';
     position: absolute;
     left: -18px;
@@ -388,11 +499,13 @@
     border-radius: 2px;
 }
 
+/* Container de filhos vazio */
 .mir-children-empty {
     padding-top: 0;
     min-height: 0;
 }
 
+/* Hint de drop zone quando vazio */
 .mir-dropzone-hint {
     display: flex;
     align-items: center;
@@ -405,7 +518,7 @@
     color: #d1d5db;
     border: 1.5px dashed #e5e7eb;
     border-radius: 8px;
-    transition: all var(--mir-ease);
+    transition: all 140ms cubic-bezier(.4, 0, .2, 1);
 }
 
 .mir-children:hover .mir-dropzone-hint {
@@ -414,7 +527,12 @@
     background: #f0f7ff;
 }
 
-/* ── Drag & Drop ─────────────────────────────────────────── */
+
+/* =============================================================
+   09. MENU ITEM ROW — DRAG & DROP (SORTABLE.JS)
+   ============================================================= */
+
+/* Item fantasma durante o arrasto */
 .sortable-ghost .mir-card-inner {
     opacity: .4;
     border-style: dashed;
@@ -422,28 +540,20 @@
     background: #f0f7ff;
 }
 
+/* Item sendo segurado */
 .sortable-chosen .mir-card-inner {
     box-shadow:
-        0 0 0 3px rgba(59,130,246,.15),
-        0 8px 24px rgba(59,130,246,.12);
+        0 0 0 3px rgba(59, 130, 246, .15),
+        0 8px 24px rgba(59, 130, 246, .12);
     border-color: #60a5fa;
 }
 
-/* ─── Card wrapper ───────────────────────────────────────────────── */
-.mir-card {
-    background: #fff;
-    border-radius: 12px;
-    padding: 20px;
-    box-shadow: 0 1px 4px rgba(0,0,0,.08);
-}
 
-.mir-tree {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
+/* =============================================================
+   10. BOTÕES GLOBAIS (PRIMARY, GHOST)
+   ============================================================= */
 
-/* ─── Botão primário grande ──────────────────────────────────────── */
+/* Botão primário grande — usado no cabeçalho da página */
 .mir-btn-primary-lg {
     display: inline-flex;
     align-items: center;
@@ -459,14 +569,15 @@
     cursor: pointer;
     transition: background 160ms ease, box-shadow 160ms ease;
 }
+
 .mir-btn-primary-lg:hover {
     background: #1d4ed8;
-    box-shadow: 0 4px 12px rgba(37,99,235,.3);
+    box-shadow: 0 4px 12px rgba(37, 99, 235, .3);
     color: #fff;
     text-decoration: none;
 }
 
-/* ─── Botão ghost ────────────────────────────────────────────────── */
+/* Botão ghost — ação secundária */
 .mir-btn-ghost {
     display: inline-flex;
     align-items: center;
@@ -482,41 +593,75 @@
     cursor: pointer;
     transition: all 160ms ease;
 }
+
 .mir-btn-ghost:hover {
     background: #e2e8f0;
     color: #1a2332;
 }
 
-/* ─── Modal ──────────────────────────────────────────────────────── */
+
+/* =============================================================
+   11. MODAL — SOBREPOSIÇÃO E ESTRUTURA
+   ============================================================= */
+
+/* Overlay com backdrop blur */
 .mir-modal-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(15, 23, 42, .55);
     z-index: 1050;
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 16px;
+    background: rgba(15, 23, 42, .55);
     backdrop-filter: blur(2px);
     animation: mir-fade-in 120ms ease;
 }
 
+/* Caixa de diálogo responsiva */
 .mir-modal-dialog {
     width: 100%;
     max-width: 640px;
     animation: mir-slide-up 160ms ease;
 }
 
-@keyframes mir-fade-in  { from { opacity: 0; } to { opacity: 1; } }
-@keyframes mir-slide-up { from { transform: translateY(12px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-
+/* Conteúdo com bordas arredondadas e sombra */
 .mir-modal-content {
     background: #fff;
     border-radius: 14px;
-    box-shadow: 0 24px 64px rgba(0,0,0,.18);
+    box-shadow: 0 24px 64px rgba(0, 0, 0, .18);
     overflow: hidden;
 }
 
+/* Animações de entrada do modal */
+@keyframes mir-fade-in {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes mir-slide-up {
+    from {
+        transform: translateY(12px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+
+/* =============================================================
+   12. MODAL — CABEÇALHO, ÍCONE E TÍTULO
+   ============================================================= */
+
+/* Cabeçalho do modal com separador inferior */
 .mir-modal-header {
     display: flex;
     align-items: center;
@@ -525,12 +670,14 @@
     border-bottom: 1px solid #f1f5f9;
 }
 
+/* Grupo de ícone + texto do título */
 .mir-modal-title {
     display: flex;
     align-items: center;
     gap: 12px;
 }
 
+/* Ícone decorativo ao lado do título */
 .mir-modal-icon {
     width: 36px;
     height: 36px;
@@ -542,9 +689,18 @@
     flex-shrink: 0;
 }
 
-.mir-modal-icon-add  { background: #dcfce7; color: #16a34a; }
-.mir-modal-icon-edit { background: #dbeafe; color: #2563eb; }
+/* Variantes de cor do ícone por contexto */
+.mir-modal-icon-add {
+    background: #dcfce7;
+    color: #16a34a;
+}
 
+.mir-modal-icon-edit {
+    background: #dbeafe;
+    color: #2563eb;
+}
+
+/* Texto do título e subtítulo */
 .mir-modal-title-text {
     font-size: .95rem;
     font-weight: 700;
@@ -558,6 +714,7 @@
     margin-top: 2px;
 }
 
+/* Botão de fechar (X) no canto superior direito */
 .mir-modal-close {
     width: 32px;
     height: 32px;
@@ -572,10 +729,24 @@
     transition: all 160ms ease;
     flex-shrink: 0;
 }
-.mir-modal-close:hover { background: #fee2e2; color: #ef4444; border-color: #fecaca; }
 
-.mir-modal-body { padding: 20px 24px; }
+.mir-modal-close:hover {
+    background: #fee2e2;
+    color: #ef4444;
+    border-color: #fecaca;
+}
 
+
+/* =============================================================
+   13. MODAL — CORPO, RODAPÉ E FORMULÁRIO
+   ============================================================= */
+
+/* Área de conteúdo principal */
+.mir-modal-body {
+    padding: 20px 24px;
+}
+
+/* Rodapé com botões de ação alinhados à direita */
 .mir-modal-footer {
     display: flex;
     align-items: center;
@@ -585,7 +756,7 @@
     border-top: 1px solid #f1f5f9;
 }
 
-/* ─── Form inputs ────────────────────────────────────────────────── */
+/* Label de campo de formulário */
 .mir-label {
     display: block;
     font-size: .8rem;
@@ -594,8 +765,12 @@
     margin-bottom: 5px;
 }
 
-.mir-required { color: #ef4444; }
+/* Asterisco de campo obrigatório */
+.mir-required {
+    color: #ef4444;
+}
 
+/* Input e select do formulário */
 .mir-input {
     display: block;
     width: 100%;
@@ -610,13 +785,15 @@
     appearance: none;
 }
 
-select.mir-input { height: 38px; }
+select.mir-input {
+    height: 38px;
+}
 
 .mir-input:focus {
     outline: none;
     border-color: #93c5fd;
     background: #fff;
-    box-shadow: 0 0 0 3px rgba(59,130,246,.12);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, .12);
 }
 
 .mir-input.is-invalid {
@@ -624,10 +801,109 @@ select.mir-input { height: 38px; }
     background: #fff5f5;
 }
 
-/* ─── Switch customizado ─────────────────────────────────────────── */
-.mir-switch-wrap { display: flex; align-items: center; }
 
-.mir-switch-input { display: none; }
+/* =============================================================
+   14. MODAL — CONFIRMAÇÃO (DARK MODE)
+   Usado para diálogos de confirmação de exclusão
+   ============================================================= */
+
+/* Caixa dark do modal de confirmação */
+.mir-modal-box {
+    background: #1e1e2e;
+    border: 1px solid rgba(255, 255, 255, .1);
+    border-radius: 14px;
+    padding: 2rem;
+    width: 100%;
+    max-width: 380px;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, .5);
+}
+
+/* Ícone circular de alerta/danger no modal de confirmação */
+.mir-modal-box .mir-modal-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: rgba(239, 68, 68, .15);
+    color: #ef4444;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* Redefine para centralizar no modal de confirmação */
+    margin: 0 auto 1rem;
+    font-size: 1.4rem;
+}
+
+/* Título do modal de confirmação */
+.mir-modal-box .mir-modal-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #f1f5f9;
+    margin-bottom: .5rem;
+    /* Redefine flex para texto centralizado */
+    display: block;
+}
+
+/* Descrição explicativa */
+.mir-modal-desc {
+    font-size: .875rem;
+    color: #94a3b8;
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+}
+
+.mir-modal-desc strong {
+    color: #f1f5f9;
+}
+
+/* Container de botões do modal de confirmação */
+.mir-modal-actions {
+    display: flex;
+    gap: .75rem;
+    justify-content: center;
+}
+
+/* Botão base do modal de confirmação */
+.mir-modal-btn {
+    padding: .55rem 1.4rem;
+    border-radius: 8px;
+    font-size: .875rem;
+    font-weight: 500;
+    cursor: pointer;
+    border: none;
+    transition: opacity .15s;
+}
+
+.mir-modal-btn:hover {
+    opacity: .85;
+}
+
+/* Botão cancelar (tom neutro) */
+.mir-modal-cancel {
+    background: rgba(255, 255, 255, .08);
+    color: #cbd5e1;
+}
+
+/* Botão confirmar (vermelho — ação destrutiva) */
+.mir-modal-confirm {
+    background: #ef4444;
+    color: #fff;
+}
+
+
+/* =============================================================
+   15. SWITCH CUSTOMIZADO
+   ============================================================= */
+
+.mir-switch-wrap {
+    display: flex;
+    align-items: center;
+}
+
+/* Input escondido — ativado via label */
+.mir-switch-input {
+    display: none;
+}
 
 .mir-switch-label {
     display: flex;
@@ -637,6 +913,7 @@ select.mir-input { height: 38px; }
     user-select: none;
 }
 
+/* Trilha do switch */
 .mir-switch-track {
     width: 40px;
     height: 22px;
@@ -647,6 +924,7 @@ select.mir-input { height: 38px; }
     flex-shrink: 0;
 }
 
+/* Bolinha deslizante */
 .mir-switch-thumb {
     position: absolute;
     top: 3px;
@@ -655,24 +933,32 @@ select.mir-input { height: 38px; }
     height: 16px;
     background: #fff;
     border-radius: 50%;
-    box-shadow: 0 1px 3px rgba(0,0,0,.2);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, .2);
     transition: transform 160ms ease;
 }
 
-.mir-switch-input:checked + .mir-switch-label .mir-switch-track {
+/* Estado: Ligado */
+.mir-switch-input:checked+.mir-switch-label .mir-switch-track {
     background: #2563eb;
 }
-.mir-switch-input:checked + .mir-switch-label .mir-switch-thumb {
+
+.mir-switch-input:checked+.mir-switch-label .mir-switch-thumb {
     transform: translateX(18px);
 }
 
+/* Texto ao lado do switch */
 .mir-switch-text {
     font-size: .85rem;
     font-weight: 600;
     color: #374151;
 }
 
-/* ─── Empty state ────────────────────────────────────────────────── */
+
+/* =============================================================
+   16. EMPTY STATE
+   Exibido quando a lista está vazia
+   ============================================================= */
+
 .mir-empty-state {
     border: 2px dashed #e3e8ef;
     border-radius: 14px;
@@ -681,6 +967,7 @@ select.mir-input { height: 38px; }
     text-align: center;
 }
 
+/* Ícone centralizado em caixa arredondada */
 .mir-empty-icon {
     width: 60px;
     height: 60px;
@@ -706,7 +993,13 @@ select.mir-input { height: 38px; }
     margin-bottom: 20px;
 }
 
-/* ─── Toast notifications ────────────────────────────────────────── */
+
+/* =============================================================
+   17. TOAST NOTIFICATIONS
+   Empilhadas no canto inferior-direito da tela
+   ============================================================= */
+
+/* Container fixo para as notificações */
 #mir-toast-container {
     position: fixed;
     bottom: 24px;
@@ -718,51 +1011,73 @@ select.mir-input { height: 38px; }
     pointer-events: none;
 }
 
+/* Toast base */
 .mir-toast {
     display: flex;
     align-items: flex-start;
     gap: 10px;
     padding: 13px 16px;
     border-radius: 10px;
-    box-shadow: 0 8px 24px rgba(0,0,0,.12), 0 2px 6px rgba(0,0,0,.06);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, .12), 0 2px 6px rgba(0, 0, 0, .06);
     min-width: 260px;
     max-width: 360px;
     pointer-events: all;
-    animation: mir-toast-in 220ms cubic-bezier(.175,.885,.32,1.275);
+    animation: mir-toast-in 220ms cubic-bezier(.175, .885, .32, 1.275);
     border: 1px solid transparent;
 }
 
+/* Animações de entrada e saída do toast */
 @keyframes mir-toast-in {
-    from { transform: translateX(24px) scale(.95); opacity: 0; }
-    to   { transform: translateX(0)    scale(1);   opacity: 1; }
-}
-@keyframes mir-toast-out {
-    from { transform: translateX(0)    scale(1);   opacity: 1; }
-    to   { transform: translateX(24px) scale(.95); opacity: 0; }
+    from {
+        transform: translateX(24px) scale(.95);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateX(0) scale(1);
+        opacity: 1;
+    }
 }
 
+@keyframes mir-toast-out {
+    from {
+        transform: translateX(0) scale(1);
+        opacity: 1;
+    }
+
+    to {
+        transform: translateX(24px) scale(.95);
+        opacity: 0;
+    }
+}
+
+/* Variantes de cor por tipo */
 .mir-toast-success {
     background: #f0fdf4;
     border-color: #bbf7d0;
     color: #15803d;
 }
+
 .mir-toast-error {
     background: #fef2f2;
     border-color: #fecaca;
     color: #b91c1c;
 }
+
 .mir-toast-info {
     background: #eff6ff;
     border-color: #bfdbfe;
     color: #1d4ed8;
 }
 
+/* Ícone do toast */
 .mir-toast-icon {
     font-size: .95rem;
     flex-shrink: 0;
     margin-top: 1px;
 }
 
+/* Mensagem do toast */
 .mir-toast-msg {
     font-size: .83rem;
     font-weight: 600;
@@ -771,84 +1086,530 @@ select.mir-input { height: 38px; }
 }
 
 
-    /* ── Modal overlay ─────────────────────────────────────────── */
-.mir-modal-overlay {
-    position: fixed;
-    inset: 0;
-    z-index: 9999;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: rgba(0, 0, 0, .45);
-    backdrop-filter: blur(3px);
+/* =============================================================
+   18. NAVBAR (HEADER)
+   Refinamentos sobre .header do template DeskApp.
+   O template já define height:70px, fixed, background:#fff.
+   Aqui apenas sobrescrevemos/complementamos.
+   ============================================================= */
+
+/* Borda inferior sutil no lugar da sombra pesada padrão */
+.header {
+    border-bottom: 1px solid #f0f3f8;
+    box-shadow: 0 1px 12px rgba(0, 0, 0, .06);
 }
 
-.mir-modal-box {
-    background: #1e1e2e;
-    border: 1px solid rgba(255,255,255,.1);
-    border-radius: 14px;
-    padding: 2rem;
-    width: 100%;
-    max-width: 380px;
-    text-align: center;
-    box-shadow: 0 20px 60px rgba(0,0,0,.5);
+/* ── Ícone de menu hamburguer ────────────────────────────────── */
+.menu-icon {
+    border-radius: 8px;
+    transition: background 160ms ease, color 160ms ease;
 }
 
-.mir-modal-icon {
-    width: 56px;
-    height: 56px;
+.menu-icon:hover {
+    background: #f0f3f8;
+    color: #1b00ff;
+}
+
+/* ── Ícone de busca (mobile toggle) ─────────────────────────── */
+.search-toggle-icon {
+    border-radius: 8px;
+    transition: background 160ms ease, color 160ms ease;
+}
+
+.search-toggle-icon:hover {
+    background: #f0f3f8;
+    color: #1b00ff;
+}
+
+/* ── Sino de notificações ────────────────────────────────────── */
+.user-notification .dropdown-toggle {
+    border-radius: 8px;
+    transition: background 160ms ease, color 160ms ease;
+}
+
+.user-notification .dropdown-toggle:hover {
+    background: #f0f3f8;
+    color: #1b00ff;
+}
+
+/* Badge de notificação ativa */
+.user-notification .dropdown-toggle .badge.notification-active {
+    background: #ef4444;
+    border: 2px solid #fff;
+    width: 9px;
+    height: 9px;
     border-radius: 50%;
-    background: rgba(239, 68, 68, .15);
-    color: #ef4444;
+    padding: 0;
+    right: 6px;
+    top: 8px;
+}
+
+/* ── Dropdown de notificações ────────────────────────────────── */
+.user-notification .dropdown-menu {
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, .12);
+    border: 1px solid #f0f3f8;
+}
+
+/* Item da lista de notificações */
+.notification-list ul li a {
+    border-radius: 8px;
+    transition: background 160ms ease;
+}
+
+.notification-list ul li a:hover {
+    background: #f5f7fb;
+}
+
+/* ── Avatar + dropdown de perfil ─────────────────────────────── */
+.user-info-dropdown {
+    padding: 5px 12px 5px 0;
+}
+
+/* Toggle do dropdown (avatar + nome) */
+.user-info-dropdown .dropdown-toggle {
     display: flex;
     align-items: center;
-    justify-content: center;
+    gap: 8px;
+    padding: 5px 8px;
+    border-radius: 10px;
+    transition: background 160ms ease;
 }
 
-.mir-modal-title {
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: #f1f5f9;
-    margin-bottom: .5rem;
+.user-info-dropdown .dropdown-toggle:hover {
+    background: #f0f3f8;
 }
 
-.mir-modal-desc {
+/* Foto do avatar — ring de foco/hover */
+.user-info-dropdown .dropdown-toggle .user-icon {
+    transition: box-shadow 160ms ease, transform 160ms ease;
+}
+
+.user-info-dropdown .dropdown-toggle:hover .user-icon {
+    box-shadow: 0 0 0 3px rgba(27, 0, 255, .12), 0 0 10px rgba(0, 0, 0, .18);
+    transform: scale(1.04);
+}
+
+/* Foto circular com cover */
+.user-info-dropdown .dropdown-toggle .user-icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    transition: transform 200ms ease;
+}
+
+/* Nome do usuário */
+.user-info-dropdown .dropdown-toggle .user-name {
     font-size: .875rem;
-    color: #94a3b8;
-    line-height: 1.6;
-    margin-bottom: 1.5rem;
+    font-weight: 600;
+    color: #1a2332;
+    letter-spacing: -.01em;
 }
 
-.mir-modal-desc strong {
-    color: #f1f5f9;
+/* Dropdown com sombra refinada */
+.user-info-dropdown .dropdown-menu {
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, .12);
+    border: 1px solid #f0f3f8;
+    padding: 6px;
+    min-width: 200px;
 }
 
-.mir-modal-actions {
-    display: flex;
-    gap: .75rem;
-    justify-content: center;
-}
-
-.mir-modal-btn {
-    padding: .55rem 1.4rem;
+/* Item do dropdown de perfil */
+.dropdown-menu-icon-list .dropdown-item {
     border-radius: 8px;
     font-size: .875rem;
     font-weight: 500;
-    cursor: pointer;
-    border: none;
-    transition: opacity .15s;
+    color: #374151;
+    padding: .6rem 1rem .6rem 44px;
+    transition: background 140ms ease, color 140ms ease;
 }
 
-.mir-modal-btn:hover { opacity: .85; }
-
-.mir-modal-cancel {
-    background: rgba(255,255,255,.08);
-    color: #cbd5e1;
+.dropdown-menu-icon-list .dropdown-item:hover,
+.dropdown-menu-icon-list .dropdown-item:focus {
+    background: #f0f3f8;
+    color: #1b00ff;
 }
 
-.mir-modal-confirm {
-    background: #ef4444;
+/* Ícone posicionado à esquerda do item */
+.dropdown-menu-icon-list .dropdown-item i {
+    color: #9ca3af;
+    font-size: 16px;
+    transition: color 140ms ease;
+}
+
+.dropdown-menu-icon-list .dropdown-item:hover i {
+    color: #1b00ff;
+}
+
+/* ── Header dark mode (compatibilidade) ──────────────────────── */
+.header-dark .header {
+    border-bottom-color: rgba(255, 255, 255, .08);
+    box-shadow: 0 1px 12px rgba(0, 0, 0, .2);
+}
+
+.header-dark .user-info-dropdown .dropdown-toggle:hover {
+    background: rgba(255, 255, 255, .08);
+}
+
+.header-dark .menu-icon:hover,
+.header-dark .search-toggle-icon:hover,
+.header-dark .user-notification .dropdown-toggle:hover {
+    background: rgba(255, 255, 255, .08);
     color: #fff;
 }
 
 
+/* =============================================================
+   19. SIDEBAR (LEFT SIDE BAR)
+   Refinamentos sobre .left-side-bar do template DeskApp.
+   O template já define width:280px, fixed, background:#142127.
+   ============================================================= */
+
+/* Borda direita sutil para separar sidebar do conteúdo */
+.left-side-bar {
+    border-right: 1px solid rgba(255, 255, 255, .06);
+}
+
+/* ── Logo / Brand ────────────────────────────────────────────── */
+.brand-logo {
+    border-bottom: 1px solid rgba(255, 255, 255, .08);
+}
+
+.brand-logo a {
+    transition: opacity 160ms ease;
+}
+
+.brand-logo a:hover {
+    opacity: .85;
+}
+
+/* Botão fechar sidebar (mobile) */
+.left-side-bar .close-sidebar {
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    transition: background 160ms ease, color 160ms ease;
+}
+
+.left-side-bar .close-sidebar:hover {
+    background: rgba(255, 255, 255, .1);
+    color: #fff;
+}
+
+/* Light mode: botão fechar em fundo claro */
+.sidebar-light .left-side-bar .close-sidebar:hover {
+    background: rgba(0, 0, 0, .07);
+    color: #142127;
+}
+
+/* ── Itens da lista principal ────────────────────────────────── */
+.sidebar-menu>ul>li {
+    padding: 1px 10px;
+}
+
+/* Link de item: transição mais suave */
+.sidebar-menu .dropdown-toggle {
+    border-radius: 8px;
+    transition: background 160ms ease, color 160ms ease, padding-left 160ms ease;
+}
+
+/* Ícone lateral: micro-animação de escala */
+.sidebar-menu .dropdown-toggle .micon {
+    transition: color 160ms ease, transform 200ms cubic-bezier(.34, 1.56, .64, 1);
+}
+
+/* NOTA: a escala já está embutida no translateY do template (transform:translate(0,-50%)) */
+/* Para não conflitar, usamos apenas a cor no hover sem escala extra */
+.sidebar-menu .dropdown-toggle:hover .micon {
+    color: #93c5fd;
+}
+
+.sidebar-menu .show>.dropdown-toggle .micon {
+    color: #93c5fd;
+}
+
+/* Estado ativo do item de 1º nível — dark sidebar: destaque branco-azulado */
+.sidebar-menu>ul>li>.dropdown-toggle.active {
+    background: rgba(255, 255, 255, .15);
+    color: #fff;
+    font-weight: 600;
+}
+
+.sidebar-menu>ul>li>.dropdown-toggle.active .micon {
+    color: #93c5fd;
+}
+
+/* Hover e estado aberto — dark sidebar */
+.sidebar-menu .dropdown-toggle:hover,
+.sidebar-menu .show>.dropdown-toggle {
+    background: rgba(255, 255, 255, .09);
+}
+
+/* ── Submenu ─────────────────────────────────────────────────── */
+.sidebar-menu .submenu {
+    background: rgba(0, 0, 0, .15);
+    border-radius: 0 0 8px 8px;
+    padding: 2px 4px 4px;
+}
+
+/* Item do submenu */
+.sidebar-menu .submenu li a {
+    border-radius: 6px;
+    font-size: .8rem;
+    padding: 10px 15px 10px 58px;
+    transition: background 140ms ease, color 140ms ease, padding-left 140ms ease;
+    color: rgba(255, 255, 255, .75);
+}
+
+/* Hover no submenu */
+.sidebar-menu .submenu li a:hover {
+    background: rgba(255, 255, 255, .08);
+    color: #fff;
+    padding-left: 62px;
+}
+
+/* Item ativo do submenu */
+.sidebar-menu .submenu li a.active {
+    background: rgba(27, 0, 255, .25);
+    color: #fff;
+    font-weight: 500;
+}
+
+/* Ícone bullet do submenu */
+.sidebar-menu .submenu li>a:before {
+    transition: left 140ms ease, color 140ms ease;
+}
+
+.sidebar-menu .submenu li:hover>a:before {
+    color: #93c5fd;
+}
+
+/* Submenu de 2º nível (child) — indentação extra */
+.sidebar-menu .submenu.child {
+    padding-left: 12px;
+}
+
+.sidebar-menu .submenu.child li a {
+    padding-left: 68px;
+    font-size: .78rem;
+    color: rgba(255, 255, 255, .6);
+}
+
+.sidebar-menu .submenu.child li a:hover {
+    padding-left: 72px;
+    color: #fff;
+}
+
+/* ── Rótulo de seção (sidebar-small-cap) ─────────────────────── */
+.sidebar-menu .sidebar-small-cap {
+    font-size: .65rem;
+    font-weight: 700;
+    letter-spacing: .1em;
+    color: rgba(255, 255, 255, .35);
+    padding: 14px 15px 6px;
+    text-transform: uppercase;
+}
+
+/* ── Divisor entre seções ────────────────────────────────────── */
+.sidebar-menu .dropdown-divider {
+    border-color: rgba(255, 255, 255, .1);
+    border-width: 1px;
+    margin: 10px 5px;
+}
+
+/* ── Sidebar light mode ──────────────────────────────────────── */
+.sidebar-light .left-side-bar {
+    border-right: 1px solid #e8ecf2;
+}
+
+.sidebar-light .brand-logo {
+    border-bottom-color: rgba(0, 0, 0, .08);
+}
+
+/* Rótulo de seção mais discreto no fundo claro */
+.sidebar-light .sidebar-menu .sidebar-small-cap {
+    color: rgba(11, 19, 43, .38);
+    letter-spacing: .12em;
+}
+
+/* Links do 1º nível: cor escura no fundo claro */
+.sidebar-light .sidebar-menu .dropdown-toggle {
+    color: #1b2a38;
+}
+
+/* Ícone do 1º nível: cor escura */
+.sidebar-light .sidebar-menu .dropdown-toggle .micon {
+    color: #1b2a38;
+}
+
+/* Hover no 1º nível — light sidebar */
+.sidebar-light .sidebar-menu .dropdown-toggle:hover,
+.sidebar-light .sidebar-menu .show>.dropdown-toggle {
+    background: rgba(27, 0, 255, .06);
+    color: #1b00ff;
+}
+
+.sidebar-light .sidebar-menu .dropdown-toggle:hover .micon,
+.sidebar-light .sidebar-menu .show>.dropdown-toggle .micon {
+    color: #1b00ff;
+}
+
+/* Active no 1º nível — accent azul suave, SEM fundo preto */
+.sidebar-light .sidebar-menu>ul>li>.dropdown-toggle.active {
+    background: rgba(27, 0, 255, .1);
+    color: #1b00ff;
+    font-weight: 700;
+    border-left: 3px solid #1b00ff;
+    padding-left: calc(67px - 3px);
+    /* compensa a borda esquerda */
+}
+
+.sidebar-light .sidebar-menu>ul>li>.dropdown-toggle.active .micon {
+    color: #1b00ff;
+}
+
+/* Submenu no light mode */
+.sidebar-light .sidebar-menu .submenu {
+    background: rgba(27, 0, 255, .03);
+    border-left: 2px solid rgba(27, 0, 255, .12);
+    margin-left: 14px;
+    border-radius: 0 0 6px 6px;
+}
+
+/* Links do submenu: texto escuro */
+.sidebar-light .sidebar-menu .submenu li a {
+    color: #4a5568;
+    font-weight: 400;
+}
+
+/* Hover no submenu light */
+.sidebar-light .sidebar-menu .submenu li a:hover {
+    background: rgba(27, 0, 255, .07);
+    color: #1b00ff;
+    padding-left: 62px;
+}
+
+.sidebar-light .sidebar-menu .submenu li:hover>a:before {
+    color: #1b00ff;
+}
+
+/* Item ativo do submenu no light mode */
+.sidebar-light .sidebar-menu .submenu li a.active {
+    background: rgba(27, 0, 255, .1);
+    color: #1b00ff;
+    font-weight: 600;
+}
+
+/* Submenu de 2º nível (child) no light mode */
+.sidebar-light .sidebar-menu .submenu.child li a {
+    color: #6b7280;
+}
+
+.sidebar-light .sidebar-menu .submenu.child li a:hover {
+    color: #1b00ff;
+}
+
+/* Divisor mais sutil no light mode */
+.sidebar-light .sidebar-menu .dropdown-divider {
+    border-color: rgba(0, 0, 0, .08);
+}
+
+
+/* =============================================================
+   20. ESTADOS GLOBAIS — BASE REUTILIZÁVEL
+   Classes utilitárias para botões-ícone e estados de interação
+   consistentes em toda a interface do dashboard.
+   ============================================================= */
+
+/* ── Botão-ícone base (db = dashboard base) ──────────────────── */
+/* Usar esta classe em qualquer botão circular/quadrado de ação   */
+.db-icon-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    border: none;
+    background: transparent;
+    color: #6b7280;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background 140ms ease, color 140ms ease, transform 140ms ease;
+    line-height: 1;
+    flex-shrink: 0;
+}
+
+.db-icon-btn:hover {
+    background: #f0f3f8;
+    color: #1b00ff;
+    transform: scale(1.05);
+}
+
+.db-icon-btn:active {
+    transform: scale(.95);
+    background: #e5e9f2;
+}
+
+.db-icon-btn:focus-visible {
+    outline: 2px solid #93c5fd;
+    outline-offset: 2px;
+}
+
+/* Variante destrutiva (vermelho) */
+.db-icon-btn.db-icon-btn--danger:hover {
+    background: #fef2f2;
+    color: #ef4444;
+}
+
+/* Variante de sucesso (verde) */
+.db-icon-btn.db-icon-btn--success:hover {
+    background: #f0fdf4;
+    color: #22c55e;
+}
+
+/* Variante primária sólida */
+.db-icon-btn.db-icon-btn--primary {
+    background: #2563eb;
+    color: #fff;
+}
+
+.db-icon-btn.db-icon-btn--primary:hover {
+    background: #1d4ed8;
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, .3);
+}
+
+/* ── Ring de foco acessível ──────────────────────────────────── */
+/* Adicionar .db-focus-ring a qualquer elemento interativo         */
+.db-focus-ring:focus-visible {
+    outline: 2px solid #93c5fd;
+    outline-offset: 2px;
+    border-radius: 6px;
+}
+
+/* ── Dropdown base aprimorado ────────────────────────────────── */
+/* Sobrescreve o dropdown padrão do template com bordas mais leves */
+.dropdown-menu {
+    border: 1px solid #f0f3f8;
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, .1);
+    padding: 4px;
+}
+
+.dropdown-item {
+    border-radius: 7px;
+    font-size: .875rem;
+    transition: background 130ms ease, color 130ms ease;
+}
+
+.dropdown-item:hover,
+.dropdown-item:focus {
+    background: #f0f3f8;
+    color: #1b00ff;
+}
