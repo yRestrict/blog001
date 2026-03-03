@@ -14,10 +14,17 @@ use App\Http\Controllers\Dashboard\CategoryController;
 use App\Http\Controllers\Dashboard\PostController;
 use App\Http\Controllers\Dashboard\TagController;
 use App\Http\Controllers\Dashboard\CommentController;
+use App\Http\Controllers\Frontend\HomeController as FrontendHomeController;
+use App\Http\Controllers\Frontend\UserController as FrontendUserController; 
+use App\Http\Controllers\Frontend\PostController as FrontendPostController;
+use App\Http\Controllers\Frontend\SearchController;
+use App\Http\Controllers\Frontend\CategoryController as FrontendCategoryController;
+use App\Http\Controllers\Frontend\TagController as FrontendTagController;
+use App\Http\Controllers\Frontend\CommentController as FrontendCommentController;
 
-Route::get('/', function () {
-    return view('welcome');
-});
+// Route::get('/', function () {
+//     return view('welcome');
+// });
 
 /**
  * Páginas de exemplo/teste
@@ -26,6 +33,20 @@ Route::view('/exemple-page', 'exemple-page');
 Route::view('/exemple-auth', 'exemple-auth');
 Route::view('/exemple-menu', 'exemple-menu');
 Route::view('/exemple-master', 'exemple-master');
+
+
+Route::name('frontend.')->group(function () {
+    Route::get('/', [FrontendHomeController::class, 'index'])->name('home');
+    Route::get("/user/{username}", [FrontendUserController::class, "index"])->name("user");
+    Route::get("/search", [SearchController::class, "index"])->name("search");
+    Route::get("/post/{slug}", [FrontendPostController::class, "index"])->name("post");
+    Route::post("/comment/{id}", [FrontendCommentController::class, "index"])->name("comment");
+    Route::post("/comment-reply", [FrontendCommentController::class, "reply"])->name("comment.reply");
+    Route::get("/category/{slug}", [FrontendCategoryController::class, "index"])->name("category");
+    Route::get("/tag/{id}", [FrontendTagController::class, "index"])->name("tag");
+
+
+});
 
 
 

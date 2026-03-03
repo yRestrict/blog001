@@ -66,6 +66,11 @@ class User extends Authenticatable
         return asset('uploads/author/default.png'); 
     }
 
+    public function posts()
+    {
+        return $this->hasMany(Post::class);
+    }
+
     public function socialLinks()
     {
         return $this->hasOne(UserSocialLink::class, 'user_id');

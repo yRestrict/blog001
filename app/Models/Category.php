@@ -25,6 +25,11 @@ class Category extends Model
         'status' => 'boolean',
     ];
 
+    public function posts()
+    {
+        return $this->hasMany(Post::class, 'category_id');
+    }
+
     /**
      * Configuração do slug automático via Spatie.
      */
