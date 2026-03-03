@@ -25,6 +25,8 @@ Route::get('/', function () {
 Route::view('/exemple-page', 'exemple-page');
 Route::view('/exemple-auth', 'exemple-auth');
 Route::view('/exemple-menu', 'exemple-menu');
+Route::view('/exemple-master', 'exemple-master');
+
 
 
 Route::prefix('admin')->name('admin.')->group(function () {
