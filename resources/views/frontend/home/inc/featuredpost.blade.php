@@ -1,73 +1,47 @@
-<div class="col-lg-8 oredoo-content">
-    <div class="theiaStickySidebar">
-        <div class="section-title">
-            <h3>Posts recentes</h3>
-        </div>
-        
-        @forelse ($posts as $recentpost)
-            <div class="post-list post-list-style3">
-                <div class="post-list-image">
-                    <a href="{{ route('frontend.post', $recentpost->slug) }}">
-                        <img class="post-thumbnail" 
-                             src="{{ asset('uploads/post/' . $recentpost->featured_image) }}" 
-                             alt="{{ $recentpost->title }}" />
-                    </a>
-                </div>
-                <div class="post-list-content">
-                    <ul class="entry-meta">
-                        <li class="post-date">
-                            <i class="far fa-calendar-alt"></i>
-                            {{ $recentpost->created_at->translatedFormat('d M, Y') }}
-                        </li>
-                        @if(isset($recentpost->views))
-                        <li class="post-views">
-                            <span class="line"></span>
-                            {{ number_format($recentpost->views) }} &nbsp;
-                            <i class="fa fa-eye" aria-hidden="true"></i>
-                        </li>
-                        @endif
-                    </ul>
-
-                    <h4 class="entry-title">
-                        <a href="{{ route('frontend.post', $recentpost->slug) }}" title="{{ $recentpost->title }}">
-                            {{ $recentpost->title }}
-                        </a>
-                    </h4>
-
-                    @if ($recentpost->content)
-                        <p class="entry-excerpt">
-                            {{ Str::limit(strip_tags($recentpost->content), 120, '...') }}
-                        </p>
-                    @endif
-
-                    {{-- Tags (relacionamento many-to-many que você tem no Model) --}}
-                    @if ($recentpost->tags && $recentpost->tags->count() > 0)
-                        <div class="entry-tags">
-                            @foreach ($recentpost->tags->take(3) as $tag)
-                                <span class="tag-item" style="font-size: 12px; color: #888;">#{{ $tag->name }}</span>
-                            @endforeach
-                        </div>
-                    @endif
-
-                    <div class="post-bottom">
-                        <div class="post-btn">
-                            <a href="{{ route('frontend.post', $recentpost->slug) }}" class="btn-read-more">
-                                Continue lendo
-                                <i class="las la-long-arrow-alt-right"></i>
-                            </a>
+{{-- Este partial pode ser usado como alternativa ao Livewire se preferir --}}
+@if ($featuredPosts->count() > 0)
+<section class="blog blog-home4 d-flex align-items-center justify-content-center">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="owl-carousel">
+                    @foreach ($featuredPosts as $post)
+                    <div class="blog-item"
+                         style="background-image: url('{{ asset('uploads/post/' . $post->featured_image) }}')">
+                        {{-- CORRECAO: era ->thumbnail, agora e ->featured_image --}}
+                        <div class="blog-banner">
+                            <div class="post-overly">
+                                <div class="post-overly-content">
+                                    <div class="entry-cat">
+                                        <a href="{{ route('frontend.category', $post->category->slug) }}"
+                                           class="category-style-2">
+                                            {{-- CORRECAO: era ->title, agora e ->name --}}
+                                            {{ $post->category->name }}
+                                        </a>
+                                    </div>
+                                    <h2 class="entry-title">
+                                        <a href="{{ route('frontend.post', $post->slug) }}">{{ $post->title }}</a>
+                                    </h2>
+                                    <ul class="entry-meta">
+                                        <li class="post-author">
+                                            {{-- CORRECAO: era ->user, agora e ->author --}}
+                                            <a href="{{ route('frontend.user', $post->author->username) }}">
+                                                {{ $post->author->name }}
+                                            </a>
+                                        </li>
+                                        <li class="post-date">
+                                            <span class="line"></span>
+                                            {{ $post->created_at->translatedFormat('d M, Y') }}
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
                         </div>
                     </div>
+                    @endforeach
                 </div>
-            </div>
-        @empty
-            <div class="alert alert-info">Nenhuma postagem encontrada!</div>
-        @endforelse
-
-        <div class="pagination">
-            <div class="pagination-area">
-                {{-- Certifique-se que o nome da variável aqui é o mesmo do foreach --}}
-                {{ $posts->links() }} 
             </div>
         </div>
     </div>
-</div>
+</section>
+@endif

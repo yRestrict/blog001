@@ -1,6 +1,7 @@
 @extends('frontend.master')
 
-@section('title', $category->title . ' - ' . config('app.sitesettings')::first()->site_title)
+{{-- CORRECAO: era $category->title, agora e $category->name --}}
+@section('title', $category->name . ' - ' . (App\Models\Setting::title()))
 
 @section('content')
     <div class="section-heading">
@@ -9,7 +10,8 @@
                 <div class="row">
                     <div class="col-lg-12">
                         <div class="section-heading-2-title">
-                            <h1>{{ $category->title }}</h1>
+                            {{-- CORRECAO: era $category->title, agora e $category->name --}}
+                            <h1>{{ $category->name }}</h1>
                             @if ($category->description)
                                 <div class="category-description">
                                     <p>{{ $category->description }}</p>
@@ -33,7 +35,7 @@
             </div>
         </div>
     </div>
-    {{-- <--  --> --}}
+
     <section class="blog-layout-2">
         <div class="container-fluid">
             <div class="row">
@@ -42,7 +44,10 @@
                         <div class="post-list post-list-style3">
                             <div class="post-list-image">
                                 <a href="{{ route('frontend.post', $post->slug) }}">
-                                    <img class="post-thumbnail" src="{{ asset('uploads/post/' . $post->thumbnail) }}" alt="{{ $post->title }}"/>
+                                    {{-- CORRECAO: era $post->thumbnail, agora e $post->featured_image --}}
+                                    <img class="post-thumbnail"
+                                         src="{{ asset('uploads/post/' . $post->featured_image) }}"
+                                         alt="{{ $post->title }}"/>
                                 </a>
                             </div>
                             <div class="post-list-content">
@@ -51,8 +56,16 @@
                                 </h3>
                                 <ul class="entry-meta">
                                     <li class="entry-cat">
-                                        <a href="{{ route('frontend.category', $post->category->slug) }} "class="category-style-1">
-                                            {{ $post->category->title }}
+                                        <a href="{{ route('frontend.category', $post->category->slug) }}"
+                                           class="category-style-1">
+                                            {{-- CORRECAO: era ->title, agora e ->name --}}
+                                            {{ $post->category->name }}
+                                        </a>
+                                    </li>
+                                    <li class="post-author">
+                                        {{-- CORRECAO: era $post->user, agora e $post->author --}}
+                                        <a href="{{ route('frontend.user', $post->author->username) }}">
+                                            {{ $post->author->name }}
                                         </a>
                                     </li>
                                     <li class="post-date">
@@ -61,16 +74,18 @@
                                     </li>
                                 </ul>
                                 <div class="post-exerpt">
-                                    <p>{{ $str::words(strip_tags($post->content), 20) }}</p>
+                                    {{-- CORRECAO: era $str::words(), agora usa Str helper --}}
+                                    <p>{{ Illuminate\Support\Str::words(strip_tags($post->content), 20) }}</p>
                                 </div>
                                 <div class="post-btn">
-                                    <a href="{{ route('frontend.post', $post->slug) }}" class="btn-read-more">Continue
-                                        lendo <i class="las la-long-arrow-alt-right"></i></a>
+                                    <a href="{{ route('frontend.post', $post->slug) }}" class="btn-read-more">
+                                        Continue lendo <i class="las la-long-arrow-alt-right"></i>
+                                    </a>
                                 </div>
                             </div>
                         </div>
                     @empty
-                        <div>Nenhuma postagem encontrada!</div>
+                        <div class="alert alert-info">Nenhuma postagem encontrada!</div>
                     @endforelse
                 </div>
             </div>

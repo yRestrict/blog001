@@ -13,17 +13,22 @@ class HomeController extends Controller
     {
         $data = [
             'settings'      => Setting::first(),
-            'featuredPosts' => Post::with(['author', 'category'])
+
+            // CORRECAO: eager load 'author' (nao 'user') porque Post->author() usa author_id
+            'featuredPosts'  => Post::with(['author', 'category'])
                                 ->where('status', 'published')
                                 ->where('featured', true)
                                 ->latest()
                                 ->take(3)
                                 ->get(),
-            'posts'         => Post::where('status', 'published')
+
+            // CORRECAO: eager load 'author' (nao 'user')
+            'posts'          => Post::where('status', 'published')
                                 ->with(['category', 'author', 'tags'])
                                 ->latest()
                                 ->paginate(6),
-            'categories'    => Category::where('status', true)
+
+            'categories'     => Category::where('status', true)
                                 ->withCount('posts')
                                 ->orderBy('ordering')
                                 ->get(),

@@ -4,21 +4,24 @@ namespace App\Livewire\Frontend;
 
 use Livewire\Component;
 use App\Models\Post;
+use Livewire\Attributes\Computed;
 
 class FeaturedSlider extends Component
 {
-    public function render()
+    #[Computed]
+    public function featuredPosts()
     {
-        // Busca posts publicados e marcados como destaque
-        $featuredPosts = Post::with(['category', 'author'])
+        // CORRECAO: era 'user', mas o Post->author() usa author_id
+        return Post::with(['category', 'author'])
             ->where('featured', true)
-            ->where('status', 'published') // Filtra pelo status
+            ->where('status', 'published')
             ->latest()
             ->take(5)
             ->get();
+    }
 
-        return view('livewire.frontend.featured-slider', [
-            'featuredPosts' => $featuredPosts
-        ]);
+    public function render()
+    {
+        return view('livewire.frontend.featured-slider');
     }
 }
