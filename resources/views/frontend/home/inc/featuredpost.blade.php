@@ -7,8 +7,8 @@
                 <div class="owl-carousel">
                     @foreach ($featuredPosts as $post)
                     <div class="blog-item"
-                         style="background-image: url('{{ asset('uploads/post/' . $post->featured_image) }}')">
-                        {{-- CORRECAO: era ->thumbnail, agora e ->featured_image --}}
+                         style="background-image: url('{{ asset('uploads/post/' . $post->thumbnail) }}')">
+                        {{-- CORRECAO: era ->thumbnail, agora e ->thumbnail --}}
                         <div class="blog-banner">
                             <div class="post-overly">
                                 <div class="post-overly-content">

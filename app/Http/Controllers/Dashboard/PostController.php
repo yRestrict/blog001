@@ -47,7 +47,7 @@ class PostController extends Controller
             'content'          => 'required|string',
             'category_id'      => 'nullable|exists:categories,id',
             'tags'             => 'nullable|string',
-            'featured_image'   => 'nullable|image|max:2048',
+            'thumbnail'   => 'nullable|image|max:2048',
             'featured'         => 'nullable|boolean',
             'comment'          => 'nullable|boolean',
             'status'           => 'required|in:draft,published,private',
@@ -56,10 +56,10 @@ class PostController extends Controller
         ]);
 
         // Upload da imagem destacada
-        if ($request->hasFile('featured_image')) {
-            $filename = time() . '_' . $request->file('featured_image')->getClientOriginalName();
-            $request->file('featured_image')->move(public_path('uploads/posts'), $filename);
-            $data['featured_image'] = $filename;
+        if ($request->hasFile('thumbnail')) {
+            $filename = time() . '_' . $request->file('thumbnail')->getClientOriginalName();
+            $request->file('thumbnail')->move(public_path('uploads/posts'), $filename);
+            $data['thumbnail'] = $filename;
         }
 
         $data['author_id'] = Auth::id();
@@ -111,7 +111,7 @@ class PostController extends Controller
             'content'          => 'required|string',
             'category_id'      => 'nullable|exists:categories,id',
             'tags'             => 'nullable|string',
-            'featured_image'   => 'nullable|image|max:2048',
+            'thumbnail'   => 'nullable|image|max:2048',
             'featured'         => 'nullable|boolean',
             'comment'          => 'nullable|boolean',
             'status'           => 'required|in:draft,published,private',
@@ -119,15 +119,15 @@ class PostController extends Controller
             'meta_description' => 'nullable|string|max:500',
         ]);
 
-        if ($request->hasFile('featured_image')) {
+        if ($request->hasFile('thumbnail')) {
             // Remove imagem antiga
-            if ($post->featured_image && file_exists(public_path('uploads/posts/' . $post->featured_image))) {
-                unlink(public_path('uploads/posts/' . $post->featured_image));
+            if ($post->thumbnail && file_exists(public_path('uploads/posts/' . $post->thumbnail))) {
+                unlink(public_path('uploads/posts/' . $post->thumbnail));
             }
 
-            $filename = time() . '_' . $request->file('featured_image')->getClientOriginalName();
-            $request->file('featured_image')->move(public_path('uploads/posts'), $filename);
-            $data['featured_image'] = $filename;
+            $filename = time() . '_' . $request->file('thumbnail')->getClientOriginalName();
+            $request->file('thumbnail')->move(public_path('uploads/posts'), $filename);
+            $data['thumbnail'] = $filename;
         }
 
         $data['featured'] = $request->boolean('featured');

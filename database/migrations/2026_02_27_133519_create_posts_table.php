@@ -15,7 +15,7 @@ return new class extends Migration
             $table->string('title');
             $table->string('slug')->unique();
             $table->longText('content');
-            $table->string('featured_image')->nullable();
+            $table->string('thumbnail')->nullable(); // troca por thumbnail
             $table->boolean('featured')->default(false);
             $table->boolean('comment')->default(true);
             $table->string('status')->default('draft'); 

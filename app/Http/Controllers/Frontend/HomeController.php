@@ -12,9 +12,9 @@ class HomeController extends Controller
     public function index()
     {
         $data = [
+            'pageTitle'     => 'Home',
             'settings'      => Setting::first(),
 
-            // CORRECAO: eager load 'author' (nao 'user') porque Post->author() usa author_id
             'featuredPosts'  => Post::with(['author', 'category'])
                                 ->where('status', 'published')
                                 ->where('featured', true)
@@ -22,7 +22,6 @@ class HomeController extends Controller
                                 ->take(3)
                                 ->get(),
 
-            // CORRECAO: eager load 'author' (nao 'user')
             'posts'          => Post::where('status', 'published')
                                 ->with(['category', 'author', 'tags'])
                                 ->latest()

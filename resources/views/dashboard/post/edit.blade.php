@@ -124,11 +124,11 @@
                     </div>
 
                     {{-- Imagem atual --}}
-                    @if ($post->featured_image)
+                    @if ($post->thumbnail)
                         <div class="form-group">
                             <label><b>Imagem Atual</b></label>
                             <div class="d-block mb-2">
-                                <img src="{{ asset('uploads/posts/' . $post->featured_image) }}"
+                                <img src="{{ asset('uploads/posts/' . $post->thumbnail) }}"
                                      alt="Imagem atual"
                                      class="img-thumbnail"
                                      style="max-height: 180px;">
@@ -138,13 +138,13 @@
 
                     {{-- Nova imagem --}}
                     <div class="form-group">
-                        <label><b>{{ $post->featured_image ? 'Substituir Imagem' : 'Imagem Destacada' }}</b></label>
+                        <label><b>{{ $post->thumbnail ? 'Substituir Imagem' : 'Imagem Destacada' }}</b></label>
                         <input type="file"
-                               name="featured_image"
-                               class="form-control-file form-control @error('featured_image') is-invalid @enderror"
+                               name="thumbnail"
+                               class="form-control-file form-control @error('thumbnail') is-invalid @enderror"
                                id="featured-image-input"
                                accept="image/*">
-                        @error('featured_image')
+                        @error('thumbnail')
                             <span class="invalid-feedback">{{ $message }}</span>
                         @enderror
                     </div>

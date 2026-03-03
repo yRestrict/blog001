@@ -49,8 +49,8 @@ class PostsTrash extends Component
         $post = Post::onlyTrashed()->findOrFail($id);
 
         // Remove imagem do disco se existir
-        if ($post->featured_image && file_exists(public_path('uploads/posts/' . $post->featured_image))) {
-            unlink(public_path('uploads/posts/' . $post->featured_image));
+        if ($post->thumbnail && file_exists(public_path('uploads/posts/' . $post->thumbnail))) {
+            unlink(public_path('uploads/posts/' . $post->thumbnail));
         }
 
         // Desvincula tags da pivot antes de excluir
@@ -68,8 +68,8 @@ class PostsTrash extends Component
         $posts = Post::onlyTrashed()->get();
 
         foreach ($posts as $post) {
-            if ($post->featured_image && file_exists(public_path('uploads/posts/' . $post->featured_image))) {
-                unlink(public_path('uploads/posts/' . $post->featured_image));
+            if ($post->thumbnail && file_exists(public_path('uploads/posts/' . $post->thumbnail))) {
+                unlink(public_path('uploads/posts/' . $post->thumbnail));
             }
             $post->tags()->detach();
             $post->forceDelete();

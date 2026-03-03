@@ -1,19 +1,21 @@
  /* -----------------------------------
            dark-mode
     ----------------------------------- */
+    document.addEventListener('DOMContentLoaded', function () {
+
     const toggleSwitch = document.querySelector('.theme-switch input[type="checkbox"]');
     const logoDark = document.querySelector('.logo-dark');
     const logoWhite = document.querySelector('.logo-white');
     const currentTheme = localStorage.getItem('theme');
 
-    if (currentTheme) {
+    if (currentTheme && toggleSwitch) {
         document.documentElement.setAttribute('data-theme', currentTheme);
 
         if (currentTheme === 'dark') {
             toggleSwitch.checked = true;
             document.body.classList.toggle("dark");
-            logoDark.classList.add('display-none');
-           logoWhite.classList.add('display-block'); 
+            if (logoDark) logoDark.classList.add('display-none');
+            if (logoWhite) logoWhite.classList.add('display-block');
         }
     }
 
@@ -22,59 +24,60 @@
             document.documentElement.setAttribute('data-theme', 'dark');
             localStorage.setItem('theme', 'dark');
             document.body.classList.add('dark');
-            logoDark.classList.add('display-none');
-            logoWhite.classList.add('display-block');  
-        }
-        else {
+            if (logoDark) logoDark.classList.add('display-none');
+            if (logoWhite) logoWhite.classList.add('display-block');
+        } else {
             document.documentElement.setAttribute('data-theme', 'light');
             localStorage.setItem('theme', 'light');
             document.body.classList.remove('dark');
-            logoDark.classList.remove('display-none');
-            logoWhite.classList.remove('display-block');
+            if (logoDark) logoDark.classList.remove('display-none');
+            if (logoWhite) logoWhite.classList.remove('display-block');
         }
     }
 
-    toggleSwitch.addEventListener('change', switchTheme, false);
+    if (toggleSwitch) {
+        toggleSwitch.addEventListener('change', switchTheme, false);
+    }
 
 
     const searchToggle = document.querySelector('.search-toggle');
-        const searchOverlay = document.querySelector('.search-overlay');
-        const searchClose = document.querySelector('.search-close');
-        const searchInput = searchOverlay ? searchOverlay.querySelector('input') : null;
-        
-        if (searchToggle && searchOverlay) {
-            searchToggle.addEventListener('click', function() {
-                searchOverlay.classList.remove('d-none');
-                if (searchInput) {
-                    setTimeout(() => searchInput.focus(), 10);
-                }
-            });
-            
-            if (searchClose) {
-                searchClose.addEventListener('click', function() {
-                    searchOverlay.classList.add('d-none');
-                });
+    const searchOverlay = document.querySelector('.search-overlay');
+    const searchClose = document.querySelector('.search-close');
+    const searchInput = searchOverlay ? searchOverlay.querySelector('input') : null;
+    
+    if (searchToggle && searchOverlay) {
+        searchToggle.addEventListener('click', function() {
+            searchOverlay.classList.remove('d-none');
+            if (searchInput) {
+                setTimeout(() => searchInput.focus(), 10);
             }
-            
-            // Fechar overlay ao clicar fora do modal
-            searchOverlay.addEventListener('click', function(e) {
-                if (e.target === searchOverlay) {
-                    searchOverlay.classList.add('d-none');
-                }
-            });
-            
-            // Fechar overlay com ESC
-            document.addEventListener('keydown', function(e) {
-                if (e.key === 'Escape' && !searchOverlay.classList.contains('d-none')) {
-                    searchOverlay.classList.add('d-none');
-                }
+        });
+        
+        if (searchClose) {
+            searchClose.addEventListener('click', function() {
+                searchOverlay.classList.add('d-none');
             });
         }
+        
+        // Fechar overlay ao clicar fora do modal
+        searchOverlay.addEventListener('click', function(e) {
+            if (e.target === searchOverlay) {
+                searchOverlay.classList.add('d-none');
+            }
+        });
+        
+        // Fechar overlay com ESC
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && !searchOverlay.classList.contains('d-none')) {
+                searchOverlay.classList.add('d-none');
+            }
+        });
+    }
 
         // ===============================
         // TOGGLE PASSWORD (PROFISSIONAL)
         // ===============================
-        document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function() {
         document.querySelectorAll('.togglePassword').forEach(btn => {
             const inputGroup = btn.closest('.input-group');
             
@@ -193,6 +196,8 @@
             });
          }, 'image/png');
       });
+
+});
 
 
 

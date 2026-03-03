@@ -127,11 +127,11 @@
                     <div class="form-group">
                         <label><b>Imagem Destacada</b></label>
                         <input type="file"
-                               name="featured_image"
-                               class="form-control-file form-control @error('featured_image') is-invalid @enderror"
+                               name="thumbnail"
+                               class="form-control-file form-control @error('thumbnail') is-invalid @enderror"
                                id="featured-image-input"
                                accept="image/*">
-                        @error('featured_image')
+                        @error('thumbnail')
                             <span class="invalid-feedback">{{ $message }}</span>
                         @enderror
                     </div>

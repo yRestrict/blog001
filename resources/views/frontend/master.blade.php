@@ -30,7 +30,7 @@
 		
         @stack('stylesheets')
 	</head>
-	<body class="login p-0 py-5">
+	<body>
 		<x-header/>
 
 		@yield('content')

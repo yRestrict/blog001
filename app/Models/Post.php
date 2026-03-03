@@ -18,7 +18,7 @@ class Post extends Model
         'title',
         'slug',
         'content',
-        'featured_image',
+        'thumbnail',
         'featured',
         'comment',
         'status',

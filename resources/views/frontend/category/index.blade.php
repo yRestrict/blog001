@@ -1,7 +1,7 @@
 @extends('frontend.master')
 
 {{-- CORRECAO: era $category->title, agora e $category->name --}}
-@section('title', $category->name . ' - ' . (App\Models\Setting::title()))
+@section('title', $category->name . ' - ' . (Setting::title()))
 
 @section('content')
     <div class="section-heading">
@@ -44,9 +44,9 @@
                         <div class="post-list post-list-style3">
                             <div class="post-list-image">
                                 <a href="{{ route('frontend.post', $post->slug) }}">
-                                    {{-- CORRECAO: era $post->thumbnail, agora e $post->featured_image --}}
+                                    {{-- CORRECAO: era $post->thumbnail, agora e $post->thumbnail --}}
                                     <img class="post-thumbnail"
-                                         src="{{ asset('uploads/post/' . $post->featured_image) }}"
+                                         src="{{ asset('uploads/post/' . $post->thumbnail) }}"
                                          alt="{{ $post->title }}"/>
                                 </a>
                             </div>
