@@ -24,7 +24,7 @@
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb mb-1">
                     <li class="breadcrumb-item">
-                        <a href="{{ route('dashboard.sidebars') }}">Sidebars</a>
+                        <a href="{{ route('admin.sidebars') }}">Sidebars</a>
                     </li>
                     <li class="breadcrumb-item active">{{ $sidebar->name }}</li>
                 </ol>

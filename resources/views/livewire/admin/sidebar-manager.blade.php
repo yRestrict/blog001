@@ -104,7 +104,7 @@
                         <div class="card-footer bg-transparent d-flex gap-2">
                             {{-- Gerenciar Widgets — vai para a rota do WidgetManager --}}
                             <a
-                                href="{{ route('dashboard.sidebars.widgets', $sidebar) }}"
+                                href="{{ route('admin.sidebars.widgets', $sidebar) }}"
                                 class="btn btn-sm btn-outline-primary flex-grow-1"
                             >
                                 <i class="bi bi-puzzle me-1"></i> Widgets

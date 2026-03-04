@@ -21,7 +21,7 @@
                             <a href="{{ route('admin.dashboard') }}">Home</a>
                         </li>
                         <li class="breadcrumb-item">
-                            <a href="{{ route('dashboard.sidebars') }}">Sidebars</a>
+                            <a href="{{ route('admin.sidebars') }}">Sidebars</a>
                         </li>
                         <li class="breadcrumb-item active" aria-current="page">
                             {{ $sidebar->name }}
@@ -37,7 +37,7 @@
         O mount() do WidgetManager recebe e armazena como propriedade.
     --}}
     <div class="pd-20 card-box mb-4">
-        @livewire('admin.sidebar.widget-manager', ['sidebar' => $sidebar])
+        @livewire('admin.widget-manager', ['sidebar' => $sidebar])
     </div>
 
 @endsection

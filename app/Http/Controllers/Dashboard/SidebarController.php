@@ -13,10 +13,10 @@ use App\Http\Controllers\Controller;
  *
  * Rotas (routes/web.php):
  *   Route::get('/sidebars', [SidebarController::class, 'index'])
- *        ->name('dashboard.sidebars');
+ *        ->name('admin.sidebars');
  *
  *   Route::get('/sidebars/{sidebar}/widgets', [SidebarController::class, 'widgets'])
- *        ->name('dashboard.sidebars.widgets');
+ *        ->name('admin.sidebars.widgets');
  */
 class SidebarController extends Controller
 {
