@@ -24,6 +24,7 @@ return new class extends Migration
             $table->string('site_logo_dark')->nullable();
             $table->string('site_favicon')->nullable();
             $table->json('site_social_links')->nullable();
+            $table->string('footer_category_order')->default('posts');
 
 
             $table->timestamps();

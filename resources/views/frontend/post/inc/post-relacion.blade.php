@@ -11,7 +11,7 @@
             <div class="related-post-card">
                 <a href="{{ route('frontend.post', $related->slug) }}" class="related-post-image-link">
                     <div class="related-post-image">
-                        <img src="{{ asset('uploads/post/'.$related->thumbnail) }}" alt="{{ $related->title }}" class="img-fluid" />
+                        <img src="{{ asset('uploads/posts/'.$related->thumbnail) }}" alt="{{ $related->title }}" class="img-fluid" />
                     </div>
                 </a>
                 

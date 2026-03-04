@@ -47,8 +47,16 @@ class Post extends Model
 
     public function category()
     {
-        return $this->belongsTo(Category::class, 'category_id');
+        return $this->belongsTo(Category::class, 'category_id')
+                    ->withDefault([
+                        'name' => 'Sem Categoria',
+                        'slug' => 'sem-categoria',
+                    ]);;
+
+        
     }
+
+    
 
     /**
      * Relação muitos-para-muitos com tags via tabela pivot post_tag.

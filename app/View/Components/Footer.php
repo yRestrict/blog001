@@ -2,7 +2,8 @@
 
 namespace App\View\Components;
 
-use App\Models\Menu;
+use App\Models\Setting;
+use App\Models\Category;
 use Closure;
 use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
@@ -11,22 +12,22 @@ class Footer extends Component
 {
     public function render(): View|Closure|string
     {
-        $menu = Menu::where('type', 'footer')
-            ->whereNull('parent_id')
-            ->where('is_active', true)
-            ->with(['children' => function ($query) {
-                $query->where('is_active', true)
-                      ->orderBy('order')
-                      ->with(['children' => function ($q) {
-                          $q->where('is_active', true)
-                            ->orderBy('order');
-                      }]);
-            }])
-            ->orderBy('order')
+        $settings = Setting::first();
+        $order    = $settings->footer_category_order ?? 'posts';
+
+        $categories = Category::where('status', true)
+            ->when($order === 'posts', function ($q) {
+                $q->withCount('posts')->orderByDesc('posts_count');
+            })
+            ->when($order === 'views', function ($q) {
+                $q->orderByDesc('views');
+            })
+            ->take(8)
             ->get();
 
         return view('components.footer', [
-            'menu' => $menu,
+            'settings'   => $settings,
+            'categories' => $categories,
         ]);
     }
 }

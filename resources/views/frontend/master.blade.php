@@ -34,7 +34,7 @@
 		<x-header/>
 
 		@yield('content')
-		{{-- <x-footer/> --}}
+		<x-footer/>
 						
 		<!-- js -->
 		<script src="{{ asset('frontend/vendors/scripts/jquery-3.5.1.min.js') }}"></script>
@@ -42,6 +42,7 @@
 		<script src="{{ asset("frontend/vendors/scripts/owl.carousel.min.js") }}"></script>		
 		<script src="{{ asset('frontend/vendors/scripts/bootstrap.min.js') }}"></script> 
 		<script src="{{ asset('frontend/vendors/scripts/switch.js') }}"></script>
+		<script src="{{ asset('frontend/vendors/scripts/main.js') }}"></script>
         @stack('scripts')
 	
 	</body>

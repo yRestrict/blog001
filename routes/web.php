@@ -21,6 +21,7 @@ use App\Http\Controllers\Frontend\SearchController;
 use App\Http\Controllers\Frontend\CategoryController as FrontendCategoryController;
 use App\Http\Controllers\Frontend\TagController as FrontendTagController;
 use App\Http\Controllers\Frontend\CommentController as FrontendCommentController;
+use App\Http\Controllers\Dashboard\SidebarController;
 
 // Route::get('/', function () {
 //     return view('welcome');
@@ -77,6 +78,13 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
         // ─── Rotas de owner ───────────────────────────────────────────────────
         Route::middleware(['role:owner'])->group(function () {
+
+        Route::get('/sidebars', [SidebarController::class, 'index'])
+            ->name('sidebars');
+
+        // Widgets de uma sidebar → chama WidgetManager (Livewire)
+        Route::get('/sidebars/{sidebar}/widgets', [SidebarController::class, 'widgets'])
+            ->name('sidebars.widgets');
 
             // Categorias
             Route::prefix('categories')->name('categories.')->group(function () {

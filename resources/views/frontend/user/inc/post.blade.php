@@ -4,7 +4,7 @@
         <div class="post-list post-list-style4 {{ $loop->first ? "pt-0" : "" }}">
             <div class="post-list-image">
                 <a href="{{ route("frontend.post", $post->slug) }}">
-                    <img src="{{ asset("uploads/post/".$post->thumbnail) }}" alt="{{ $post->title }}"/>
+                    <img src="{{ asset("uploads/posts/".$post->thumbnail) }}" alt="{{ $post->title }}"/>
                 </a>
             </div>
             <div class="post-list-content">

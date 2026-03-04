@@ -57,7 +57,7 @@ class Categories extends Component
 
         return [
             'categoryName'        => ['required', 'string', 'max:255', $unique],
-            'categoryParentId'    => ['nullable', 'exists:parent_categories,id'],
+            'categoryParentId'    => ['required', 'exists:parent_categories,id'],
             'categoryDescription' => ['nullable', 'string'],
             'categoryStatus'      => ['boolean'],
         ];

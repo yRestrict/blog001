@@ -45,7 +45,7 @@ class PostController extends Controller
         $data = $request->validate([
             'title'            => 'required|string|max:255',
             'content'          => 'required|string',
-            'category_id'      => 'nullable|exists:categories,id',
+            'category_id'      => 'required|exists:categories,id',
             'tags'             => 'nullable|string',
             'thumbnail'   => 'nullable|image|max:2048',
             'featured'         => 'nullable|boolean',

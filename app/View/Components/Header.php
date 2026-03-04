@@ -12,7 +12,7 @@ class Header extends Component
 {
     public function render(): View|Closure|string
     {
-        $siteSetting = Setting::first();
+        $settings = Setting::first();
 
         $menu = Menu::where('type', 'header')
             ->whereNull('parent_id')
@@ -30,7 +30,7 @@ class Header extends Component
 
         return view('components.header', [
             'menu'        => $menu,
-            'siteSetting' => $siteSetting,
+            'siteSetting' => $settings,
         ]);
     }
 }

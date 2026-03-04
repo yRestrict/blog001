@@ -46,7 +46,7 @@
                                 <a href="{{ route('frontend.post', $post->slug) }}">
                                     {{-- CORRECAO: era $post->thumbnail, agora e $post->thumbnail --}}
                                     <img class="post-thumbnail"
-                                         src="{{ asset('uploads/post/' . $post->thumbnail) }}"
+                                         src="{{ asset('uploads/posts/' . $post->thumbnail) }}"
                                          alt="{{ $post->title }}"/>
                                 </a>
                             </div>

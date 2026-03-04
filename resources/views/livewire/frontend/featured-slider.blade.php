@@ -4,9 +4,9 @@
         <div class="container-fluid">
             <div class="row">
                 <div class="col-lg-12">
-                    <div class="owl-carousel featured-slider">
+                    <div class="owl-carousel">
                         @foreach ($featuredPosts as $featuredPost)
-                        <div class="blog-item" style="background-image: url('{{ asset("uploads/posts/" . $featuredPost->thumbnail) }}')">
+                        <div class="blog-item" style="background-image: url('{{ asset("uploads/posts/" . $featuredPost->featured_image) }}')">
                             <div class="blog-banner">
                                 <div class="post-overly">
                                     <div class="post-overly-content">
@@ -43,23 +43,3 @@
     </section>
     @endif
 </div>
-
-@push('scripts')
-<script>
-    $(document).ready(function () {
-        $(".featured-slider").owlCarousel({
-            loop: true,
-            margin: 0,
-            nav: true,
-            dots: true,
-            autoplay: true,
-            autoplayTimeout: 5000,
-            responsive: {
-                0:    { items: 1 },
-                768:  { items: 1 },
-                1024: { items: 1 }
-            }
-        });
-    });
-</script>
-@endpush

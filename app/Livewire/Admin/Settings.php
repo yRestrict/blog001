@@ -30,6 +30,7 @@ class Settings extends Component
     public $new_logo_light;
     public $new_logo_dark;
     public $new_favicon;
+    public $footer_category_order;
 
     public $site_social_links = []; 
 

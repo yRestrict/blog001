@@ -16,6 +16,7 @@ return new class extends Migration
             $table->integer('ordering')->default(1000);
             $table->text('description')->nullable();
             $table->boolean('status')->default(true);
+            $table->integer('views')->default(0);
             $table->softDeletes();
             $table->timestamps();
 

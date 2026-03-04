@@ -19,10 +19,12 @@ class Category extends Model
         'ordering',
         'description',
         'status',
+        'views',
     ];
 
     protected $casts = [
         'status' => 'boolean',
+        'views' => 'integer',
     ];
 
     public function posts()
