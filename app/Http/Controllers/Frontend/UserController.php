@@ -3,25 +3,36 @@
 namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Models\User;
+use App\Models\Setting;
+use App\UserStatus; // Importe o seu Enum aqui
 
 class UserController extends Controller
 {
     public function index($username)
     {
-        // Buscar usuário pelo username
-        $user = User::where('username', $username)->firstOrFail();
+        // 1. Busca o usuário com redes sociais, filtrando pelo Enum de status
+        $user = User::with(['socialLinks']) 
+                    ->where('username', $username)
+                    ->where('status', UserStatus::Active) // Aqui você usa o Enum
+                    ->first();
 
-        // Buscar posts desse usuário
-        $recentposts = $user->posts()
-            ->latest()
-            ->paginate(10);
+        if (!$user) {
+            abort(404);
+        }
 
-        return view('frontend.user.index', [
-            'pageTitle'   => "Posts de {$user->name}",
-            'user'        => $user,
-            'recentposts' => $recentposts,
-        ]);
+        $data = [
+            'pageTitle' => 'Posts de ' . $user->name,
+            'settings'  => Setting::first(),
+            'user'      => $user,
+            'posts'     => $user->posts()
+                                ->where('status', "published")
+                                ->with(['category', 'tags']) 
+                                ->latest()
+                                ->paginate(10)
+                                ->withQueryString()
+        ];
+
+        return view('frontend.user.index', $data);
     }
 }

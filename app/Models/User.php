@@ -10,6 +10,7 @@ use Illuminate\Notifications\Notifiable;
 use App\UserStatus;
 use App\UserRole;
 
+
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
@@ -100,4 +101,5 @@ class User extends Authenticatable
     {
         return $this->status === UserStatus::Banned;
     }
+
 }

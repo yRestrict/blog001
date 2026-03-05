@@ -76,15 +76,12 @@
                         </div>
                     </div>
                     
-                    <!-- Anúncio após o conteúdo -->
                     
                     @include("frontend.post.inc.post-relacion")
                     
                     @include("frontend.post.inc.comment")
                 </div>
             </div>
-            <!--sidebar-->
-            {{-- @include("frontend.post.inc.sidebar2") --}}
         </div>
     </div>
 </section>
@@ -92,50 +89,3 @@
 @endsection
 
 
-@push('script')
- <script>
-function incrementDownloadCount(postId) {
-    
-    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
-    
-    if (!csrfToken) {
-        console.error('❌ CSRF token não encontrado');
-        return;
-    }
-    
-    // Use a rota nomeada corretamente
-    const url = `{{ route("frontend.post.increment-downloads", "") }}/`;
-    
-    fetch(url, {
-        method: 'POST',
-        headers: {
-            'X-CSRF-TOKEN': csrfToken,
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
-        }
-    })
-    .then(response => {
-        
-        if (!response.ok) {
-            throw new Error(`Erro HTTP: ${response.status}`);
-        }
-        return response.json();
-    })
-    .then(data => {
-        
-        if (data.success) {
-            // Atualiza o contador na página
-            const counterElement = document.querySelector(`small[data-post-id="${postId}"]`);
-            if (counterElement) {
-                counterElement.textContent = `Total de ${data.clicks} downloads`;
-            }
-        } else {
-            console.error('❌ Erro do servidor:', data.message);
-        }
-    })
-    .catch(error => {
-        console.error('💥 Erro na requisição:', error);
-    });
-}
-</script> 
-@endpush

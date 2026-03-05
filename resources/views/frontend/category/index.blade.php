@@ -10,7 +10,6 @@
                 <div class="row">
                     <div class="col-lg-12">
                         <div class="section-heading-2-title">
-                            {{-- CORRECAO: era $category->title, agora e $category->name --}}
                             <h1>{{ $category->name }}</h1>
                             @if ($category->description)
                                 <div class="category-description">

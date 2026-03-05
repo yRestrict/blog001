@@ -588,6 +588,7 @@ ul {
   vertical-align: middle;
   position: relative;
   border: 0px solid #E6E7E7;
+  padding: 3px 5px;
   color: #191b1d99;
   font-size: 14px;
   font-weight: 600;
@@ -739,14 +740,15 @@ ul {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
+  align-items: center;
+  justify-content: center;
   -webkit-box-align: center;
-      -ms-flex-align: center;
-          align-items: center;
+  -ms-flex-align: center;
 }
 
 .authors-info .image img {
   border-radius: 50px;
-  width: 50px;
+  width: 150px;
 }
 
 .authors-info .content {
@@ -6321,8 +6323,25 @@ input:checked + .slider:before {
 }
 
 .tag-item:hover {
-    background: #007bff;
-    color: black;
+    cursor: pointer;
+  display: -webkit-inline-box;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: middle;
+  position: relative;
+  border: 0px solid #E6E7E7;
+  padding: 3px 5px;
+  color: #191b1d99;
+  font-size: 14px;
+  font-weight: 600;
+  overflow: hidden;
+  text-transform: capitalize;
+  border-radius: 20px;
+  -webkit-transition: all 0.3s ease-in-out;
+  transition: all 0.3s ease;
+    
 }
 
 /* Post bottom section */
