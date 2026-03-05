@@ -112,15 +112,29 @@
                     </div>
 
                     {{-- Tags --}}
-                    <div class="form-group">
-                        <label><b>Tags</b></label>
+                    <div class="form-group" style="position: relative;">
+                        <label><b>Tags</b> <small class="text-muted">(separe por vírgula)</small></label>
+
                         <input type="text"
-                               class="form-control"
-                               name="tags"
-                               value="{{ old('tags') }}"
-                               data-role="tagsinput"
-                               placeholder="Adicione tags separadas por vírgula">
-                        <small class="text-muted">Separe as tags por vírgula. Novas tags serão criadas automaticamente.</small>
+                            id="tag-input"
+                            name="tags"
+                            class="form-control"
+                            placeholder="Ex: LARAVEL, PHP, JAVASCRIPT"
+                            value="{{ old('tags') }}"
+                            autocomplete="off"
+                            style="text-transform: uppercase;">
+
+                        <ul id="tag-suggestions"
+                            style="display:none; position:absolute; z-index:1000; background:#fff;
+                                border:1px solid #ced4da; border-top:none; width:100%;
+                                max-height:200px; overflow-y:auto; list-style:none;
+                                margin:0; padding:0; border-radius:0 0 4px 4px;
+                                box-shadow: 0 4px 12px rgba(0,0,0,.1);">
+                        </ul>
+
+                        <small class="form-text text-muted">
+                            Digite e selecione sugestões ou crie novas tags.
+                        </small>
                     </div>
 
                     {{-- Imagem destacada --}}
@@ -213,12 +227,8 @@
 
 @endsection
 
-@push('stylesheets')
-    <link rel="stylesheet" href="{{ asset('dashboard/src/plugins/bootstrap-tagsinput/bootstrap-tagsinput.css') }}">
-@endpush
 
 @push('scripts')
-<script src="{{ asset('dashboard/src/plugins/bootstrap-tagsinput/bootstrap-tagsinput.js') }}"></script>
 <script>
     // Preview da imagem destacada
     document.getElementById('featured-image-input').addEventListener('change', function (e) {
@@ -232,5 +242,97 @@
         };
         reader.readAsDataURL(file);
     });
+
+    (function () {
+        const input       = document.getElementById('tag-input');
+        const suggestions = document.getElementById('tag-suggestions');
+        const searchUrl   = "{{ route('admin.tags.tags.search') }}"; {{-- ← aspas duplas aqui --}}
+
+        let debounceTimer = null;
+
+        input.addEventListener('input', function () {
+            const cursorPos = this.selectionStart;
+            this.value = this.value.toUpperCase();
+            this.setSelectionRange(cursorPos, cursorPos);
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(() => fetchSuggestions(), 250);
+        });
+
+        function fetchSuggestions() {
+            const parts    = input.value.split(',');
+            const lastPart = parts[parts.length - 1].trim();
+            if (lastPart.length < 1) { hideSuggestions(); return; }
+
+            fetch(searchUrl + '?q=' + encodeURIComponent(lastPart))
+                .then(r => r.json())
+                .then(tags => renderSuggestions(tags, parts))
+                .catch(() => hideSuggestions());
+        }
+
+        function renderSuggestions(tags, parts) {
+            suggestions.innerHTML = '';
+            const already  = parts.slice(0, -1).map(t => t.trim().toUpperCase());
+            const filtered = tags.filter(t => !already.includes(t.toUpperCase()));
+            if (filtered.length === 0) { hideSuggestions(); return; }
+
+            filtered.forEach(tag => {
+                const li = document.createElement('li');
+                li.textContent = tag;
+                li.style.cssText = 'padding:8px 12px; cursor:pointer; font-size:.875rem;';
+                li.addEventListener('mouseenter', () => li.style.background = '#f3f4f6');
+                li.addEventListener('mouseleave', () => li.style.background = '');
+                li.addEventListener('mousedown', function (e) {
+                    e.preventDefault();
+                    selectTag(tag, parts);
+                });
+                suggestions.appendChild(li);
+            });
+
+            suggestions.style.display = 'block';
+        }
+
+        function selectTag(tag, parts) {
+            parts[parts.length - 1] = ' ' + tag;
+            input.value = parts.join(',').replace(/^,\s*/, '') + ', ';
+            hideSuggestions();
+            input.focus();
+        }
+
+        document.addEventListener('click', function (e) {
+            if (!input.contains(e.target) && !suggestions.contains(e.target)) {
+                hideSuggestions();
+            }
+        });
+
+        input.addEventListener('keydown', function (e) {
+            const items  = suggestions.querySelectorAll('li');
+            const active = suggestions.querySelector('li.active');
+            let idx      = Array.from(items).indexOf(active);
+
+            if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                if (active) active.classList.remove('active');
+                const next = items[idx + 1] || items[0];
+                if (next) { next.classList.add('active'); next.style.background = '#ede9fe'; }
+            }
+            if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                if (active) active.classList.remove('active');
+                const prev = items[idx - 1] || items[items.length - 1];
+                if (prev) { prev.classList.add('active'); prev.style.background = '#ede9fe'; }
+            }
+            if (e.key === 'Enter' && active) {
+                e.preventDefault();
+                const parts = input.value.split(',');
+                selectTag(active.textContent, parts);
+            }
+            if (e.key === 'Escape') hideSuggestions();
+        });
+
+        function hideSuggestions() {
+            suggestions.style.display = 'none';
+            suggestions.innerHTML     = '';
+        }
+    })();
 </script>
 @endpush

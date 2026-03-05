@@ -71,7 +71,7 @@
 
         <div class="pagination">
             <div class="pagination-area">
-                {{ $posts->links() }}
+                {{ $posts->links('vendor.pagination.custom') }}
             </div>
         </div>
     </div>

@@ -2,148 +2,115 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Facades\Cache;
 
-/**
- * MODEL: Sidebar
- *
- * Representa uma ÁREA do layout que pode conter widgets.
- * Exemplos: "Sidebar Principal", "Sidebar do Post", "Footer Lateral"
- *
- * Relacionamentos:
- *   Sidebar → hasMany → SidebarWidget
- *
- * Como usar nas views:
- *   <x-sidebar area="main-sidebar" />
- */
 class Sidebar extends Model
 {
-    /**
-     * Campos que podem ser preenchidos via mass assignment (create/update).
-     * Campos fora desta lista serão ignorados por segurança.
-     */
+    use HasFactory;
+
+    protected $table = 'sidebars';
+
     protected $fillable = [
-        'name',
-        'slug',
-        'description',
-        'active',
+        'title',
+        'type',
+        'status',
+        'order',
+        'limit',
+        'period_type',
+        'content',
+        'link',
+        'image',
+        'icon',
+        'color',
+        'social_data',
+        'fixed',
+        'category_display_type',
+        'selected_categories',
+        'category_limit',
+        'tag_display_type',
+        'tag_limit',
+        'selected_tags',
+        'slide_images',
+        'slide_interval',
+        'slide_autoplay',
+        'slide_controls',
+        'slide_indicators',
+        'image_width',
+        'image_height',
     ];
 
-    /**
-     * Casts automáticos — o Laravel converte o valor do banco para o tipo correto.
-     * 'active' no banco é 0/1, mas o PHP vai receber true/false.
-     */
     protected $casts = [
-        'active' => 'boolean',
+        'status' => 'boolean',
+        'limit' => 'integer',
+        'order' => 'integer',
+        'fixed' => 'boolean',
+        'social_data' => 'array',
+        'selected_categories' => 'array',
+        'category_limit' => 'integer',
+        'tag_limit' => 'integer',
+        'selected_tags' => 'array',
+        'slide_images' => 'array',
+        'slide_interval' => 'integer',
+        'slide_autoplay' => 'boolean',
+        'slide_controls' => 'boolean',
+        'slide_indicators' => 'boolean',
+        'image_width' => 'integer',
+        'image_height' => 'integer',
     ];
 
-    // =========================================================================
-    // RELACIONAMENTOS
-    // =========================================================================
+    // ─── Accessors ────────────────────────────────────────────────────────────
 
-    /**
-     * Todos os widgets desta sidebar, ordenados por posição.
-     *
-     * Uso: $sidebar->widgets → retorna uma Collection de SidebarWidget
-     */
-    public function widgets(): HasMany
+    public function getTypeNameAttribute(): string
     {
-        return $this->hasMany(SidebarWidget::class)->orderBy('position');
+        return [
+            'search' => 'Busca',
+            'categories' => 'Categorias',
+            'popular_posts' => 'Posts Populares',
+            'popular_downloads' => 'Downloads Populares',
+            'tags' => 'Tags',
+            'social_links' => 'Redes Sociais',
+            'image_link' => 'Imagem com Link',
+            'custom' => 'Customizado',
+        ][$this->type] ?? $this->type;
     }
 
-    /**
-     * Apenas os widgets ATIVOS desta sidebar, ordenados por posição.
-     * Usado no frontend para não exibir widgets desativados.
-     *
-     * Uso: $sidebar->activeWidgets → retorna Collection filtrada
-     */
-    public function activeWidgets(): HasMany
+    public function getCategoryDisplayTypeNameAttribute(): string
     {
-        return $this->hasMany(SidebarWidget::class)
-                    ->where('active', true)
-                    ->orderBy('position');
+        return [
+            'most_posts' => 'Categorias com Mais Posts',
+            'most_visited' => 'Categorias Mais Visitadas',
+            'manual' => 'Seleção Manual',
+        ][$this->category_display_type] ?? 'Categorias com Mais Posts';
     }
 
-    // =========================================================================
-    // SCOPES
-    // Scopes são filtros reutilizáveis para queries.
-    // Uso: Sidebar::active()->get() em vez de Sidebar::where('active', true)->get()
-    // =========================================================================
+    public function getTagDisplayTypeNameAttribute(): string
+    {
+        return [
+            'most_posts' => 'Tags com Mais Posts',
+            'most_visited' => 'Tags Mais Visitadas',
+            'manual' => 'Seleção Manual',
+        ][$this->tag_display_type] ?? 'Tags com Mais Posts';
+    }
 
-    /**
-     * Scope: apenas sidebars ativas.
-     */
+    public function getPeriodTypeNameAttribute(): string
+    {
+        return [
+            'week' => 'Downloads da Semana',
+            'month' => 'Downloads do Mês',
+            'total' => 'Total de Downloads',
+        ][$this->period_type] ?? 'Downloads da Semana';
+    }
+
+    // ─── Scopes ───────────────────────────────────────────────────────────────
+
     public function scopeActive($query)
     {
-        return $query->where('active', true);
+        return $query->where('status', true);
     }
 
-    // =========================================================================
-    // MÉTODOS ESTÁTICOS (lógica de busca sem Service)
-    // =========================================================================
-
-    /**
-     * Busca uma sidebar pelo slug, com seus widgets e settings carregados.
-     * Usa cache para não fazer a mesma query toda requisição.
-     *
-     * O "with()" é eager loading — carrega tudo de uma vez (3 queries)
-     * em vez de fazer N queries (problema N+1).
-     *
-     * Uso: Sidebar::getBySlug('main-sidebar')
-     *
-     * @param  string $slug
-     * @return static|null
-     */
-    public static function getBySlug(string $slug): ?static
+    public function scopeOrdered($query)
     {
-        // Cache::remember(chave, segundos, função)
-        // Se a chave existir no cache, retorna direto. Senão, executa a função e salva.
-        return Cache::remember("sidebar:{$slug}", 3600, function () use ($slug) {
-            return static::with([
-                        // Carrega os widgets ativos com suas settings — eager loading
-                        'activeWidgets',
-                        'activeWidgets.settings',
-                    ])
-                    ->where('slug', $slug)
-                    ->where('active', true)
-                    ->first();
-        });
-    }
-
-    /**
-     * Invalida o cache desta sidebar.
-     * Chamado quando qualquer widget é salvo ou deletado.
-     *
-     * @return void
-     */
-    public function clearCache(): void
-    {
-        Cache::forget("sidebar:{$this->slug}");
-    }
-
-    // =========================================================================
-    // EVENTOS DO MODEL (boot)
-    // Executados automaticamente pelo Laravel em certas ações.
-    // =========================================================================
-
-    /**
-     * O método boot() registra eventos do model.
-     * Aqui usamos para invalidar o cache automaticamente ao salvar/deletar.
-     */
-    protected static function boot(): void
-    {
-        parent::boot();
-
-        // Toda vez que uma sidebar for salva (create ou update), limpa o cache
-        static::saved(function (Sidebar $sidebar) {
-            $sidebar->clearCache();
-        });
-
-        // Toda vez que uma sidebar for deletada, limpa o cache
-        static::deleted(function (Sidebar $sidebar) {
-            $sidebar->clearCache();
-        });
+        return $query->orderBy('order');
     }
 }

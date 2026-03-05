@@ -21,6 +21,18 @@ class Tag extends Model
         'views' => 'integer',
     ];
 
+    // ─── Sempre salva o nome em maiúsculo ─────────────────────────────────────
+    public function setNameAttribute(string $value): void
+    {
+        $this->attributes['name'] = mb_strtoupper(trim($value), 'UTF-8');
+    }
+
+    // ─── Sempre retorna o nome em maiúsculo ───────────────────────────────────
+    public function getNameAttribute(string $value): string
+    {
+        return mb_strtoupper($value, 'UTF-8');
+    }
+
     public function getSlugOptions(): SlugOptions
     {
         return SlugOptions::create()

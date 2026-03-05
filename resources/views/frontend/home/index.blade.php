@@ -4,15 +4,20 @@
 
 @section("content")
 
-    <livewire:frontend.featured-slider />
+<livewire:frontend.featured-slider />
 
-    <section class="section-feature-1">
-        <div class="container-fluid">
-            <div class="row">
-                @include("frontend.home.inc.recentpost")
-                {{-- @include("frontend.home.inc.sidebar") --}}
+<section class="section-feature-1">
+    <div class="container-fluid">
+        <div class="row">
+            @include("frontend.home.inc.recentpost")
+            <div class="col-lg-4 oredoo-sidebar">
+                <div class="theiaStickySidebar">
+                    @include('components.sidebar.index')
+                </div>
             </div>
+
         </div>
-    </section>
+    </div>
+</section>
 
 @endsection

@@ -1,7 +1,7 @@
 @extends('frontend.master')
 
 {{-- CORRECAO: era $category->title, agora e $category->name --}}
-@section('title', $category->name . ' - ' . (Setting::title()))
+@section("title", ($settings->site_title ?? 'Blog') . " - " . ($settings->site_description ?? 'Slogan'))
 
 @section('content')
     <div class="section-heading">
@@ -17,7 +17,7 @@
                                     <p>{{ $category->description }}</p>
                                 </div>
                             @endif
-                            <div class="category-stats">
+                            <div class="category-stats" style="display: grid;">
                                 <span class="posts-count">
                                     <i class="fas fa-file-alt" style="color: #2563eb"></i>
                                     {{ $posts->total() }} {{ $posts->total() == 1 ? 'post' : 'posts' }}
@@ -63,7 +63,7 @@
                                         </a>
                                     </li>
                                     <li class="post-author">
-                                        {{-- CORRECAO: era $post->user, agora e $post->author --}}
+                                        <span class="line"></span>
                                         <a href="{{ route('frontend.user', $post->author->username) }}">
                                             {{ $post->author->name }}
                                         </a>
@@ -97,7 +97,7 @@
             <div class="pagination-area">
                 <div class="row">
                     <div class="col-lg-12">
-                        {{ $posts->links() }}
+                        {{ $posts->links('vendor.pagination.custom') }}
                     </div>
                 </div>
             </div>

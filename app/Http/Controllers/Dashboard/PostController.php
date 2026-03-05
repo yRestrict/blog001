@@ -14,9 +14,6 @@ use Illuminate\Support\Facades\Auth;
 
 class PostController extends Controller
 {
-    /**
-     * Listagem de posts.
-     */
     public function PostPage()
     {
         return view('dashboard.post.index', [
@@ -24,9 +21,6 @@ class PostController extends Controller
         ]);
     }
 
-    /**
-     * Formulário de criação.
-     */
     public function postCreate()
     {
         $categorieshtml = $this->buildCategoriesHtml();
@@ -37,9 +31,6 @@ class PostController extends Controller
         ]);
     }
 
-    /**
-     * Salva novo post.
-     */
     public function postStore(Request $request)
     {
         $data = $request->validate([
@@ -47,7 +38,7 @@ class PostController extends Controller
             'content'          => 'required|string',
             'category_id'      => 'required|exists:categories,id',
             'tags'             => 'nullable|string',
-            'thumbnail'   => 'nullable|image|max:2048',
+            'thumbnail'        => 'nullable|image|max:2048',
             'featured'         => 'nullable|boolean',
             'comment'          => 'nullable|boolean',
             'status'           => 'required|in:draft,published,private',
@@ -55,7 +46,6 @@ class PostController extends Controller
             'meta_description' => 'nullable|string|max:500',
         ]);
 
-        // Upload da imagem destacada
         if ($request->hasFile('thumbnail')) {
             $filename = time() . '_' . $request->file('thumbnail')->getClientOriginalName();
             $request->file('thumbnail')->move(public_path('uploads/posts'), $filename);
@@ -68,42 +58,26 @@ class PostController extends Controller
 
         $post = Post::create($data);
 
-        // Sincroniza tags (cria se não existir)
-        if (!empty($data['tags'])) {
-            $tagIds = [];
-            foreach (explode(',', $data['tags']) as $tagName) {
-                $tagName = trim($tagName);
-                if ($tagName === '') continue;
-
-                $tag = Tag::firstOrCreate(
-                    ['name' => $tagName],
-                    ['slug' => Str::slug($tagName)]
-                );
-                $tagIds[] = $tag->id;
-            }
-            $post->tags()->sync($tagIds);
-        }
+        $post->tags()->sync($this->resolveTagIds($data['tags'] ?? ''));
 
         return redirect()->route('admin.posts.index')->with('success', 'Post criado com sucesso!');
     }
 
-    /**
-     * Formulário de edição.
-     */
     public function postEdit(Post $post)
     {
         $categorieshtml = $this->buildCategoriesHtml($post->category_id);
+
+        // Monta string de tags já associadas para preencher o campo
+        $currentTags = $post->tags->pluck('name')->implode(', ');
 
         return view('dashboard.post.edit', [
             'pageTitle'      => 'Editar Post',
             'post'           => $post->load('tags'),
             'categorieshtml' => $categorieshtml,
+            'currentTags'    => $currentTags,
         ]);
     }
 
-    /**
-     * Atualiza post existente.
-     */
     public function postUpdate(Request $request, Post $post)
     {
         $data = $request->validate([
@@ -111,7 +85,7 @@ class PostController extends Controller
             'content'          => 'required|string',
             'category_id'      => 'nullable|exists:categories,id',
             'tags'             => 'nullable|string',
-            'thumbnail'   => 'nullable|image|max:2048',
+            'thumbnail'        => 'nullable|image|max:2048',
             'featured'         => 'nullable|boolean',
             'comment'          => 'nullable|boolean',
             'status'           => 'required|in:draft,published,private',
@@ -120,11 +94,9 @@ class PostController extends Controller
         ]);
 
         if ($request->hasFile('thumbnail')) {
-            // Remove imagem antiga
             if ($post->thumbnail && file_exists(public_path('uploads/posts/' . $post->thumbnail))) {
                 unlink(public_path('uploads/posts/' . $post->thumbnail));
             }
-
             $filename = time() . '_' . $request->file('thumbnail')->getClientOriginalName();
             $request->file('thumbnail')->move(public_path('uploads/posts'), $filename);
             $data['thumbnail'] = $filename;
@@ -134,38 +106,17 @@ class PostController extends Controller
         $data['comment']  = $request->boolean('comment');
 
         $post->update($data);
-
-        // Sincroniza tags
-        $tagIds = [];
-        if (!empty($data['tags'])) {
-            foreach (explode(',', $data['tags']) as $tagName) {
-                $tagName = trim($tagName);
-                if ($tagName === '') continue;
-
-                $tag = Tag::firstOrCreate(
-                    ['name' => $tagName],
-                    ['slug' => Str::slug($tagName)]
-                );
-                $tagIds[] = $tag->id;
-            }
-        }
-        $post->tags()->sync($tagIds);
+        $post->tags()->sync($this->resolveTagIds($data['tags'] ?? ''));
 
         return redirect()->route('admin.posts.index')->with('success', 'Post atualizado com sucesso!');
     }
 
-    /**
-     * Soft delete do post.
-     */
     public function postDestroy(Post $post)
     {
         $post->delete();
         return redirect()->route('admin.posts.index')->with('success', 'Post removido!');
     }
 
-    /**
-     * Página da lixeira de posts.
-     */
     public function postTrash()
     {
         return view('dashboard.post.trash', [
@@ -173,16 +124,48 @@ class PostController extends Controller
         ]);
     }
 
-    // ─── Helper ───────────────────────────────────────────────────────────────
+    // ─── API: busca tags para autocomplete ───────────────────────────────────
+    // Registre a rota: Route::get('/tags/search', [PostController::class, 'searchTags'])->name('tags.search');
+    public function searchTags(Request $request)
+    {
+        $query = mb_strtoupper(trim($request->get('q', '')), 'UTF-8');
+
+        $tags = Tag::where('name', 'like', '%' . $query . '%')
+            ->orderBy('name')
+            ->limit(10)
+            ->pluck('name');
+
+        return response()->json($tags);
+    }
+
+    // ─── Helpers ─────────────────────────────────────────────────────────────
 
     /**
-     * Monta o HTML do <select> de categorias agrupadas por categoria pai.
+     * Resolve IDs das tags a partir de uma string separada por vírgula.
+     * Cria tags novas se não existirem. Sempre em maiúsculo.
      */
+    private function resolveTagIds(string $tagsString): array
+    {
+        $tagIds = [];
+
+        foreach (explode(',', $tagsString) as $tagName) {
+            $tagName = mb_strtoupper(trim($tagName), 'UTF-8');
+            if ($tagName === '') continue;
+
+            $tag = Tag::firstOrCreate(
+                ['name' => $tagName],
+                ['slug' => Str::slug($tagName)]
+            );
+            $tagIds[] = $tag->id;
+        }
+
+        return $tagIds;
+    }
+
     private function buildCategoriesHtml(?int $selectedId = null): string
     {
         $html = '<option value="">-- Selecione uma Categoria --</option>';
 
-        // Categorias agrupadas (com pai)
         $parentCategories = ParentCategory::with(['categories' => function ($q) {
             $q->where('status', true)->orderBy('name');
         }])->orderBy('name')->get();
@@ -198,7 +181,6 @@ class PostController extends Controller
             $html .= '</optgroup>';
         }
 
-        // Categorias sem pai
         $orphans = Category::whereNull('parent_category_id')
             ->where('status', true)
             ->orderBy('name')

@@ -10,17 +10,12 @@ class Tags extends Component
 {
     use WithPagination;
 
-    // ─── Estado do modal ──────────────────────────────────────────────────────
     public bool    $showModal  = false;
     public bool    $isEditing  = false;
     public ?int    $tagId      = null;
     public string  $tagName    = '';
-
-    // ─── Pesquisa ─────────────────────────────────────────────────────────────
     public string  $search     = '';
-
-    // ─── Confirmação de exclusão ──────────────────────────────────────────────
-    public ?int $confirmingDelete = null;
+    public ?int    $confirmingDelete = null;
 
     protected $messages = [
         'tagName.required' => 'O nome da tag é obrigatório.',
@@ -33,7 +28,12 @@ class Tags extends Component
         $this->resetPage();
     }
 
-    // ─── Regras dinâmicas ────────────────────────────────────────────────────
+    // ─── Converte para maiúsculo enquanto digita ──────────────────────────────
+    public function updatedTagName(): void
+    {
+        $this->tagName = mb_strtoupper($this->tagName, 'UTF-8');
+    }
+
     protected function tagRules(): array
     {
         $unique = 'unique:tags,name' .
@@ -44,33 +44,31 @@ class Tags extends Component
         ];
     }
 
-    // ─── Abrir modal criar ────────────────────────────────────────────────────
     public function openAdd(): void
     {
         $this->resetForm();
         $this->showModal = true;
     }
 
-    // ─── Abrir modal editar ───────────────────────────────────────────────────
     public function openEdit(int $id): void
     {
         $tag = Tag::findOrFail($id);
 
         $this->tagId     = $tag->id;
-        $this->tagName   = $tag->name;
+        $this->tagName   = mb_strtoupper($tag->name, 'UTF-8');
         $this->isEditing = true;
         $this->showModal = true;
     }
 
-    // ─── Salvar (criar ou atualizar) ──────────────────────────────────────────
     public function save(): void
     {
+        $this->tagName = mb_strtoupper(trim($this->tagName), 'UTF-8');
         $this->validate($this->tagRules());
 
         if ($this->isEditing) {
             $tag       = Tag::findOrFail($this->tagId);
-            $tag->name = $this->tagName;
-            $tag->slug = null; // força regeneração pelo Spatie
+            $tag->name = $this->tagName; // setNameAttribute já aplica strtoupper
+            $tag->slug = null;
             $tag->save();
 
             $this->dispatch('notify', type: 'success', message: 'Tag atualizada com sucesso!');
@@ -82,14 +80,12 @@ class Tags extends Component
         $this->closeModal();
     }
 
-    // ─── Fechar modal ─────────────────────────────────────────────────────────
     public function closeModal(): void
     {
         $this->showModal = false;
         $this->resetForm();
     }
 
-    // ─── Confirmação de exclusão ──────────────────────────────────────────────
     public function confirmDelete(int $id): void
     {
         $this->confirmingDelete = $id;
@@ -103,14 +99,13 @@ class Tags extends Component
     public function deleteTag(int $id): void
     {
         $tag = Tag::findOrFail($id);
-        $tag->posts()->detach(); // remove da pivot antes de deletar
+        $tag->posts()->detach();
         $tag->delete();
 
         $this->confirmingDelete = null;
         $this->dispatch('notify', type: 'success', message: 'Tag removida com sucesso!');
     }
 
-    // ─── Reset form ───────────────────────────────────────────────────────────
     private function resetForm(): void
     {
         $this->tagId     = null;
@@ -119,12 +114,11 @@ class Tags extends Component
         $this->resetErrorBag();
     }
 
-    // ─── Render ───────────────────────────────────────────────────────────────
     public function render()
     {
         $tags = Tag::withCount('posts')
             ->when($this->search, fn ($q) =>
-                $q->where('name', 'like', '%' . $this->search . '%')
+                $q->where('name', 'like', '%' . mb_strtoupper($this->search, 'UTF-8') . '%')
             )
             ->orderBy('name')
             ->paginate(15);

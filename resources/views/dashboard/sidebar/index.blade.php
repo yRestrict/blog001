@@ -26,9 +26,7 @@
         </div>
     </div>
 
-    {{-- Componente Livewire responsável por todo o CRUD --}}
-    <div class="pd-20 card-box mb-4">
-        @livewire('admin.sidebar-manager')
-    </div>
+    @livewire('admin.sidebar')
+
 
 @endsection

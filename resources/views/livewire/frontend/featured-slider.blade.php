@@ -6,7 +6,7 @@
                 <div class="col-lg-12">
                     <div class="owl-carousel">
                         @foreach ($featuredPosts as $featuredPost)
-                        <div class="blog-item" style="background-image: url('{{ asset("uploads/posts/" . $featuredPost->featured_image) }}')">
+                        <div class="blog-item" style="background-image: url('{{ asset("uploads/posts/" . $featuredPost->thumbnail) }}')">
                             <div class="blog-banner">
                                 <div class="post-overly">
                                     <div class="post-overly-content">

@@ -45,6 +45,8 @@ Route::name('frontend.')->group(function () {
     Route::post("/comment-reply", [FrontendCommentController::class, "reply"])->name("comment.reply");
     Route::get("/category/{slug}", [FrontendCategoryController::class, "index"])->name("category");
     Route::get("/tag/{id}", [FrontendTagController::class, "index"])->name("tag");
+    Route::get("/search", [SearchController::class, "index"])->name("search");
+
 
 
 });
@@ -82,14 +84,15 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/sidebars', [SidebarController::class, 'index'])
             ->name('sidebars');
 
-        // Widgets de uma sidebar → chama WidgetManager (Livewire)
-        Route::get('/sidebars/{sidebar}/widgets', [SidebarController::class, 'widgets'])
-            ->name('sidebars.widgets');
 
             // Categorias
             Route::prefix('categories')->name('categories.')->group(function () {
                 Route::get('/', [CategoryController::class, 'categoriesPage'])->name('index');
                 Route::get('/trash', [CategoryController::class, 'categoriesTrash'])->name('trash');
+            });
+
+            Route::prefix('sidebar')->name('sidebar.')->group(function () {
+                Route::get('/', [CategoryController::class, 'categoriesPage'])->name('index');
             });
 
             // Posts
@@ -105,6 +108,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
             // Tags
             Route::prefix('tags')->name('tags.')->group(function () {
+                Route::get('/tags/search', [PostController::class, 'searchTags'])->name('tags.search');
                 Route::get('/', [TagController::class, 'index'])->name('index');
             });
 

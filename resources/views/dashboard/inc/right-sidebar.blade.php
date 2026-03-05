@@ -151,7 +151,7 @@
 
                     {{-- ── Sidebars ──────────── --}}
                     <li>
-                        <a href="" class="dropdown-toggle no-arrow db-focus-ring">
+                        <a href="{{ route('admin.sidebars') }}" class="dropdown-toggle no-arrow db-focus-ring">
                             <span class="micon fa fa-columns"></span>
                             <span class="mtext">Sidebars</span>
                         </a>

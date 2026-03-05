@@ -2,13 +2,20 @@
 
 namespace App\Providers;
 
-use Illuminate\Support\ServiceProvider;
-use Illuminate\Auth\Middleware\RedirectIfAuthenticated;
-use Illuminate\Auth\Middleware\Authenticate;
-use Illuminate\Support\Facades\Session;
-use App\Policies\UserPolicy;
-use Illuminate\Support\Facades\Gate;
+use App\Models\Sidebar;
 use App\Models\User;
+use App\Observers\SidebarObserver;
+use App\Policies\UserPolicy;
+use App\Services\SidebarService;
+use App\View\Composers\SidebarViewComposer;
+use Illuminate\Auth\Middleware\Authenticate;
+use Illuminate\Auth\Middleware\RedirectIfAuthenticated;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\View;
+use Illuminate\Support\ServiceProvider;
+use Livewire\Livewire;
+
 
 
 class AppServiceProvider extends ServiceProvider
@@ -18,7 +25,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->singleton(SidebarService::class);
     }
 
     /**
@@ -26,6 +33,14 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Sidebar::observe(SidebarObserver::class);
+
+        View::composer('frontend.*', SidebarViewComposer::class);
+
+
+
+
+
         //Redirect an authenticated user dashboard if tries to access login page
         RedirectIfAuthenticated::redirectUsing(function(){
             return route('admin.dashboard');

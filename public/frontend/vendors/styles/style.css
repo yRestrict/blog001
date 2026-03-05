@@ -445,38 +445,55 @@ ul {
   opacity: 1;
 }
 
-/* pagination*/
-.pagination {
-  border-radius: 0px;
-}
-
+/* Container principal da paginação */
 .pagination-area {
-  margin-bottom: 50px;
-  padding-top: 50px;
-  text-align: center;
+    margin-bottom: 50px;
+    padding-top: 30px;
+    text-align: center;
 }
 
-.pagination-left {
-  text-align: left;
+/* Estilo da lista customizada */
+.pagination-list ul.list-inline {
+    display: flex;             /* Coloca os itens lado a lado */
+    justify-content: flex-start; /* Alinha à esquerda conforme sua imagem */
+    gap: 10px;                 /* ESPAÇO entre cada quadrado */
+    list-style: none;
+    padding: 0;
+    margin: 0;
 }
 
-.pagination-list ul li a, .pagination-list ul li span {
-  width: 50px;
-  height: 50px;
-  border: 1px solid #E6E7E7;
-  font-weight: 700;
-  display: block;
-  text-align: center;
-  line-height: 50px;
-  border-radius: 0px;
-  margin-right: 3px;
-  -webkit-transition: all 0.5s ease-in-out;
-  transition: all 0.5s ease-in-out;
+/* Estilo dos quadrados (Links e Spans) */
+.pagination-list ul li a, 
+.pagination-list ul li span {
+    width: 45px;               /* Largura do quadrado */
+    height: 45px;              /* Altura do quadrado */
+    border: 1px solid #333;    /* Cor da borda para tema dark */
+    background-color: transparent;
+    color: #ffffff;
+    font-weight: 700;
+    display: flex;             /* Necessário para alinhar o ícone/número no meio */
+    align-items: center;       /* Centraliza verticalmente */
+    justify-content: center;    /* Centraliza horizontalmente */
+    text-decoration: none;
+    transition: all 0.3s ease-in-out;
 }
 
-.pagination-list ul li span.active, .pagination-list ul li a.active, .pagination-list ul li a:hover {
-  background-color: #191B1D;
-  color: #ffffff;
+/* Página atual (Ativa) */
+.pagination-list ul li span.active {
+    background-color: #ffffff; /* Fundo branco para destacar */
+    color: #000000;            /* Número em preto */
+    border-color: #ffffff;
+}
+
+/* Efeito ao passar o mouse nos números clicáveis */
+.pagination-list ul li a:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-color: #ffffff;
+}
+
+/* Ajuste de tamanho para os ícones Font Awesome */
+.pagination-list ul li i {
+    font-size: 14px;
 }
 
 /*buttons*/
