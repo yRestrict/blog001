@@ -41,12 +41,6 @@ class AppServiceProvider extends ServiceProvider
 
         View::composer('components.header', HeaderViewComposer::class);
 
-
-
-
-
-
-
         //Redirect an authenticated user dashboard if tries to access login page
         RedirectIfAuthenticated::redirectUsing(function(){
             return route('admin.dashboard');
