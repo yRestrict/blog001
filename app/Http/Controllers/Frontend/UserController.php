@@ -29,7 +29,7 @@ class UserController extends Controller
                                 ->where('status', "published")
                                 ->with(['category', 'tags']) 
                                 ->latest()
-                                ->paginate(10)
+                                ->paginate(6)
                                 ->withQueryString()
         ];
 

@@ -4,7 +4,7 @@
             <h3>Posts recentes</h3>
         </div>
         @forelse ($posts as $post)
-            <div class="post-list post-list-style3">
+            <div class="post-list post-list-style0">
                 <div class="post-list-image">
                     <a href="{{ route('frontend.post', $post->slug) }}">
                         <img class="post-thumbnail" 
@@ -12,9 +12,20 @@
                             alt="{{ $post->title }}" />
                     </a>
                 </div>
+
+
                 <div class="post-list-content">
                     <ul class="entry-meta">
+
+                        <li class="entry-cat">
+                            <a href="{{ route('frontend.category', $post->category->slug) }}"
+                                class="category-style-2">
+                                {{ $post->category->name }}
+                            </a>
+                        </li>
+
                         <li class="post-author">
+                            <span class="line"></span>
                             <a href="{{ route('frontend.user', $post->author->username) }}">
                                 {{ $post->author->name }}
                             </a>
@@ -52,13 +63,11 @@
                     @endif
 
                     <div class="post-bottom">
-                        <div class="post-btn">
-                            <a href="{{ route('frontend.post', $post->slug) }}" class="btn-read-more"
-                                aria-label="Continue lendo {{ $post->title }}">
-                                Continue lendo
-                                <i class="las la-long-arrow-alt-right"></i>
-                            </a>
-                        </div>
+                        <a href="{{ route('frontend.post', $post->slug) }}" class="btn-read-more"
+                            aria-label="Continue lendo {{ $post->title }}">
+                            Continue lendo
+                            <i class="las la-long-arrow-alt-right"></i>
+                        </a>
                     </div>
                 </div>
             </div>

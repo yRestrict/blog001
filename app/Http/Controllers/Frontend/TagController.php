@@ -32,7 +32,7 @@ class TagController extends Controller
                                 ->where('status', "published") // Garante que o post está ativo
                                 ->with(['category', 'author', 'tags']) // 'author' é o nome no seu Model Post
                                 ->latest() // Ordena por created_at desc
-                                ->paginate(10)
+                                ->paginate(6)
                                 ->withQueryString() // Mantém filtros na URL ao trocar de página
         ];
 

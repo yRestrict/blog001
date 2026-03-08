@@ -15,6 +15,8 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 use Livewire\Livewire;
+use App\View\Composers\HeaderViewComposer;
+
 
 
 
@@ -36,6 +38,10 @@ class AppServiceProvider extends ServiceProvider
         Sidebar::observe(SidebarObserver::class);
 
         View::composer('frontend.*', SidebarViewComposer::class);
+
+        View::composer('components.header', HeaderViewComposer::class);
+
+
 
 
 

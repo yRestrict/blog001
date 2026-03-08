@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Auth;
 
 class PostController extends Controller
 {
+    
     public function PostPage()
     {
         return view('dashboard.post.index', [
@@ -119,6 +120,11 @@ class PostController extends Controller
 
     public function postTrash()
     {
+        $posts = Post::onlyTrashed()->with(['category' => function ($q) {
+            $q->withTrashed();
+        }])->latest('deleted_at')->paginate(10);
+
+
         return view('dashboard.post.trash', [
             'pageTitle' => 'Lixeira — Posts',
         ]);

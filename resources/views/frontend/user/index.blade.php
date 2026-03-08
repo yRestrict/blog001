@@ -75,74 +75,71 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-lg-8 oredoo-content">
-    <div class="theiaStickySidebar">
-        
-        <div class="author-post-list">
-            @forelse ($posts as $post)
-            <div class="post-list-modern {{ $loop->first ? 'mt-0' : '' }}">
-                
-                {{-- Imagem do Post --}}
-                <div class="post-list-image">
-                    <a href="{{ route('frontend.post', $post->slug) }}">
-                        <img src="{{ asset('uploads/posts/'.$post->thumbnail) }}" alt="{{ $post->title }}"/>
-                    </a>
-                </div>
+                <div class="theiaStickySidebar">
+                    
+                    <div class="author-post-list">
+                        @forelse ($posts as $post)
+                        <div class="post-list-modern {{ $loop->first ? 'mt-0' : '' }}">
+                            
+                            {{-- Imagem do Post --}}
+                            <div class="post-list-image">
+                                <a href="{{ route('frontend.post', $post->slug) }}">
+                                    <img src="{{ asset('uploads/posts/'.$post->thumbnail) }}" alt="{{ $post->title }}"/>
+                                </a>
+                            </div>
 
-                {{-- Conteúdo do Post --}}
-                <div class="post-list-content">
-                    <ul class="entry-meta mb-2" style="padding: 3px 5px;">
-                        <li class="entry-cat">
-                            <a href="{{ route('frontend.category', $post->category->slug) }}" class="category-style-1">
-                                {{ $post->category->name }}
-                            </a>
-                        </li>
-                        <li class="post-date" > 
-                            <span class="line ms-2 me-2"></span>
-                            <i class="far fa-calendar-alt" style="color: #007bff;"></i> {{ $post->created_at->translatedFormat('d M, Y') }}
-                        </li>
-                    </ul>
+                            {{-- Conteúdo do Post --}}
+                            <div class="post-list-content">
+                                <ul class="entry-meta mb-2" style="padding: 3px 5px;">
+                                    <li class="entry-cat">
+                                        <a href="{{ route('frontend.category', $post->category->slug) }}" class="category-style-1">
+                                            {{ $post->category->name }}
+                                        </a>
+                                    </li>
+                                    <li class="post-date" > 
+                                        <span class="line ms-2 me-2"></span>
+                                        <i class="far fa-calendar-alt" style="color: #007bff;"></i> {{ $post->created_at->translatedFormat('d M, Y') }}
+                                    </li>
+                                </ul>
 
-                    <h5 class="entry-title" style="padding: 3px 5px;">
-                        <a href="{{ route('frontend.post', $post->slug) }}">{{ $post->title }}</a>
-                    </h5>
+                                <h5 class="entry-title" style="padding: 3px 5px;">
+                                    <a href="{{ route('frontend.post', $post->slug) }}">{{ $post->title }}</a>
+                                </h5>
 
-                    {{-- Pequeno resumo para não ficar vazio na lista --}}
-                    <p class="text-muted small mt-2" style="padding: 3px 5px;">
-                        {{ Str::limit(strip_tags($post->content), 100) }}
-                    </p>
+                                {{-- Pequeno resumo para não ficar vazio na lista --}}
+                                <p class="text-muted small mt-2" style="padding: 3px 5px;">
+                                    {{ Str::limit(strip_tags($post->content), 100) }}
+                                </p>
 
-                    @if ($post->tags && $post->tags->count() > 0)
-                        <div class="entry-tags">
-                            @foreach ($post->tags->take(3) as $tag)
-                                <span class="tag-item">#{{ $tag->name }}</span>
-                            @endforeach
+                                @if ($post->tags && $post->tags->count() > 0)
+                                    <div class="entry-tags">
+                                        @foreach ($post->tags->take(3) as $tag)
+                                            <span class="tag-item">#{{ $tag->name }}</span>
+                                        @endforeach
+                                    </div>
+                                @endif
+
+                                <div class="post-bottom mt-3">
+                                    <a href="{{ route('frontend.post', $post->slug) }}" class="btn-read-more">
+                                        Continue lendo <i class="las la-long-arrow-alt-right"></i>
+                                    </a>
+                                </div>
+                            </div>
                         </div>
-                    @endif
+                        @empty
+                        <div class="text-center py-5 border border-secondary rounded" style="background: #1a1a1a;">
+                            <p class="text-muted">Nenhuma publicação encontrada!</p>
+                        </div>
+                        @endforelse
+                    </div>
 
-                    <div class="post-bottom mt-3">
-                        <a href="{{ route('frontend.post', $post->slug) }}" class="btn-read-more">
-                            Continue lendo <i class="las la-long-arrow-alt-right"></i>
-                        </a>
+                    <div class="pagination mt-4">
+                        <div class="pagination-area text-left">
+                            {{ $posts->links("vendor.pagination.custom") }}
+                        </div>
                     </div>
                 </div>
             </div>
-            @empty
-            <div class="text-center py-5 border border-secondary rounded" style="background: #1a1a1a;">
-                <p class="text-muted">Nenhuma publicação encontrada!</p>
-            </div>
-            @endforelse
-        </div>
-
-        <div class="pagination mt-4">
-            <div class="pagination-area text-left">
-                {{ $posts->links("vendor.pagination.custom") }}
-            </div>
-        </div>
-    </div>
-</div>
-
-
-
             <div class="col-lg-4 oredoo-sidebar">
                 <div class="theiaStickySidebar">
                     @include('components.sidebar.index')
@@ -154,100 +151,26 @@
 
 
 <style>
-    /* Container da Lista */
-.author-post-list {
-    margin-top: 2rem;
-}
 
-/* Estilização de cada item da lista */
-.post-list-modern {
-    border: 1px solid #E6E7E7;
-    border-radius: 15px;
-    padding: 20px;
-    margin-bottom: 25px;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-}
+    /* ═══════════════════════════════════════════════════════════
+       AUTOR — Card do perfil
+    ═══════════════════════════════════════════════════════════ */
 
-.post-list-modern:hover {
-    transform: translateX(10px); /* Efeito lateral em vez de subir */
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-}
-
-/* Ajuste da imagem na lista */
-.post-list-modern .post-list-image {
-    width: 280px; /* Largura fixa para manter o alinhamento */
-    min-width: 280px;
-    height: 180px;
-    overflow: hidden;
-    border-radius: 10px;
-}
-
-.post-list-modern .post-list-image img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform 0.5s ease;
-}
-
-.post-list-modern:hover .post-list-image img {
-    transform: scale(1.1);
-}
-
-/* Conteúdo da lista */
-.post-list-modern .post-list-content {
-    padding-left: 25px;
-}
-
-.post-list-modern .entry-title a {
-    font-size: 1.4rem;
-    font-weight: 700;
-    text-decoration: none;
-    transition: color 0.3s;
-}
-
-
-.post-list-modern .post-date {
-    color: #888;
-    font-size: 0.85rem;
-}
-
-.post-list-modern .category-style-1 {
-    border-radius: 20px;
-    font-size: 0.95rem;
-    font-weight: 600;
-}
-
-/* Responsividade */
-@media (max-width: 768px) {
-    .post-list-modern {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-    .post-list-modern .post-list-image {
-        width: 100%;
-        min-width: 100%;
-        margin-bottom: 20px;
-    }
-    .post-list-modern .post-list-content {
-        padding-left: 0;
-    }
-}
-
-
-    /* Card Principal */
     .author-card-custom {
         border-radius: 15px;
-        border: 1px solid #333;
         display: flex;
         align-items: center;
         padding: 2rem;
         margin-bottom: 2rem;
-        gap: 30px; /* <-- ESPAÇO ENTRE FOTO E TEXTO */
+        gap: 30px;
+        border-bottom: 1px solid rgb(230, 231, 231);
     }
 
-    /* Foto do Autor */
+    .dark .author-card-custom {
+        border-bottom: 1px solid rgba(153, 153, 153, 0.15);
+    }
+
+    /* Foto */
     .author-avatar-wrapper img {
         width: 140px;
         height: 140px;
@@ -257,26 +180,27 @@
         box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
     }
 
-    .author-name-row{
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 5px;
+    /* Nome + verificado */
+    .author-name-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 5px;
     }
 
-    .author-verified{
-        color: #0d6efd;
+    .author-verified {
+        color: #007bff;
         font-size: 18px;
         display: flex;
         align-items: center;
     }
 
-    /* Tipografia e Textos */
     .author-name-title {
         font-weight: 700;
         margin-bottom: 0;
     }
 
+    /* Handle / role */
     .author-handle {
         color: #6c757d;
         font-size: 0.875rem;
@@ -289,13 +213,14 @@
         font-weight: 600;
     }
 
+    /* Bio */
     .author-description {
         max-width: 700px;
         line-height: 1.6;
         margin-bottom: 1.5rem;
     }
 
-    /* Botões de Redes Sociais */
+    /* Redes sociais */
     .social-btn-round {
         width: 35px;
         height: 35px;
@@ -309,12 +234,19 @@
     }
 
     .social-btn-round:hover {
-        background-color: #007bff;
-        border-color: #007bff;
         transform: translateY(-3px);
     }
 
-    /* Responsividade para Mobile */
+    .dark .social-btn-round:hover {
+        color: #E6E7E7;
+        background: #fff;
+        transform: translateY(-3px);
+    }
+
+    .social-btn-round i:hover       { color: #191B1D; }
+    .dark .social-btn-round i:hover { color: rgb(230, 231, 231); }
+
+    /* Mobile */
     @media (max-width: 768px) {
         .author-card-custom {
             flex-direction: column;
@@ -325,5 +257,128 @@
             margin-top: 1.5rem;
         }
     }
+
+
+    /* ═══════════════════════════════════════════════════════════
+       AUTOR — Lista de posts
+    ═══════════════════════════════════════════════════════════ */
+
+    .author-post-list {
+        margin-top: 2rem;
+    }
+
+    /* Card do post */
+    .post-list-modern {
+        border: 1px solid #E6E7E7;
+        border-radius: 15px;
+        padding: 20px;
+        margin-bottom: 25px;
+        display: flex;
+        align-items: center;
+        transition: all 0.3s ease;
+    }
+
+    .dark .post-list-modern {
+        border: 1px solid rgba(153, 153, 153, 0.15);
+    }
+
+    .post-list-modern:hover {
+        transform: translateX(10px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    .dark .post-list-modern:hover {
+        box-shadow: 0 5px 15px rgba(77, 76, 76, 0.3);
+    }
+
+    /* Imagem */
+    .post-list-modern .post-list-image {
+        width: 280px;
+        min-width: 280px;
+        height: 180px;
+        overflow: hidden;
+        border-radius: 10px;
+        flex-shrink: 0;
+    }
+
+    .post-list-modern .post-list-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+    }
+
+    .post-list-modern:hover .post-list-image img {
+        transform: scale(1.1);
+    }
+
+    /* Conteúdo */
+    .post-list-modern .post-list-content {
+        padding-left: 25px;
+    }
+
+    /* Título — light */
+    .post-list-modern .entry-title a {
+        font-size: 1.4rem;
+        font-weight: 700;
+        text-decoration: none;
+        color: #191B1D;
+        transition: color 0.3s;
+    }
+
+    /* Título — dark */
+    .dark .post-list-modern .entry-title a {
+        color: #e6e7e7;
+    }
+
+    .dark .post-list-modern .entry-title a:hover {
+        color: #ffffff;
+    }
+
+    /* Remove o ::after que causava a linha azul */
+    .post-list-modern .entry-title a::after {
+        display: none !important;
+        background: none !important;
+        content: none !important;
+    }
+
+    /* Data */
+    .post-list-modern .post-date {
+        color: #888;
+        font-size: 0.85rem;
+    }
+
+    /* Categoria */
+    .post-list-modern .category-style-1 {
+        border-radius: 20px;
+        font-size: 0.95rem;
+        font-weight: 600;
+    }
+
+    /* Leia mais — remove linha azul herdada */
+    .post-list-modern .btn-read-more {
+        text-decoration: none;
+        border-bottom: none;
+        box-shadow: none;
+    }
+
+    /* Mobile */
+    @media (max-width: 768px) {
+        .post-list-modern {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .post-list-modern .post-list-image {
+            width: 100%;
+            min-width: 100%;
+            margin-bottom: 20px;
+        }
+
+        .post-list-modern .post-list-content {
+            padding-left: 0;
+        }
+    }
+
 </style>
 @endsection

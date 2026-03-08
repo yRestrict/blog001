@@ -11,7 +11,7 @@
                                 <div class="post-overly">
                                     <div class="post-overly-content">
                                         <div class="entry-cat">
-                                            <a href="{{ route('frontend.category', $featuredPost->category->slug) }}" class="category-style-2">
+                                            <a href="{{ route('frontend.category', $featuredPost->category->slug) }}" class="category-style-0">
                                                 {{ $featuredPost->category->name }}
                                             </a>
                                         </div>

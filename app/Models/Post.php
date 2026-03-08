@@ -52,8 +52,6 @@ class Post extends Model
                         'name' => 'Sem Categoria',
                         'slug' => 'sem-categoria',
                     ]);;
-
-        
     }
 
     
