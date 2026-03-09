@@ -7,29 +7,31 @@ use App\Models\Post;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 
-
-
 class PostComments extends Component
 {
     public Post $post;
 
-    // ─── Formulário principal ─────────────────────────────────────────────────
-    public string  $guestName  = '';
-    public string  $guestEmail = '';
-    public string  $body       = '';
+    public string $guestName  = '';
+    public string $guestEmail = '';
+    public string $body       = '';
 
-    // ─── Reply ───────────────────────────────────────────────────────────────
-    public ?int    $replyingTo     = null; // id do comentário pai
-    public string  $replyBody      = '';
-    public string  $replyGuestName = '';
+    public ?int   $replyingTo     = null;
+    public string $replyBody      = '';
+    public string $replyGuestName = '';
+    public string $replyingToName = '';
 
-    // ─── Feedback ────────────────────────────────────────────────────────────
-    public bool    $submitted = false;
+    // Só controla se mostra o alerta de sucesso — não esconde o formulário
+    public bool $submitted = false;
+
+    public function mount(Post $post): void
+    {
+        $this->post = $post;
+    }
 
     protected function rules(): array
     {
         return [
-            'guestName'  => ['required', 'string', 'max:100'],
+            'guestName'  => Auth::check() ? ['nullable'] : ['required', 'string', 'max:100'],
             'guestEmail' => ['nullable', 'email', 'max:150'],
             'body'       => ['required', 'string', 'min:3', 'max:1000'],
         ];
@@ -38,7 +40,7 @@ class PostComments extends Component
     protected function replyRules(): array
     {
         return [
-            'replyGuestName' => ['required', 'string', 'max:100'],
+            'replyGuestName' => Auth::check() ? ['nullable'] : ['required', 'string', 'max:100'],
             'replyBody'      => ['required', 'string', 'min:3', 'max:1000'],
         ];
     }
@@ -51,21 +53,15 @@ class PostComments extends Component
         'replyBody.required'      => 'A resposta não pode estar vazia.',
     ];
 
-    // ─── Enviar comentário principal ──────────────────────────────────────────
     public function submit(): void
     {
-        // Bloqueia se comentários estão desativados no post
-        if (! $this->post->comment) {
-            return;
-        }
-
-        $user = Auth::user();
+        if (! $this->post->comment) return;
 
         $this->validate($this->rules());
 
         Comment::create([
             'post_id'     => $this->post->id,
-            'user_id'     => Auth::id(), // null se não logado
+            'user_id'     => Auth::id(),
             'parent_id'   => null,
             'guest_name'  => Auth::check() ? null : $this->guestName,
             'guest_email' => Auth::check() ? null : $this->guestEmail,
@@ -74,14 +70,15 @@ class PostComments extends Component
             'ip_address'  => request()->ip(),
         ]);
 
-        $this->reset(['guestName', 'guestEmail', 'body']);
+        // Limpa só o campo de texto, mantém nome/email preenchidos
+        $this->reset(['body']);
         $this->submitted = true;
     }
 
-    // ─── Abrir/fechar formulário de reply ────────────────────────────────────
-    public function startReply(int $commentId): void
+    public function startReply(int $commentId, string $authorName): void
     {
         $this->replyingTo     = $commentId;
+        $this->replyingToName = $authorName;
         $this->replyBody      = '';
         $this->replyGuestName = '';
         $this->resetErrorBag();
@@ -90,24 +87,27 @@ class PostComments extends Component
     public function cancelReply(): void
     {
         $this->replyingTo     = null;
+        $this->replyingToName = '';
         $this->replyBody      = '';
         $this->replyGuestName = '';
         $this->resetErrorBag();
     }
 
-    // ─── Enviar reply ─────────────────────────────────────────────────────────
     public function submitReply(): void
     {
-        if (! $this->replyingTo || ! $this->post->comment) {
-            return;
-        }
+        if (! $this->replyingTo || ! $this->post->comment) return;
 
         $this->validate($this->replyRules());
+
+        $parent = Comment::find($this->replyingTo);
+
+        // Mantém máximo 2 níveis — reply de reply vai pro mesmo pai
+        $parentId = $parent?->parent_id ?? $this->replyingTo;
 
         Comment::create([
             'post_id'    => $this->post->id,
             'user_id'    => Auth::id(),
-            'parent_id'  => $this->replyingTo,
+            'parent_id'  => $parentId,
             'guest_name' => Auth::check() ? null : $this->replyGuestName,
             'body'       => $this->replyBody,
             'status'     => 'pending',
@@ -121,7 +121,9 @@ class PostComments extends Component
     public function render()
     {
         return view('livewire.post-comments', [
-            'comments' => $this->post->comments()->with('replies')->get(),
+            'comments' => $this->post->comments()
+                ->with(['replies.user'])
+                ->get(),
         ]);
     }
 }

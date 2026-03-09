@@ -46,6 +46,8 @@ Route::name('frontend.')->group(function () {
     Route::get("/category/{slug}", [FrontendCategoryController::class, "index"])->name("category");
     Route::get("/tag/{id}", [FrontendTagController::class, "index"])->name("tag");
     Route::get("/search", [SearchController::class, "index"])->name("search");
+    Route::get('/post/download/{download}', [FrontendPostController::class, 'download'])->name('post.download');
+
 
 
 

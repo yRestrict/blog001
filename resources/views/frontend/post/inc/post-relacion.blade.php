@@ -6,7 +6,7 @@
     </div>
 
     <div class="row">
-        @foreach($relatedPosts->take(3) as $related)
+        @foreach($relatedPosts as $related)
         <div class="col-md-4">
             <div class="related-post-card">
                 <a href="{{ route('frontend.post', $related->slug) }}" class="related-post-image-link">
@@ -18,7 +18,7 @@
                 <div class="related-post-text-content">
                     <h6 class="related-post-title">
                         <a href="{{ route('frontend.post', $related->slug) }}">
-                            {{ Str::limit($related->title, 50) }}
+                            {{ Str::limit(html_entity_decode(strip_tags($related->content)), 80) }} 
                         </a>
                     </h6>
                     

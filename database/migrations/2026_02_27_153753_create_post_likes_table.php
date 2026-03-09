@@ -10,15 +10,16 @@ return new class extends Migration
     {
         Schema::create('post_likes', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('post_id');
+            $table->unsignedBigInteger('post_id');       // ← post_id primeiro
             $table->string('ip_address', 45);
             $table->string('session_id')->nullable();
+            $table->enum('type', ['like', 'dislike'])->default('like');  // ← type por último
             $table->timestamps();
 
             $table->foreign('post_id')
-                  ->references('id')
-                  ->on('posts')
-                  ->cascadeOnDelete();
+                ->references('id')
+                ->on('posts')
+                ->cascadeOnDelete();
 
             $table->unique(['post_id', 'ip_address']);
         });

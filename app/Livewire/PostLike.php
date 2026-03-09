@@ -9,39 +9,55 @@ use App\Models\PostLike as PostLikeModel;
 class PostLike extends Component
 {
     public Post $post;
-    public int  $likesCount = 0;
-    public bool $liked      = false;
+    public int  $likesCount    = 0;
+    public int  $dislikesCount = 0;
+    public ?string $userReaction = null; // 'like', 'dislike', ou null
 
     public function mount(Post $post): void
     {
-        $this->post       = $post;
-        $this->likesCount = $post->likes()->count();
-        $this->liked      = $post->isLikedByIp(request()->ip());
+        $this->post          = $post;
+        $this->likesCount    = $post->likes()->where('type', 'like')->count();
+        $this->dislikesCount = $post->likes()->where('type', 'dislike')->count();
+
+        $existing = PostLikeModel::where('post_id', $post->id)
+            ->where('ip_address', request()->ip())
+            ->first();
+
+        $this->userReaction = $existing?->type;
     }
 
-    public function toggle(): void
+    public function react(string $type): void
     {
         $ip = request()->ip();
 
         $existing = PostLikeModel::where('post_id', $this->post->id)
-                            ->where('ip_address', $ip)
-                            ->first();
+            ->where('ip_address', $ip)
+            ->first();
 
         if ($existing) {
-            // Remove o like
-            $existing->delete();
-            $this->liked      = false;
-            $this->likesCount = max(0, $this->likesCount - 1);
+            if ($existing->type === $type) {
+                // Clicou no mesmo botão — remove a reação
+                $existing->delete();
+                $this->userReaction = null;
+            } else {
+                // Trocou de like para dislike ou vice-versa
+                $existing->update(['type' => $type]);
+                $this->userReaction = $type;
+            }
         } else {
-            // Adiciona o like
+            // Nova reação
             PostLikeModel::create([
                 'post_id'    => $this->post->id,
                 'ip_address' => $ip,
                 'session_id' => session()->getId(),
+                'type'       => $type,
             ]);
-            $this->liked      = true;
-            $this->likesCount = $this->likesCount + 1;
+            $this->userReaction = $type;
         }
+
+        // Reconta
+        $this->likesCount    = PostLikeModel::where('post_id', $this->post->id)->where('type', 'like')->count();
+        $this->dislikesCount = PostLikeModel::where('post_id', $this->post->id)->where('type', 'dislike')->count();
     }
 
     public function render()

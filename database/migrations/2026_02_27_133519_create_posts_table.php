@@ -16,6 +16,8 @@ return new class extends Migration
             $table->string('slug')->unique();
             $table->longText('content');
             $table->string('thumbnail')->nullable(); // troca por thumbnail
+            $table->integer("views")->default(0);
+            $table->integer('downloads')->default(0);
             $table->boolean('featured')->default(false);
             $table->boolean('comment')->default(true);
             $table->string('status')->default('draft'); 

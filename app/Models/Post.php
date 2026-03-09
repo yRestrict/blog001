@@ -19,16 +19,20 @@ class Post extends Model
         'slug',
         'content',
         'thumbnail',
+        'views',       
         'featured',
         'comment',
         'status',
         'meta_keywords',
         'meta_description',
+        'downloads',    // ← para o sistema de downloads (contador
     ];
 
     protected $casts = [
-        'featured' => 'boolean',
-        'comment'  => 'boolean',
+        'featured'  => 'boolean',
+        'comment'   => 'boolean',
+        'views'     => 'integer',
+        'downloads' => 'integer',
     ];
 
     public function getSlugOptions(): SlugOptions
@@ -94,5 +98,15 @@ class Post extends Model
     public function isLikedByIp(string $ip): bool
     {
         return $this->likes()->where('ip_address', $ip)->exists();
+    }
+
+     public function downloadButtons()
+    {
+        return $this->hasMany(PostDownload::class)->orderBy('order');
+    }
+
+    public function hasDownloads(): bool
+    {
+        return $this->downloadButtons()->exists();
     }
 }
