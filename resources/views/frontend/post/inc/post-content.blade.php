@@ -7,7 +7,7 @@
 <section class="post-single-layout-2">
     <div class="container-fluid">
         <div class="row">
-            <div class="col-lg-12 oredoo-content">
+            <div class="col-lg-8 oredoo-content">
                 <div class="theiaStickySidebar" style="padding-top: 80px;">
 
                     {{-- ── Título e meta ────────────────────────────────────── --}}
@@ -91,7 +91,7 @@
                                 </li>
                                 <li>
                                     <a href="https://api.whatsapp.com/send?text={{ urlencode(request()->url()) }}"
-                                       target="_blank"><i class="fab fa-whatsapp"></i></a>
+                                       target="_blank"><i class="fab fa-whatsapp" style="background-color: green;"></i></a>
                                 </li>
                             </ul>
                         </div>
@@ -100,8 +100,14 @@
                     @include('frontend.post.inc.post-relacion')
 
                     <livewire:post-like :post="$post" />
-                    <livewire:post-comments :post="$post" />
+                    <livewire:post-comments :post="$post" />                      
 
+                </div>
+            </div>
+
+            <div class="col-lg-4 oredoo-sidebar">
+                <div class="theiaStickySidebar">
+                    @include('components.sidebar.index')
                 </div>
             </div>
         </div>

@@ -11,11 +11,11 @@
 
                 <div class="footer-order-options">
 
-                    <label class="footer-option-card {{ $footer_category_order === 'posts' ? 'active' : '' }}">
+                    <label wire:key="order-posts" class="footer-option-card {{ $footer_category_order === 'posts' ? 'active' : '' }}">
                         <input type="radio"
-                               wire:model="footer_category_order"
-                               value="posts"
-                               class="d-none">
+                            wire:model.live="footer_category_order"
+                            value="posts"
+                            class="d-none">
                         <div class="footer-option-icon">
                             <i class="fa fa-file-text-o"></i>
                         </div>
@@ -28,11 +28,11 @@
                         </div>
                     </label>
 
-                    <label class="footer-option-card {{ $footer_category_order === 'views' ? 'active' : '' }}">
+                    <label wire:key="order-views" class="footer-option-card {{ $footer_category_order === 'views' ? 'active' : '' }}">
                         <input type="radio"
-                               wire:model="footer_category_order"
-                               value="views"
-                               class="d-none">
+                            wire:model.live="footer_category_order"
+                            value="views"
+                            class="d-none">
                         <div class="footer-option-icon">
                             <i class="fa fa-eye"></i>
                         </div>

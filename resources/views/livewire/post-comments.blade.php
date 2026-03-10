@@ -1,56 +1,43 @@
 <div>
     <div class="post-single-comments">
-
-        {{-- Comentários desativados --}}
         @if (! $post->comment)
             <div class="alert alert-secondary">
                 <i class="las la-comment-slash"></i> Os comentários estão desativados neste post.
             </div>
         @else
-
-            {{-- mensagem de sucesso --}}
             @if ($submitted)
                 <div class="alert alert-success contact_msg rounded-0 mb-4">
                     <i class="las la-check-circle"></i>
                     Seu comentário foi enviado e aguarda aprovação. Obrigado!
                 </div>
             @endif
-
-            {{-- Lista de comentários --}}
             @if ($comments->count() > 0)
-
-                <h4>{{ $comments->count() }} {{ $comments->count() === 1 ? 'Comentário' : 'Comentários' }}</h4>
-
+                <h4><i class="fa fa-comments"></i> {{ $comments->count() }} {{ $comments->count() === 1 ? 'Comentário' : 'Comentários' }}</h4>
+    
                 <ul class="comments">
-
                     @foreach ($comments as $comment)
-
                         <li class="comment-item {{ $loop->first ? 'pt-0' : '' }}" id="comment-{{ $comment->id }}">
 
                             <div class="d-flex align-items-start">     
                             <div class="mr-3">
                                 @if ($comment->user && $comment->user->profile)
-                                    <img src="{{ asset('uploads/author/' . $comment->user->profile) }}"
-                                        class="rounded-circle"
-                                        style="width:42px;height:42px;object-fit:cover;">
+                                    <img src="{{ asset('uploads/author/' . $comment->user->profile) }}" style="width:42px;height:42px;object-fit:cover;">
                                 @else
-                                    <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center"
-                                        style="width:42px;height:42px;font-size:16px;">
+                                    <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center" style="width:42px;height:42px;font-size:16px;">
                                         {{ strtoupper(substr($comment->author_name,0,1)) }}
                                     </div>
                                 @endif
                             </div>
 
-                            {{-- Nome + hora --}}
                             <div>
                                 <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">
 
                                     @if ($comment->user?->username)
-                                        <a href="{{ route('frontend.user', $comment->user->username) }}">
-                                            <strong>{{ $comment->author_name }}</strong>
+                                        <a href="{{ route('frontend.user', $comment->user->username) }}" class="author-link">
+                                            <span class="comment-author-name">{{ $comment->author_name }}</span>
                                         </a>
                                     @else
-                                        <strong>{{ $comment->author_name }}</strong>
+                                        <span class="comment-author-name">{{ $comment->author_name }}</span>
                                     @endif
 
                                     @if ($comment->user_id === $post->author_id)
@@ -58,21 +45,15 @@
                                     @endif
                                 </div>
 
-                                <div style="font-size:13px;">
+                                <div class="comment-time">
                                     <span class="text-muted">
                                         {{ $comment->created_at->diffForHumans() }}
                                     </span>
                                 </div>
-
                             </div>
-
                         </div>
-
-
-                        {{-- Conteúdo alinhado na borda --}}
-                        <div style="margin-top:8px;">
-
-                            <p style="margin-bottom:8px;">
+                        <div class="comment-body">
+                            <p>
                                 {{ $comment->body }}
                             </p>
 
@@ -84,21 +65,19 @@
                                 </a>
                             @endif
 
+                            @if ($replyingTo === $comment->id)
+                                @include('livewire.frontend.reply-form')
+                            @endif
+
                         </div>
 
-                            {{-- Replies --}}
                             @if ($comment->replies->isNotEmpty())
 
-                                <ul class="mt-3 pl-4 border-left"
-                                    style="list-style:none;border-width:3px;border-color:#007bff;padding-left:18px;">
+                                <ul class="comment-replies">
 
                                     @foreach ($comment->replies as $reply)
 
-                                        <li class="mb-3 d-flex"
-    id="comment-{{ $reply->id }}"
-    style="border-bottom:1px solid rgba(0,0,0,0.08); padding:12px 0 12px 14px;">
-
-                                            {{-- Avatar reply --}}
+                                        <li class="reply-item d-flex" id="comment-{{ $reply->id }}">
                                             <div class="shrink-0 mr-3">
 
                                                 @if ($reply->user && $reply->user->profile)
@@ -115,35 +94,31 @@
 
                                             </div>
 
-                                            {{-- conteúdo reply --}}
                                             <div style="flex:1; margin-left:6px;">
 
                                                 <div class="d-flex align-items-center flex-wrap" style="gap:6px;">
 
                                                     @if ($reply->user?->username)
-                                                        <a href="{{ route('frontend.user', $reply->user->username) }}">
-                                                            <strong>{{ $reply->author_name }}</strong>
+                                                        <a href="{{ route('frontend.user', $reply->user->username) }}" class="author-link">
+                                                            <span class="comment-author-name">{{ $reply->author_name }}</span>
                                                         </a>
                                                     @else
-                                                        <strong>{{ $reply->author_name }}</strong>
+                                                        <span class="comment-author-name">{{ $reply->author_name }}</span>
                                                     @endif
 
                                                     @if ($reply->user_id && $reply->user_id === $post->author_id)
                                                         <span class="badge bg-success text-white" style="font-size:10px;">Autor</span>
                                                     @endif
-
-                                                    <span style="font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;background:rgba(0,123,255,0.1);color:#007bff;">
+                                                    <span class="reply-badge">
                                                         Resposta
                                                     </span>
-
-                                                    {{-- hora ao lado --}}
                                                     <small class="text-muted">
                                                         {{ $reply->created_at->diffForHumans() }}
                                                     </small>
 
                                                 </div>
 
-                                                <p class="mb-1 mt-1">
+                                                <p class="comment-text">
                                                     {{ $reply->body }}
                                                 </p>
 
@@ -182,7 +157,6 @@
             @endif
 
 
-            {{-- Formulário principal --}}
             <div id="comment-form-location">
 
                 <div class="comments-form" id="comment-form">
@@ -198,9 +172,9 @@
                     <div class="row">
 
                         @guest
-                            <div class="col-md-6">
+                            <div class="col-md-6 ">
                                 <div class="form-group">
-                                    <input type="text"
+                                    <input type="text" name="name" id="name"
                                            wire:model.defer="guestName"
                                            class="form-control @error('guestName') is-invalid @enderror"
                                            placeholder="Nome *">
@@ -213,7 +187,7 @@
 
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <input type="email"
+                                    <input type="email" name="email" id="email"
                                            wire:model.defer="guestEmail"
                                            class="form-control @error('guestEmail') is-invalid @enderror"
                                            placeholder="Email (opcional)">
@@ -229,9 +203,8 @@
                         <div class="col-md-12">
 
                             <div class="form-group">
-                                <textarea wire:model.defer="body"
+                                <textarea wire:model.defer="body" id="message" cols="30" rows="5"
                                           class="form-control @error('body') is-invalid @enderror"
-                                          rows="5"
                                           placeholder="Mensagem *"></textarea>
 
                                 @error('body')

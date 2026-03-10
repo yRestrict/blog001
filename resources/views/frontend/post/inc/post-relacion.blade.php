@@ -18,7 +18,7 @@
                 <div class="related-post-text-content">
                     <h6 class="related-post-title">
                         <a href="{{ route('frontend.post', $related->slug) }}">
-                            {{ Str::limit(html_entity_decode(strip_tags($related->content)), 80) }} 
+                            {{ Str::limit($related->title, 60) }} {{-- ← título --}}
                         </a>
                     </h6>
                     
@@ -26,6 +26,8 @@
                     <p class="related-post-excerpt">
                         {{ Str::limit(html_entity_decode(strip_tags($related->content)), 15) }}
                     </p>
+
+                    
                     @endif
                 </div>
             </div>

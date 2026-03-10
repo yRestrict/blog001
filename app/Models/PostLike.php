@@ -10,6 +10,7 @@ class PostLike extends Model
     use HasFactory;
 
     protected $fillable = [
+        'type',  
         'post_id',
         'ip_address',
         'session_id',

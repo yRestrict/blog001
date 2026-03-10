@@ -605,10 +605,10 @@ ul {
   transition: all 0.3s ease-in-out;
 }
 
-.btn-custom:hover, .btn-custom:focus {
+/* .btn-custom:hover, .btn-custom:focus {
   color: #191B1D;
   background-color: #ffffff;
-}
+} */
 
 .btn-action {
   cursor: pointer;
@@ -4233,6 +4233,7 @@ input:checked + .slider:before {
 .post-single-comments .comments-form {
   border: 1px solid #E6E7E7;
   padding: 30px;
+  margin-bottom: 30px;
 }
 
 .post-single-layout-2 {
@@ -6756,11 +6757,11 @@ input:checked + .slider:before {
   border: 1px solid #ffffff;
 }
 
-.dark .btn-custom:hover, .dark .btn-custom:focus {
+/* .dark .btn-custom:hover, .dark .btn-custom:focus {
   color: #ffffff;
   background-color: transparent !important;
   border: 1px solid #d7d7d7;
-}
+} */
 
 .dark .btn-read-more {
     position: relative;
@@ -7021,6 +7022,112 @@ input:checked + .slider:before {
 /* ── Texto no dark mode ──────────────────────────────────── */
 .dark .post-list.post-list-style0 .entry-excerpt {
     color: #aaaaaa;
+}
+
+
+/* ─────────────────────────────────────────────
+   Comentários
+───────────────────────────────────────────── */
+
+.comment-meta {
+    line-height: 1.2;
+}
+
+.comment-time {
+    font-size: 13px;
+    color: #6c757d;
+}
+
+/* Conteúdo */
+
+.comment-body {
+    margin-top: 8px;
+}
+
+.comment-text {
+    margin-bottom: 8px;
+}
+
+/* Replies */
+
+.comment-replies {
+    list-style: none;
+    border-left: 3px solid #007bff;
+    padding-left: 18px;
+    margin-top: 15px;
+}
+
+.reply-item {
+    border-bottom: 1px solid rgba(0,0,0,0.08);
+    padding: 12px 0 12px 14px;
+}
+
+/* Badge resposta */
+
+.reply-badge {
+    font-size: 10px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 20px;
+    background: rgba(0,123,255,0.1);
+    color: #007bff;
+}
+
+/* ─────────────────────────────────────────────
+   DARK MODE
+───────────────────────────────────────────── */
+
+/* Apenas nos forms de comentário */
+.post-single-comments .form-control {
+    border: 1px solid #e0e0e0 !important;
+}
+
+.dark .post-single-comments .form-control {
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+.post-single-comments .form-control:focus {
+    border-color: #007bff !important;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.08) !important;
+}
+
+.dark .post-single-comments .form-control:focus {
+    border-color: #007bff !important;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.08) !important;
+}
+
+/* --- ESTILO BASE (Modo Claro) --- */
+.comment-author-name {
+    font-weight: 600;
+    color: #444; 
+    transition: all 0.2s ease;
+}
+
+/* Tira o sublinhado azul padrão dos links */
+.author-link {
+    text-decoration: none !important;
+}
+
+/* O HOVER: Só acontece se o span estiver DENTRO de um .author-link */
+.author-link:hover .comment-author-name {
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+/* Badge Hover */
+.badge.bg-success:hover {
+    filter: brightness(1.1);
+}
+
+/* --- MODO ESCURO (.dark) --- */
+.dark .comment-author-name {
+    color: #d7d7d7;
+}
+
+/* O HOVER no Modo Escuro: Só para links */
+.dark .author-link:hover .comment-author-name {
+    color: #fff;
 }
 
 

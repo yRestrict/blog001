@@ -183,7 +183,7 @@
                                         </a>
                                     </li>
                                     <li>
-                                        <a href="javascript:;" class="db-focus-ring">
+                                        <a href="{{ route('admin.footer') }}" class="db-focus-ring">
                                             Footer
                                         </a>
                                     </li>

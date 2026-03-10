@@ -4,23 +4,29 @@
 
 @section('content')
 
-<div class="main-container">
-    <div class="pd-ltr-20 xs-pd-20-10">
 
-        <div class="page-header d-flex justify-content-between align-items-center mb-4">
-            <div>
-                <h2 class="h4 mb-1">Configurações do Footer</h2>
-                <p class="text-muted mb-0">
-                    Controle como o rodapé do site se comporta.
-                </p>
+<div class="page-header">
+    <div class="row align-items-center">
+        <div class="col-md-6 col-sm-12">
+            <div class="title">
+                <h4>Menu </h4>
             </div>
         </div>
-
-        <div class="card-box p-4">
-            <livewire:admin.footer-settings />
+        <div class="col-md-6 col-sm-12">
+            <nav aria-label="breadcrumb" role="navigation">
+                <ol class="breadcrumb d-flex justify-content-end mb-0">
+                    <li class="breadcrumb-item">
+                        <a href="{{ route('admin.dashboard') }}">Home</a>
+                    </li>
+                    <li class="breadcrumb-item active" aria-current="page">
+                        Menu
+                    </li>
+                </ol>
+            </nav>
         </div>
-
     </div>
 </div>
+
+<livewire:admin.footer-settings />
 
 @endsection

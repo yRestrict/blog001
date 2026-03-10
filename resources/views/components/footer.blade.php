@@ -42,7 +42,7 @@
                     <h6 class="footer-heading">Categorias Populares</h6>
                     @if($categories->isNotEmpty())
                         <ul class="footer-links">
-                            @foreach($categories as $category)
+                            @foreach($categories->take(4) as $category)
                                 <li>
                                     <a href="{{ route('frontend.category', $category->slug) }}">
                                         {{ $category->name }}
