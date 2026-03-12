@@ -1,8 +1,12 @@
 @extends('frontend.master')
-
-@section("title", ($settings->site_title ?? 'Blog') . " - " . ($settings->site_description ?? 'Slogan'))
+@section("pageTitle", isset($pageTitle) ? $pageTitle : "Categorias")
+@section('meta_tags')
+    {!! SEO::generate() !!}
+@endsection
 
 @section('content')
+
+
 <div class="section-heading">
     <div class="container-fluid">
         <div class="row">

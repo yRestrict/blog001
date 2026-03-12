@@ -3,21 +3,14 @@
 	<head>
 		<!-- Basic Page Info -->
 		<meta charset="utf-8" />
-		<title>
-			@hasSection('pageTitle')
-				@yield('pageTitle') - {{ $settings->site_title ?? config('app.name') }}
-			@else
-				{{ $settings->site_title ?? config('app.name') }}
-			@endif
-		</title>
-		
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
 
 		<!-- Site favicon -->
 		@if($settings?->favicon())
 			<link rel="icon" type="image/png" href="{{ $settings->favicon() }}">
 		@endif
-		<!-- Mobile Specific Metas -->
-		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+		@yield('meta_tags')
 
 		<!-- Google Font -->
 		<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />

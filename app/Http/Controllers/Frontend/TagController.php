@@ -3,39 +3,49 @@
 namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
-use App\Models\Tag;
 use App\Models\Setting;
+use App\Models\Tag;
+use Artesaos\SEOTools\Facades\SEOMeta;
+use Artesaos\SEOTools\Facades\SEOTools;
 
 class TagController extends Controller
 {
     public function index($slug)
     {
-        // 1. Busca a tag pelo slug
         $tag = Tag::where('slug', $slug)->first();
 
-        // 2. Validação simples
-        if (!$tag) {
+        if (! $tag) {
             return redirect()->route('frontend.home')
                 ->with('error', 'Tag não encontrada.');
         }
 
-        // 3. Incrementa visualizações (campo 'views' definido no seu Model Tag)
         $tag->increment('views');
 
-        // 4. Monta o array $data com tudo o que a view precisa
-        $data = [
+        $posts = $tag->posts()
+                    ->where('status', 'published')
+                    ->with(['category', 'author', 'tags'])
+                    ->latest()
+                    ->paginate(6)
+                    ->withQueryString();
+
+        // ── SEO ───────────────────────────────────────────────────────────────
+        $title       = "#{$tag->name} — " . (Setting::first()->site_title ?? config('app.name'));
+        $description = "Explore todos os posts com a tag {$tag->name}. {$posts->total()} publicações encontradas.";
+
+        SEOTools::setTitle($title);
+        SEOTools::setDescription($description);
+        SEOMeta::setKeywords($tag->name);
+
+        SEOTools::opengraph()->setUrl(request()->url());
+        SEOTools::opengraph()->addProperty('type', 'website');
+
+        SEOTools::twitter()->setUrl(request()->url());
+
+        return view('frontend.tag.index', [
             'pageTitle' => 'Tag: ' . $tag->name,
             'settings'  => Setting::first(),
             'tag'       => $tag,
-            // Paginação dos posts relacionados através da relação belongsToMany
-            'posts'     => $tag->posts()
-                                ->where('status', "published") // Garante que o post está ativo
-                                ->with(['category', 'author', 'tags']) // 'author' é o nome no seu Model Post
-                                ->latest() // Ordena por created_at desc
-                                ->paginate(6)
-                                ->withQueryString() // Mantém filtros na URL ao trocar de página
-        ];
-
-        return view('frontend.tag.index', $data);
+            'posts'     => $posts,
+        ]);
     }
 }

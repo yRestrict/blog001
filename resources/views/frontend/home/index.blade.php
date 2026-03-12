@@ -1,6 +1,9 @@
 @extends("frontend.master")
 
-@section("title", ($settings->site_title ?? 'Blog') . " - " . ($settings->site_description ?? 'Slogan'))
+@section("pageTitle", isset($pageTitle) ? $pageTitle : "Home")
+@section('meta_tags')
+    {!! SEO::generate() !!}
+@endsection
 
 @section("content")
 
@@ -19,5 +22,4 @@
         </div>
     </div>
 </section>
-
 @endsection

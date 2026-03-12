@@ -6,7 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Models\Post;
 use App\Models\PostDownload;
 use App\Models\Setting;
+use Artesaos\SEOTools\Facades\SEOMeta;
+use Artesaos\SEOTools\Facades\SEOTools;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Str;
 
 class PostController extends Controller
 {
@@ -25,6 +28,27 @@ class PostController extends Controller
                     ->firstOrFail();
 
         $post->increment('views');
+
+        // ── SEO ───────────────────────────────────────────────────────────────
+        $description = $post->meta_description
+                        ?? Str::limit(strip_tags($post->content), 160);
+
+        SEOTools::setTitle($post->title);
+        SEOTools::setDescription($description);
+        SEOMeta::setKeywords($post->meta_keywords ?? '');
+
+        SEOTools::opengraph()->setUrl(request()->url());
+        SEOTools::opengraph()->addProperty('type', 'article');
+        SEOTools::opengraph()->addProperty('article:author', $post->author->name);
+        SEOTools::opengraph()->addProperty('article:published_time', $post->created_at->toIso8601String());
+        if ($post->thumbnail) {
+            SEOTools::opengraph()->addImage(asset('uploads/posts/' . $post->thumbnail));
+        }
+
+        SEOTools::twitter()->setUrl(request()->url());
+        if ($post->thumbnail) {
+            SEOTools::twitter()->addImage(asset('uploads/posts/' . $post->thumbnail));
+        }
 
         return view('frontend.post.index', [
             'pageTitle'    => $post->title,
@@ -49,69 +73,48 @@ class PostController extends Controller
         return redirect()->back()->with('error', 'Arquivo não encontrado.');
     }
 
-    // ─── Helpers ─────────────────────────────────────────────────────────────
-
     private function getRelatedPosts(Post $post, int $limit = 3): Collection
     {
         $exclude = $post->id;
         $tagIds  = $post->tags->pluck('id');
 
-        // 1️⃣ Mesma categoria
         $related = Post::with(['author', 'category'])
             ->where('status', 'published')
             ->where('id', '!=', $exclude)
             ->where('category_id', $post->category_id)
-            ->latest()
-            ->take($limit)
-            ->get();
+            ->latest()->take($limit)->get();
 
         if ($related->count() >= $limit) return $related;
 
-        // 2️⃣ Mesma categoria pai
         if ($post->category?->parent_category_id) {
             $alreadyIds = $related->pluck('id')->push($exclude);
-
             $fromParent = Post::with(['author', 'category'])
                 ->where('status', 'published')
                 ->whereNotIn('id', $alreadyIds)
-                ->whereHas('category', fn($q) =>
-                    $q->where('parent_category_id', $post->category->parent_category_id)
-                )
-                ->latest()
-                ->take($limit - $related->count())
-                ->get();
-
+                ->whereHas('category', fn($q) => $q->where('parent_category_id', $post->category->parent_category_id))
+                ->latest()->take($limit - $related->count())->get();
             $related = $related->merge($fromParent);
         }
 
         if ($related->count() >= $limit) return $related;
 
-        // 3️⃣ Tags em comum
         if ($tagIds->isNotEmpty()) {
             $alreadyIds = $related->pluck('id')->push($exclude);
-
             $fromTags = Post::with(['author', 'category'])
                 ->where('status', 'published')
                 ->whereNotIn('id', $alreadyIds)
                 ->whereHas('tags', fn($q) => $q->whereIn('tags.id', $tagIds))
-                ->latest()
-                ->take($limit - $related->count())
-                ->get();
-
+                ->latest()->take($limit - $related->count())->get();
             $related = $related->merge($fromTags);
         }
 
         if ($related->count() >= $limit) return $related;
 
-        // 4️⃣ Posts mais recentes
         $alreadyIds = $related->pluck('id')->push($exclude);
-
         $recent = Post::with(['author', 'category'])
             ->where('status', 'published')
             ->whereNotIn('id', $alreadyIds)
-            ->latest()
-            ->take($limit - $related->count())
-            ->get();
+            ->latest()->take($limit - $related->count())->get();
 
         return $related->merge($recent);
     }

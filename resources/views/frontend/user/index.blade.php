@@ -1,6 +1,9 @@
 @extends("frontend.master")
 
-@section("title", ($settings->site_title ?? 'Blog') . " - " . ($settings->site_description ?? 'Slogan'))
+@section("pageTitle", isset($pageTitle) ? $pageTitle : "user")
+@section('meta_tags')
+    {!! SEO::generate() !!}
+@endsection
 
 @section("content")
 

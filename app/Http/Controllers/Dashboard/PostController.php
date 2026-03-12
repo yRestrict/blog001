@@ -11,10 +11,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 
-
 class PostController extends Controller
 {
-    
     public function PostPage()
     {
         return view('dashboard.post.index', [
@@ -24,11 +22,9 @@ class PostController extends Controller
 
     public function postCreate()
     {
-        $categorieshtml = $this->buildCategoriesHtml();
-
         return view('dashboard.post.create', [
             'pageTitle'      => 'Criar Post',
-            'categorieshtml' => $categorieshtml,
+            'categorieshtml' => $this->buildCategoriesHtml(),
         ]);
     }
 
@@ -53,12 +49,13 @@ class PostController extends Controller
             $data['thumbnail'] = $filename;
         }
 
-        $data['author_id'] = Auth::id();
-        $data['featured']  = $request->boolean('featured');
-        $data['comment']   = $request->boolean('comment');
+        $data['author_id']        = Auth::id();
+        $data['featured']         = $request->boolean('featured');
+        $data['comment']          = $request->boolean('comment');
+        $data['meta_keywords']    = $request->meta_keywords ?: $this->generateKeywords($request);
+        $data['meta_description'] = $request->meta_description ?: Str::limit(preg_replace('/\s+/', ' ', strip_tags($request->content)), 160);
 
         $post = Post::create($data);
-
         $post->tags()->sync($this->resolveTagIds($data['tags'] ?? ''));
 
         return redirect()->route('admin.posts.index')->with('success', 'Post criado com sucesso!');
@@ -66,16 +63,11 @@ class PostController extends Controller
 
     public function postEdit(Post $post)
     {
-        $categorieshtml = $this->buildCategoriesHtml($post->category_id);
-
-        // Monta string de tags já associadas para preencher o campo
-        $currentTags = $post->tags->pluck('name')->implode(', ');
-
         return view('dashboard.post.edit', [
             'pageTitle'      => 'Editar Post',
             'post'           => $post->load('tags'),
-            'categorieshtml' => $categorieshtml,
-            'currentTags'    => $currentTags,
+            'categorieshtml' => $this->buildCategoriesHtml($post->category_id),
+            'currentTags'    => $post->tags->pluck('name')->implode(', '),
         ]);
     }
 
@@ -103,8 +95,10 @@ class PostController extends Controller
             $data['thumbnail'] = $filename;
         }
 
-        $data['featured'] = $request->boolean('featured');
-        $data['comment']  = $request->boolean('comment');
+        $data['featured']         = $request->boolean('featured');
+        $data['comment']          = $request->boolean('comment');
+        $data['meta_keywords']    = $request->meta_keywords ?: $this->generateKeywords($request);
+        $data['meta_description'] = $request->meta_description ?: Str::limit(preg_replace('/\s+/', ' ', strip_tags($request->content)), 160);
 
         $post->update($data);
         $post->tags()->sync($this->resolveTagIds($data['tags'] ?? ''));
@@ -120,18 +114,19 @@ class PostController extends Controller
 
     public function postTrash()
     {
-        $posts = Post::onlyTrashed()->with(['category' => function ($q) {
-            $q->withTrashed();
-        }])->latest('deleted_at')->paginate(10);
-
+        $posts = Post::onlyTrashed()
+            ->with(['category' => fn($q) => $q->withTrashed()])
+            ->latest('deleted_at')
+            ->paginate(10);
 
         return view('dashboard.post.trash', [
             'pageTitle' => 'Lixeira — Posts',
+            'posts'     => $posts,
         ]);
     }
 
     // ─── API: busca tags para autocomplete ───────────────────────────────────
-    // Registre a rota: Route::get('/tags/search', [PostController::class, 'searchTags'])->name('tags.search');
+
     public function searchTags(Request $request)
     {
         $query = mb_strtoupper(trim($request->get('q', '')), 'UTF-8');
@@ -145,6 +140,35 @@ class PostController extends Controller
     }
 
     // ─── Helpers ─────────────────────────────────────────────────────────────
+
+    /**
+     * Gera keywords automaticamente a partir de categoria, parent e tags.
+     * Só é chamado quando o usuário não preencheu meta_keywords manualmente.
+     */
+    private function generateKeywords(Request $request): string
+    {
+        $parts    = [];
+        $category = Category::with('parentCategory')->find($request->category_id);
+
+        if ($category) {
+            $parts[] = $category->name;
+
+            if ($category->parentCategory) {
+                $parts[] = $category->parentCategory->name;
+            }
+        }
+
+        if ($request->tags) {
+            foreach (explode(',', $request->tags) as $tag) {
+                $trimmed = trim($tag);
+                if ($trimmed !== '') {
+                    $parts[] = $trimmed;
+                }
+            }
+        }
+
+        return implode(', ', array_unique($parts));
+    }
 
     /**
      * Resolve IDs das tags a partir de uma string separada por vírgula.
@@ -162,6 +186,7 @@ class PostController extends Controller
                 ['name' => $tagName],
                 ['slug' => Str::slug($tagName)]
             );
+
             $tagIds[] = $tag->id;
         }
 
