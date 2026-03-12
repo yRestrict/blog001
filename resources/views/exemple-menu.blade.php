@@ -1,4 +1,4 @@
-@extends('exemple-master') 
+@extends('dashboard.master-tabler') 
 @section('pageTitle', isset($pageTitle) ? $pageTitle : 'Page Title Here')
 @section('content')
 {{-- MINHA NAVBAR --}}

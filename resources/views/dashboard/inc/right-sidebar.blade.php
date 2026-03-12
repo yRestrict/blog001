@@ -35,7 +35,7 @@
 
                 {{-- ── Media ─────────────────── --}}
                 <li>
-                    <a href="{{ route('admin.dashboard') }}"
+                    <a href=""
                        class="dropdown-toggle no-arrow db-focus-ring">
                         <span class="micon fa fa-file"></span>
                         <span class="mtext">Media</span>
@@ -50,30 +50,35 @@
                     </a>
                     <ul class="submenu">
                         <li>
+                            <a href="{{ route('admin.posts.create') }}"
+                               class="db-focus-ring {{ Route::is('admin.posts.create') ? 'active' : '' }}">
+                                Novo
+                            </a>
+                        </li>
+                        <li>
                             <a href="{{ route('admin.posts.index') }}"
                                class="db-focus-ring {{ Route::is('admin.posts.index') ? 'active' : '' }}">
                                 Posts
                             </a>
                         </li>
                         <li>
-                            <a href="{{ route('admin.posts.create') }}"
-                               class="db-focus-ring {{ Route::is('admin.posts.create') ? 'active' : '' }}">
-                                Create Post
+                            <a href="{{ route('admin.posts.trash') }}"
+                               class="db-focus-ring {{ Route::is('admin.posts.trash') ? 'active' : '' }}">
+                                Excluidos
                             </a>
                         </li>
                     </ul>
                 </li>
 
                 {{-- ── Comments ──────────────── --}}
-                <li class="dropdown">
+                <li class="dropdown {{ Route::is('admin.comments.index') ? 'active' : '' }}">
                     <a href="javascript:;" class="dropdown-toggle db-focus-ring">
                         <span class="micon fa fa-comments"></span>
-                        <span class="mtext">Comments</span>
+                        <span class="mtext">Comentários</span>
                     </a>
                     <ul class="submenu">
-                        <li><a href="" class="db-focus-ring">New</a></li>
-                        <li><a href="" class="db-focus-ring">All Comments</a></li>
-                        <li><a href="" class="db-focus-ring">Trash</a></li>
+                        <li><a href="{{ route('admin.comments.index') }}" class="db-focus-ring">Comentários</a></li>
+                        <li><a href="" class="db-focus-ring">Reprovados</a></li>
                     </ul>
                 </li>
 
@@ -81,17 +86,17 @@
                 <li class="dropdown {{ Route::is('admin.categories.*') ? 'active' : '' }}">
                     <a href="javascript:;" class="dropdown-toggle db-focus-ring">
                         <span class="micon fa fa-th-list"></span>
-                        <span class="mtext">Categories</span>
+                        <span class="mtext">Categorias</span>
                     </a>
                     <ul class="submenu">
                         <li>
                             <a href="{{ route('admin.categories.index') }}" class="db-focus-ring">
-                                All Categories
+                                Categorias
                             </a>
                         </li>
                         <li>
                             <a href="{{ route('admin.categories.trash') }}" class="db-focus-ring">
-                                Trash
+                                Excluidos
                             </a>
                         </li>
                     </ul>
@@ -107,7 +112,7 @@
                         <li>
                             <a href="{{ route('admin.tags.index') }}"
                                class="db-focus-ring {{ Route::is('admin.tags.index') ? 'active' : '' }}">
-                                All Tags
+                                Tags
                             </a>
                         </li>
                     </ul>
@@ -126,7 +131,7 @@
                     <div class="dropdown-divider"></div>
                 </li>
                 <li>
-                    <div class="sidebar-small-cap">Settings</div>
+                    <div class="sidebar-small-cap">Config</div>
                 </li>
 
                 {{-- ── Profile ───────────────── --}}
@@ -134,7 +139,7 @@
                     <a href="{{ route('admin.profile') }}"
                        class="dropdown-toggle no-arrow db-focus-ring {{ Route::is('admin.profile') ? 'active' : '' }}">
                         <span class="micon fa fa-user-circle"></span>
-                        <span class="mtext">Profile</span>
+                        <span class="mtext">Perfil</span>
                     </a>
                 </li>
 
@@ -145,7 +150,7 @@
                         <a href="{{ route('admin.users.index') }}"
                            class="dropdown-toggle no-arrow db-focus-ring {{ Route::is('admin.users.index') ? 'active' : '' }}">
                             <span class="micon fa fa-users"></span>
-                            <span class="mtext">Users</span>
+                            <span class="mtext">Usuários</span>
                         </a>
                     </li>
 
@@ -161,12 +166,12 @@
                     <li>
                         <a href="javascript:;" class="dropdown-toggle db-focus-ring">
                             <span class="micon fa fa-cogs"></span>
-                            <span class="mtext">General</span>
+                            <span class="mtext">Geral</span>
                         </a>
                         <ul class="submenu">
                             <li>
                                 <a href="{{ route('admin.settings') }}" class="db-focus-ring">
-                                    Settings
+                                    Configurações
                                 </a>
                             </li>
                             <li class="dropdown">
@@ -191,11 +196,8 @@
                             </li>
                         </ul>
                     </li>
-
                 @endif
-
             </ul>
         </div>
     </div>
-
 </div>
