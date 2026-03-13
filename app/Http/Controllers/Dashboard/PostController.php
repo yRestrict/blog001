@@ -7,7 +7,9 @@ use App\Models\Category;
 use App\Models\ParentCategory;
 use App\Models\Post;
 use App\Models\Tag;
+use App\Models\User;
 use App\Notifications\PostApprovedNotification;
+use App\UserRole;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
@@ -58,7 +60,7 @@ class PostController extends Controller
         $data['comment']          = $request->boolean('comment');
         $data['meta_keywords']    = $request->meta_keywords ?: $this->generateKeywords($request);
         $data['meta_description'] = $request->meta_description
-            ?: Str::limit(preg_replace('/\s+/', ' ', strip_tags($request->content)), 160);
+            ?: Str::limit($this->extractPlainText($request->content), 160);
 
         // Se o autor não é owner e não tem auto_approve, manda para revisão
         if (! $user->isOwner() && ! $user->autoApprovePosts() && $data['status'] === 'published') {
@@ -115,7 +117,7 @@ class PostController extends Controller
         $data['comment']          = $request->boolean('comment');
         $data['meta_keywords']    = $request->meta_keywords ?: $this->generateKeywords($request);
         $data['meta_description'] = $request->meta_description
-            ?: Str::limit(preg_replace('/\s+/', ' ', strip_tags($request->content)), 160);
+            ?: Str::limit($this->extractPlainText($request->content), 160);
 
         // Se author não tem auto_approve e tenta publicar, manda para revisão
         if (! $user->isOwner() && ! $user->autoApprovePosts() && $data['status'] === 'published') {
@@ -199,6 +201,22 @@ class PostController extends Controller
 
     // ─── Helpers ─────────────────────────────────────────────────────────────
 
+    /**
+     * Extrai texto puro do HTML gerado pelo Quill.
+     * Remove tags, decodifica entidades e limpa espaços.
+     */
+    private function extractPlainText(string $html): string
+    {
+        // Decodifica &gt; &lt; &amp; etc.
+        $text = html_entity_decode($html, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+        // Remove todas as tags HTML
+        $text = strip_tags($text);
+        // Colapsa espaços e quebras de linha
+        $text = preg_replace('/\s+/', ' ', $text);
+
+        return trim($text);
+    }
+
     private function generateKeywords(Request $request): string
     {
         $parts    = [];
@@ -266,20 +284,5 @@ class PostController extends Controller
         }
 
         return $html;
-    }
-
-    public function uploadImage(Request $request)
-    {
-        $request->validate([
-            'image' => 'required|image|max:4096',
-        ]);
-    
-        $file     = $request->file('image');
-        $filename = time() . '_' . $file->getClientOriginalName();
-        $file->move(public_path('uploads/posts'), $filename);
-    
-        return response()->json([
-            'url' => asset('uploads/posts/' . $filename),
-        ]);
     }
 }

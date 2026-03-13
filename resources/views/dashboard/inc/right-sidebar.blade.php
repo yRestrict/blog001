@@ -118,14 +118,6 @@
                     </ul>
                 </li>
 
-                {{-- ── Invoice ───────────────── --}}
-                <li>
-                    <a href="invoice.html" class="dropdown-toggle no-arrow db-focus-ring">
-                        <span class="micon bi bi-receipt-cutoff"></span>
-                        <span class="mtext">Invoice</span>
-                    </a>
-                </li>
-
                 {{-- ── Divider ───────────────── --}}
                 <li>
                     <div class="dropdown-divider"></div>
