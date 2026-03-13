@@ -1,0 +1,444 @@
+# 📰 Laravel Blog — Documentação do Projeto
+
+> Sistema de blog completo construído com **Laravel**, **Livewire**, **Quill.js** e **SEOTools**.  
+> Esta documentação descreve todos os sistemas implementados, suas funcionalidades e decisões técnicas.
+
+---
+
+## 📋 Índice
+
+- [Visão Geral](#visão-geral)
+- [Stack Técnica](#stack-técnica)
+- [Sistema de Autenticação e Usuários](#sistema-de-autenticação-e-usuários)
+- [Sistema de Posts](#sistema-de-posts)
+- [Sistema de Aprovação de Posts](#sistema-de-aprovação-de-posts)
+- [Editor de Texto (Quill.js)](#editor-de-texto-quilljs)
+- [Sistema de Comentários](#sistema-de-comentários)
+- [Sistema de Likes e Reações](#sistema-de-likes-e-reações)
+- [Sistema de Notificações](#sistema-de-notificações)
+- [Sistema de Mute por Post](#sistema-de-mute-por-post)
+- [Sistema de Downloads](#sistema-de-downloads)
+- [SEO Automático](#seo-automático)
+- [Sidebar com Widgets](#sidebar-com-widgets)
+- [Posts Relacionados](#posts-relacionados)
+- [Estrutura de Rotas](#estrutura-de-rotas)
+- [Banco de Dados](#banco-de-dados)
+
+---
+
+## Visão Geral
+
+Blog multi-autor com painel administrativo completo. Suporta múltiplos níveis de acesso, sistema de aprovação de conteúdo, notificações em tempo real, moderação de comentários, editor WYSIWYG com highlight de código e muito mais.
+
+---
+
+## Stack Técnica
+
+| Camada | Tecnologia |
+|---|---|
+| Backend | Laravel 11 |
+| Frontend reativo | Livewire 3 |
+| Editor WYSIWYG | Quill.js 2.0 |
+| Highlight de código | highlight.js 11.9 |
+| Resize de imagens no editor | resize-quill-image 1.0.8 |
+| SEO | artesaos/seotools |
+| Slugs | spatie/laravel-sluggable |
+| Autenticação | Laravel Auth nativo |
+
+---
+
+## Sistema de Autenticação e Usuários
+
+### Roles (UserRole enum)
+
+O sistema possui três níveis de acesso:
+
+| Role | Descrição |
+|---|---|
+| `owner` | Acesso total. Aprova posts, gerencia usuários, acessa todas as configurações. |
+| `author` | Cria e edita os próprios posts. Modera comentários dos próprios posts. |
+| `visitor` | Apenas leitura. Pode comentar quando autenticado. |
+
+### Status de usuário (UserStatus enum)
+
+| Status | Descrição |
+|---|---|
+| `active` | Usuário ativo, acesso normal. |
+| `pending` | Aguardando ativação. |
+| `banned` | Bloqueado. Redirecionado ao tentar acessar o painel. |
+
+### Configurações por usuário (UserSetting)
+
+Tabela `user_settings` separada do `users` para flexibilidade futura.
+
+| Campo | Descrição |
+|---|---|
+| `auto_approve_posts` | Quando `true`, os posts do author são publicados diretamente sem precisar de aprovação do owner. |
+
+### Funcionalidades
+
+- Login, logout, forgot password e reset de senha
+- Middleware `checkBanned` bloqueia usuários banidos
+- Middleware `role:owner` protege rotas administrativas
+- Toggle de `auto_approve_posts` na listagem e na edição de usuários
+- Foto de perfil com fallback para `default.png`
+- Bio e links sociais por usuário
+- Política de acesso via `UserPolicy`
+
+---
+
+## Sistema de Posts
+
+### Status do post
+
+| Status | Descrição |
+|---|---|
+| `draft` | Rascunho. Invisível no frontend. |
+| `published` | Publicado. Visível no frontend. |
+| `private` | Privado. Visível apenas para autenticados com permissão. |
+| `pending_review` | Aguardando aprovação do owner. Invisível no frontend. |
+
+### Campos principais
+
+| Campo | Descrição |
+|---|---|
+| `title` | Título do post |
+| `slug` | Gerado automaticamente via spatie/sluggable |
+| `content` | HTML gerado pelo Quill.js |
+| `thumbnail` | Imagem destacada |
+| `featured` | Se está em destaque na home |
+| `comment` | Se comentários estão habilitados |
+| `views` | Contador de visualizações |
+| `downloads` | Contador de downloads |
+| `meta_keywords` | Gerado automaticamente se vazio |
+| `meta_description` | Gerado automaticamente com texto limpo do conteúdo |
+| `status` | Estado atual do post |
+
+### Geração automática de meta
+
+Quando o usuário não preenche os campos de SEO manualmente:
+
+- **meta_keywords** — gerado a partir da categoria, categoria pai e tags do post
+- **meta_description** — extraído do conteúdo com `html_entity_decode` + `strip_tags` + limpeza de espaços, limitado a 160 caracteres. Garante que HTML do Quill (incluindo classes `ql-token`, entidades `&gt;` etc.) não vaze para o meta.
+
+### SoftDeletes
+
+Posts suportam soft delete com lixeira própria no painel (`/admin/posts/trash`).
+
+---
+
+## Sistema de Aprovação de Posts
+
+### Fluxo por tipo de author
+
+```
+Author com auto_approve = true
+  └── Posta → vai direto para "published" → aparece no frontend
+
+Author com auto_approve = false
+  └── Posta → vai para "pending_review" → invisível no frontend
+        └── Owner aprova → "published" → author recebe notificação
+        └── Owner rejeita → volta para "draft"
+```
+
+### Implementação
+
+- `DashboardPostController::postStore()` e `postUpdate()` verificam `$user->autoApprovePosts()` antes de definir o status
+- Rota `PATCH /admin/posts/{post}/approve` — aprova e envia `PostApprovedNotification`
+- Rota `PATCH /admin/posts/{post}/reject` — rejeita e move para rascunho
+- Página `/admin/posts/pending` lista todos os posts aguardando aprovação com botões de aprovar/rejeitar
+- Toggle `auto_approve_posts` disponível na listagem de usuários (rota `toggle-auto-approve`) e na página de edição do usuário
+
+---
+
+## Editor de Texto (Quill.js)
+
+### Versão e compatibilidade
+
+Quill **2.0.2** via CDN. Compatível com o módulo `resize-quill-image@1.0.8`.
+
+### Funcionalidades do editor
+
+| Funcionalidade | Detalhe |
+|---|---|
+| Formatação completa | Negrito, itálico, sublinhado, tachado, cores, alinhamento |
+| Cabeçalhos | H1 a H6 |
+| Listas | Ordenadas e não ordenadas com indentação |
+| Blockquote | Suportado |
+| Code block | Com highlight automático via highlight.js e seletor de linguagem |
+| Imagens | Upload para o servidor via `POST /admin/posts/upload-image`, resize arrastável pelas bordas |
+| Vídeos YouTube | Inserção via modal com campos de URL, largura e altura customizáveis |
+| Links | Suportados |
+
+### Resize de imagens
+
+Módulo `resize-quill-image` registrado como `modules/imageResize`. Ao clicar em uma imagem no editor, aparecem handles nas bordas para redimensionar arrastando.
+
+O seletor de linguagem do code-block fica oculto por padrão e aparece ao passar o mouse sobre o bloco.
+
+### Renderização no frontend
+
+O Quill 2.0 salva code-blocks como `<div class="ql-code-block-container">` com `<div class="ql-code-block">` por linha — diferente do Quill 1.x que usava `<pre class="ql-syntax">`. O frontend aplica CSS customizado para:
+
+- Fundo escuro `#282c34` no container
+- Ocultar o `<select>` de linguagem
+- Mapear as classes `ql-token hljs-*` para as cores do tema atom-one-dark
+- Imagens e iframes responsivos
+
+### Partials do editor
+
+| Arquivo | Localização | Função |
+|---|---|---|
+| `quill-scripts.blade.php` | `dashboard/partials/` | JS + CSS do Quill, resize, upload, YouTube, tags |
+| `quill-modals.blade.php` | `dashboard/partials/` | Modal de inserção de vídeo YouTube |
+
+---
+
+## Sistema de Comentários
+
+### Funcionalidades
+
+- Comentários raiz e respostas aninhadas (1 nível)
+- Suporte a usuários autenticados e visitantes (guest com nome e e-mail)
+- Status: `pending`, `approved`, `rejected`
+- SoftDeletes nos comentários
+
+### Regras de aprovação automática
+
+| Quem comenta | Status |
+|---|---|
+| Owner | `approved` automaticamente |
+| Author comentando no próprio post | `approved` automaticamente |
+| Qualquer outro | `pending` (aguarda moderação) |
+
+### Moderação (Livewire)
+
+Componente `CommentsModeration` com:
+
+- Filtro por status: Pendentes, Aprovados, Rejeitados, Lixeira
+- Scope por role: owners veem todos, authors veem apenas comentários dos próprios posts
+- `approveAll()` respeita o scope do author
+- Restaurar e forçar exclusão de comentários na lixeira
+- Ao aprovar, dispara `CommentApprovedNotification` para o dono do comentário
+
+---
+
+## Sistema de Likes e Reações
+
+- Componente Livewire `PostLike`
+- Identificação por IP + session (sem necessidade de login)
+- Tipos: `like` e `dislike`
+- Ao reagir (novo ou troca de tipo), dispara `NewReactionNotification`
+- Ao remover reação, **não** notifica
+
+---
+
+## Sistema de Notificações
+
+### Tecnologia
+
+Laravel Notifications com driver `database` (tabela `notifications` nativa do Laravel).
+
+### Tipos de notificação
+
+| Classe | Quando é enviada |
+|---|---|
+| `NewCommentNotification` | Novo comentário pendente em um post |
+| `NewReactionNotification` | Like ou dislike em um post |
+| `CommentApprovedNotification` | Moderador aprovou um comentário |
+| `PostApprovedNotification` | Owner aprovou um post do author |
+
+### Componente de sino (Livewire)
+
+`NotificationBell` — componente Livewire registrado em `AppServiceProvider`.
+
+- Polling a cada 30 segundos
+- Dropdown com ícone emoji por tipo de notificação
+- Marcar como lida individualmente
+- Marcar todas como lidas
+
+---
+
+## Sistema de Mute por Post
+
+Permite que usuários silenciem notificações de likes e/ou comentários individualmente por post.
+
+### Tabela `post_notification_settings`
+
+| Campo | Tipo | Descrição |
+|---|---|---|
+| `user_id` | FK | Usuário que configurou o mute |
+| `post_id` | FK | Post alvo |
+| `mute_likes` | boolean | Silencia notificações de likes |
+| `mute_comments` | boolean | Silencia notificações de comentários |
+
+### Helpers
+
+```php
+PostNotificationSetting::isMuted($userId, $postId, 'likes');
+PostNotificationSetting::toggleMute($userId, $postId, 'comments');
+User::hasMutedPost($postId, 'likes');
+```
+
+Cada notificação verifica `isMuted()` no método `via()` antes de enviar.
+
+### Interface
+
+Modal de mute acessível na tela de moderação de comentários, por post, com dois toggles independentes.
+
+---
+
+## Sistema de Downloads
+
+- Model `PostDownload` com campos: `label`, `url`, `order`, `alignment_class`
+- Cada post pode ter múltiplos botões de download ordenáveis
+- Contador `downloads` no model `Post` incrementado a cada download
+- Rota frontend: `GET /post/download/{download}`
+- Exibição no frontend somente quando `$post->hasDownloads()` retorna true
+
+---
+
+## SEO Automático
+
+Implementado com `artesaos/seotools` em todos os controllers do frontend.
+
+### Controllers com SEO configurado
+
+| Controller | Página |
+|---|---|
+| `FrontendHomeController` | Home |
+| `FrontendPostController` | Post individual |
+| `FrontendCategoryController` | Listagem por categoria |
+| `FrontendTagController` | Listagem por tag |
+| `FrontendUserController` | Página do author |
+
+### O que é configurado por página
+
+- `SEOTools::setTitle()`
+- `SEOTools::setDescription()`
+- `SEOMeta::setKeywords()`
+- OpenGraph (og:title, og:description, og:image)
+- Twitter Card
+
+### Meta tags no layout
+
+```blade
+{{-- frontend/master.blade.php --}}
+@yield('meta_tags')
+
+{{-- Em cada blade de página --}}
+@section('meta_tags')
+    {!! SEO::generate() !!}
+@endsection
+```
+
+---
+
+## Sidebar com Widgets
+
+### Arquitetura
+
+Pattern **Strategy** via `WidgetRegistry`. Cada widget é uma classe em `app/Sidebar/Widgets/`.
+
+| Widget | Descrição |
+|---|---|
+| Posts Recentes | Últimos posts publicados |
+| Posts Populares | Posts com mais views |
+| Posts em Destaque | Posts com `featured = true` |
+| Categorias | Lista de categorias com contagem |
+| Tags | Nuvem de tags |
+| Popular Downloads | Posts com mais downloads |
+
+### Como funciona
+
+- `SidebarService` carrega os widgets ativos (TTL = 0, sem cache)
+- `SidebarViewComposer` injeta os dados em todas as views `frontend.*`
+- `SidebarObserver` observa mudanças no model `Sidebar`
+
+---
+
+## Posts Relacionados
+
+Lógica em cascata no `FrontendPostController::getRelatedPosts()`:
+
+```
+1. Posts da mesma categoria
+   ↓ (se não encontrar suficientes)
+2. Posts da categoria pai
+   ↓ (se não encontrar suficientes)
+3. Posts com tags em comum
+   ↓ (se não encontrar suficientes)
+4. Posts recentes
+```
+
+Retorna no máximo 3 posts, excluindo o post atual.
+
+---
+
+## Estrutura de Rotas
+
+### Frontend (`/`)
+
+| Método | Rota | Nome |
+|---|---|---|
+| GET | `/` | `frontend.home` |
+| GET | `/post/{slug}` | `frontend.post` |
+| GET | `/category/{slug}` | `frontend.category` |
+| GET | `/tag/{id}` | `frontend.tag` |
+| GET | `/user/{username}` | `frontend.user` |
+| GET | `/search` | `frontend.search` |
+| GET | `/post/download/{download}` | `frontend.post.download` |
+
+### Dashboard (`/admin`) — requer autenticação
+
+| Método | Rota | Nome |
+|---|---|---|
+| GET | `/admin/dashboard` | `admin.dashboard` |
+| GET/POST | `/admin/posts` | `admin.posts.index/store` |
+| GET | `/admin/posts/pending` | `admin.posts.pending` |
+| PATCH | `/admin/posts/{post}/approve` | `admin.posts.approve` |
+| PATCH | `/admin/posts/{post}/reject` | `admin.posts.reject` |
+| POST | `/admin/posts/upload-image` | `admin.posts.upload-image` |
+| PATCH | `/admin/users/{user}/toggle-auto-approve` | `admin.users.toggle-auto-approve` |
+
+---
+
+## Banco de Dados
+
+### Tabelas principais
+
+| Tabela | Descrição |
+|---|---|
+| `users` | Usuários do sistema |
+| `user_settings` | Configurações por usuário (auto_approve_posts) |
+| `posts` | Posts do blog |
+| `categories` | Categorias com suporte a categoria pai |
+| `parent_categories` | Categorias pai |
+| `tags` | Tags |
+| `post_tag` | Pivot posts ↔ tags |
+| `comments` | Comentários com soft delete |
+| `post_likes` | Likes e dislikes por IP/session |
+| `post_downloads` | Botões de download por post |
+| `post_notification_settings` | Configurações de mute por usuário/post |
+| `notifications` | Tabela nativa do Laravel para notificações |
+| `sidebars` | Configuração dos widgets da sidebar |
+| `settings` | Configurações gerais do site |
+
+### Migrations relevantes
+
+```
+2026_03_12_000001_create_post_notification_settings_table.php
+2026_03_12_000002_create_user_settings_table.php
+add_downloads_to_posts_table.php
+```
+
+---
+
+## Observações de Produção
+
+Antes de ir para produção, considere:
+
+- **Cache de settings** — `Setting::first()` é chamado em todo request. Use `Cache::remember('settings', 3600, ...)`.
+- **Queue para notificações** — atualmente síncronas. Configure Laravel Queue com database ou Redis.
+- **Rate limiting** — adicione rate limit nas rotas de likes e comentários para evitar spam.
+- **Storage de imagens** — imagens salvas em `public/uploads`. Em produção, considere S3 ou similar.
