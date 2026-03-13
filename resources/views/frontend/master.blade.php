@@ -36,6 +36,7 @@
 		<script src="{{ asset('frontend/vendors/scripts/bootstrap.min.js') }}"></script> 
 		<script src="{{ asset('frontend/vendors/scripts/switch.js') }}"></script>
 		<script src="{{ asset('frontend/vendors/scripts/main.js') }}"></script>
+		
         @stack('scripts')
 	
 	</body>

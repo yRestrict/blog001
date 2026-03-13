@@ -2,59 +2,31 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-
 use App\UserStatus;
 use App\UserRole;
 
-
 class User extends Authenticatable
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var list<string>
-     */
     protected $fillable = [
-        'name',
-        'email',
-        'password',
-        'username',
-        'picture',
-        'bio',
-        'role',
-        'status',
+        'name', 'email', 'password',
+        'username', 'picture', 'bio',
+        'role', 'status',
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var list<string>
-     */
-    protected $hidden = [
-        'password',
-        'remember_token',
-    ];
+    protected $hidden = ['password', 'remember_token'];
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
     protected function casts(): array
     {
         return [
             'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-            'status' => UserStatus::class,
-            'role' => UserRole::class,
-
+            'password'          => 'hashed',
+            'status'            => UserStatus::class,
+            'role'              => UserRole::class,
         ];
     }
 
@@ -63,8 +35,7 @@ class User extends Authenticatable
         if ($value && file_exists(public_path('uploads/author/' . $value))) {
             return asset('uploads/author/' . $value);
         }
-        
-        return asset('uploads/author/default.png'); 
+        return asset('uploads/author/default.png');
     }
 
     public function posts()
@@ -77,29 +48,29 @@ class User extends Authenticatable
         return $this->hasOne(UserSocialLink::class, 'user_id');
     }
 
-    public function isOwner(): bool
+    public function notificationSettings()
     {
-        return $this->role === UserRole::Owner;
+        return $this->hasMany(PostNotificationSetting::class);
     }
 
-    public function isAuthor(): bool
+    public function settings()
     {
-        return $this->role === UserRole::Author;
+        return $this->hasOne(UserSetting::class);
     }
 
-    public function isVisitor(): bool
+    public function isOwner(): bool   { return $this->role === UserRole::Owner; }
+    public function isAuthor(): bool  { return $this->role === UserRole::Author; }
+    public function isVisitor(): bool { return $this->role === UserRole::Visitor; }
+    public function isActive(): bool  { return $this->status === UserStatus::Active; }
+    public function isBanned(): bool  { return $this->status === UserStatus::Banned; }
+
+    public function hasMutedPost(int $postId, string $type): bool
     {
-        return $this->role === UserRole::Visitor;
+        return PostNotificationSetting::isMuted($this->id, $postId, $type);
     }
 
-    public function isActive(): bool
+    public function autoApprovePosts(): bool
     {
-        return $this->status === UserStatus::Active;
+        return $this->settings?->auto_approve_posts ?? false;
     }
-
-    public function isBanned(): bool
-    {
-        return $this->status === UserStatus::Banned;
-    }
-
 }

@@ -4,6 +4,7 @@ namespace App\Livewire;
 
 use App\Models\Comment;
 use App\Models\Post;
+use App\Notifications\NewCommentNotification;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 
@@ -11,119 +12,127 @@ class PostComments extends Component
 {
     public Post $post;
 
-    public string $guestName  = '';
-    public string $guestEmail = '';
-    public string $body       = '';
+    public string $name  = '';
+    public string $email = '';
+    public string $body  = '';
+    public bool   $submitted = false;
 
-    public ?int   $replyingTo     = null;
-    public string $replyBody      = '';
-    public string $replyGuestName = '';
-    public string $replyingToName = '';
-
-    // Só controla se mostra o alerta de sucesso — não esconde o formulário
-    public bool $submitted = false;
+    public ?int   $replyingTo      = null;
+    public string $replyAuthorName = '';
+    public string $replyBody       = '';
 
     public function mount(Post $post): void
     {
         $this->post = $post;
-    }
 
-    protected function rules(): array
-    {
-        return [
-            'guestName'  => Auth::check() ? ['nullable'] : ['required', 'string', 'max:100'],
-            'guestEmail' => ['nullable', 'email', 'max:150'],
-            'body'       => ['required', 'string', 'min:3', 'max:1000'],
-        ];
+        if (Auth::check()) {
+            $this->name  = Auth::user()->name;
+            $this->email = Auth::user()->email;
+        }
     }
-
-    protected function replyRules(): array
-    {
-        return [
-            'replyGuestName' => Auth::check() ? ['nullable'] : ['required', 'string', 'max:100'],
-            'replyBody'      => ['required', 'string', 'min:3', 'max:1000'],
-        ];
-    }
-
-    protected $messages = [
-        'guestName.required'      => 'Por favor, informe seu nome.',
-        'body.required'           => 'O comentário não pode estar vazio.',
-        'body.min'                => 'O comentário deve ter pelo menos 3 caracteres.',
-        'replyGuestName.required' => 'Por favor, informe seu nome.',
-        'replyBody.required'      => 'A resposta não pode estar vazia.',
-    ];
 
     public function submit(): void
     {
-        if (! $this->post->comment) return;
+        if (Auth::check()) {
+            $this->validate([
+                'body' => 'required|string|min:3|max:2000',
+            ]);
+            $this->name = Auth::user()->name;
+        } else {
+            $this->validate([
+                'name'  => 'required|string|max:100',
+                'email' => 'nullable|email|max:255',
+                'body'  => 'required|string|min:3|max:2000',
+            ]);
+        }
 
-        $this->validate($this->rules());
-
-        Comment::create([
-            'post_id'     => $this->post->id,
+        $status  = $this->resolveStatus();
+        $comment = $this->post->comments()->create([
             'user_id'     => Auth::id(),
-            'parent_id'   => null,
-            'guest_name'  => Auth::check() ? null : $this->guestName,
-            'guest_email' => Auth::check() ? null : $this->guestEmail,
+            'guest_name'  => Auth::check() ? null : $this->name,
+            'guest_email' => Auth::check() ? null : $this->email,
             'body'        => $this->body,
-            'status'      => 'pending',
+            'status'      => $status,
             'ip_address'  => request()->ip(),
         ]);
 
-        // Limpa só o campo de texto, mantém nome/email preenchidos
-        $this->reset(['body']);
+        if ($status === 'pending') {
+            NewCommentNotification::dispatch($comment);
+        }
+
+        $this->reset('body');
         $this->submitted = true;
     }
 
     public function startReply(int $commentId, string $authorName): void
     {
-        $this->replyingTo     = $commentId;
-        $this->replyingToName = $authorName;
-        $this->replyBody      = '';
-        $this->replyGuestName = '';
-        $this->resetErrorBag();
+        $this->replyingTo      = $commentId;
+        $this->replyAuthorName = $authorName;
+        $this->replyBody       = '';
     }
 
     public function cancelReply(): void
     {
-        $this->replyingTo     = null;
-        $this->replyingToName = '';
-        $this->replyBody      = '';
-        $this->replyGuestName = '';
-        $this->resetErrorBag();
+        $this->replyingTo = null;
+        $this->replyBody  = '';
     }
 
     public function submitReply(): void
     {
-        if (! $this->replyingTo || ! $this->post->comment) return;
+        if (Auth::check()) {
+            $this->validate(['replyBody' => 'required|string|min:3|max:2000']);
+            $this->name = Auth::user()->name;
+        } else {
+            $this->validate([
+                'name'      => 'required|string|max:100',
+                'replyBody' => 'required|string|min:3|max:2000',
+            ]);
+        }
 
-        $this->validate($this->replyRules());
+        $parent   = Comment::findOrFail($this->replyingTo);
+        $parentId = $parent->parent_id ?? $parent->id;
+        $status   = $this->resolveStatus();
 
-        $parent = Comment::find($this->replyingTo);
-
-        // Mantém máximo 2 níveis — reply de reply vai pro mesmo pai
-        $parentId = $parent?->parent_id ?? $this->replyingTo;
-
-        Comment::create([
-            'post_id'    => $this->post->id,
-            'user_id'    => Auth::id(),
-            'parent_id'  => $parentId,
-            'guest_name' => Auth::check() ? null : $this->replyGuestName,
-            'body'       => $this->replyBody,
-            'status'     => 'pending',
-            'ip_address' => request()->ip(),
+        $reply = $this->post->comments()->create([
+            'user_id'     => Auth::id(),
+            'parent_id'   => $parentId,
+            'guest_name'  => Auth::check() ? null : $this->name,
+            'guest_email' => Auth::check() ? null : $this->email,
+            'body'        => $this->replyBody,
+            'status'      => $status,
+            'ip_address'  => request()->ip(),
         ]);
 
-        $this->cancelReply();
-        $this->submitted = true;
+        if ($status === 'pending') {
+            NewCommentNotification::dispatch($reply);
+        }
+
+        $this->replyingTo = null;
+        $this->replyBody  = '';
+        $this->submitted  = true;
     }
 
     public function render()
     {
-        return view('livewire.post-comments', [
-            'comments' => $this->post->comments()
-                ->with(['replies.user'])
-                ->get(),
-        ]);
+        $comments = $this->post->comments()
+            ->with(['user', 'replies.user'])
+            ->whereNull('parent_id')
+            ->where('status', 'approved')
+            ->latest()
+            ->get();
+
+        return view('livewire.post-comments', compact('comments'));
+    }
+
+    private function resolveStatus(): string
+    {
+        if (! Auth::check()) return 'pending';
+
+        $user = Auth::user();
+
+        if ($user->isOwner()) return 'approved';
+        if ($user->isAuthor() && $this->post->author_id === $user->id) return 'approved';
+
+        return 'pending';
     }
 }

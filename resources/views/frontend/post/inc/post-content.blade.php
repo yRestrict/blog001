@@ -115,3 +115,62 @@
 </section>
 
 @endsection
+
+{{--
+    Adicione no final do blade do post, fora do @section('content')
+--}}
+
+@push('stylesheets')
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+
+    <style>
+        /* ── Container do code-block (Quill 2.0) ───────────────────────── */
+        .post-single-content .ql-code-block-container {
+            background: #282c34;
+            border-radius: 6px;
+            padding: 16px;
+            margin: 16px 0;
+            overflow-x: auto;
+            font-family: 'Fira Code', 'Consolas', 'Monaco', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        /* ── Cada linha de código ───────────────────────────────────────── */
+        .post-single-content .ql-code-block {
+            color: #abb2bf;
+            white-space: pre;
+            min-height: 1.4em;
+        }
+
+        /* ── Esconde o <select> de linguagem no frontend ────────────────── */
+        .post-single-content .ql-code-block-container .ql-ui {
+            display: none !important;
+        }
+
+        /* ── Cores do highlight (classes ql-token hljs-*) ───────────────── */
+        .post-single-content .ql-token.hljs-keyword   { color: #c678dd; }
+        .post-single-content .ql-token.hljs-string     { color: #98c379; }
+        .post-single-content .ql-token.hljs-variable   { color: #e06c75; }
+        .post-single-content .ql-token.hljs-title      { color: #61afef; }
+        .post-single-content .ql-token.hljs-function   { color: #61afef; }
+        .post-single-content .ql-token.hljs-class      { color: #e5c07b; }
+        .post-single-content .ql-token.hljs-meta       { color: #56b6c2; }
+        .post-single-content .ql-token.hljs-comment    { color: #5c6370; font-style: italic; }
+        .post-single-content .ql-token.hljs-number     { color: #d19a66; }
+        .post-single-content .ql-token.hljs-built_in   { color: #56b6c2; }
+        .post-single-content .ql-token.hljs-attr       { color: #e06c75; }
+        .post-single-content .ql-token.hljs-selector-tag { color: #e06c75; }
+
+        /* ── Imagens responsivas ────────────────────────────────────────── */
+        .post-single-content img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        /* ── Iframes (YouTube) responsivos ──────────────────────────────── */
+        .post-single-content iframe {
+            max-width: 100%;
+        }
+    </style>
+@endpush

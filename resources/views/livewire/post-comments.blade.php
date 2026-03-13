@@ -175,11 +175,11 @@
                             <div class="col-md-6 ">
                                 <div class="form-group">
                                     <input type="text" name="name" id="name"
-                                           wire:model.defer="guestName"
-                                           class="form-control @error('guestName') is-invalid @enderror"
+                                           wire:model.defer="name"
+                                           class="form-control @error('name') is-invalid @enderror"
                                            placeholder="Nome *">
 
-                                    @error('guestName')
+                                    @error('name')
                                         <span class="invalid-feedback">{{ $message }}</span>
                                     @enderror
                                 </div>
@@ -188,11 +188,11 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <input type="email" name="email" id="email"
-                                           wire:model.defer="guestEmail"
-                                           class="form-control @error('guestEmail') is-invalid @enderror"
+                                           wire:model.defer="email"
+                                           class="form-control @error('email') is-invalid @enderror"
                                            placeholder="Email (opcional)">
 
-                                    @error('guestEmail')
+                                    @error('email')
                                         <span class="invalid-feedback">{{ $message }}</span>
                                     @enderror
                                 </div>
