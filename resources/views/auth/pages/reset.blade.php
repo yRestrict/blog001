@@ -13,7 +13,7 @@
 
         <input type="hidden" name="token" value="{{ $token }}">
 
-        <div class="input-group custom mb-3">
+        <div class="input-group custom mb-2">
             <input type="password" class="form-control form-control-lg js-password" placeholder="{{ __('messages.new_password_placeholder') }}" name="new_password">
             <div class="input-group-append custom">
                 <button type="button" class="input-group-text togglePassword">
@@ -28,7 +28,7 @@
             </div>
         @enderror
 
-        <div class="input-group custom mb-3">
+        <div class="input-group custom mb-2">
             <input type="password" class="form-control form-control-lg js-password" placeholder="{{ __('messages.confirm_password_placeholder') }}" name="new_password_confirmation">
             <div class="input-group-append custom">
                 <button type="button" class="input-group-text togglePassword">
