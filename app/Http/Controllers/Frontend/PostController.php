@@ -30,7 +30,8 @@ class PostController extends Controller
 
         // ── SEO ───────────────────────────────────────────────────────────────
         // Usa excerpt() que remove o <select> do code-block antes de strip_tags
-        $description = $post->meta_description ?: $post->excerpt(160);
+        // $description = $post->meta_description ?: $post->excerpt(160);
+        $description = $post->meta_description ?? $post->clean_description;
 
         SEOTools::setTitle($post->title);
         SEOTools::setDescription($description);
