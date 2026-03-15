@@ -7,7 +7,9 @@ use App\Models\Category;
 use App\Models\ParentCategory;
 use App\Models\Post;
 use App\Models\Tag;
+use App\Models\User;
 use App\Notifications\PostApprovedNotification;
+use App\UserRole;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
@@ -56,9 +58,10 @@ class PostController extends Controller
         $data['author_id']        = $user->id;
         $data['featured']         = $request->boolean('featured');
         $data['comment']          = $request->boolean('comment');
+        $data['content']          = $this->sanitizeContent($data['content']);
         $data['meta_keywords']    = $request->meta_keywords ?: $this->generateKeywords($request);
         $data['meta_description'] = $request->meta_description
-            ?: Str::limit($this->extractPlainText($request->content), 160);
+            ?: Str::limit($this->extractPlainText($data['content']), 160);
 
         // Se o autor não é owner e não tem auto_approve, manda para revisão
         if (! $user->isOwner() && ! $user->autoApprovePosts() && $data['status'] === 'published') {
@@ -113,9 +116,10 @@ class PostController extends Controller
 
         $data['featured']         = $request->boolean('featured');
         $data['comment']          = $request->boolean('comment');
+        $data['content']          = $this->sanitizeContent($data['content']);
         $data['meta_keywords']    = $request->meta_keywords ?: $this->generateKeywords($request);
         $data['meta_description'] = $request->meta_description
-            ?: Str::limit($this->extractPlainText($request->content), 160);
+            ?: Str::limit($this->extractPlainText($data['content']), 160);
 
         // Se author não tem auto_approve e tenta publicar, manda para revisão
         if (! $user->isOwner() && ! $user->autoApprovePosts() && $data['status'] === 'published') {
@@ -200,15 +204,37 @@ class PostController extends Controller
     // ─── Helpers ─────────────────────────────────────────────────────────────
 
     /**
+     * Sanitiza o HTML do Quill antes de salvar no banco.
+     * Remove o <select> de linguagem do code-block (e seu conteúdo de texto)
+     * que vaza como "PlainBashC++C#..." no conteúdo salvo.
+     */
+    private function sanitizeContent(string $html): string
+    {
+        // Remove <select>...</select> inteiro dentro de ql-code-block-container
+        $html = preg_replace('/<select[^>]*class="ql-ui"[^>]*>.*?<\/select>/is', '', $html);
+
+        return $html;
+    }
+
+    /**
      * Extrai texto puro do HTML gerado pelo Quill.
-     * Remove tags, decodifica entidades e limpa espaços.
+     * Remove o <select> do code-block (e seu conteúdo) antes de strip_tags,
+     * depois decodifica entidades e limpa espaços.
      */
     private function extractPlainText(string $html): string
     {
-        // Decodifica &gt; &lt; &amp; etc.
-        $text = html_entity_decode($html, ENT_QUOTES | ENT_HTML5, 'UTF-8');
-        // Remove todas as tags HTML
+        // Remove <select>...</select> inteiro (o seletor de linguagem do Quill)
+        $text = preg_replace('/<select[^>]*>.*?<\/select>/is', '', $html);
+
+        // Remove <script> e <style> com conteúdo
+        $text = preg_replace('/<(script|style)[^>]*>.*?<\/(script|style)>/is', '', $text);
+
+        // Decodifica entidades HTML (&gt; &lt; &amp; etc.)
+        $text = html_entity_decode($text, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+
+        // Remove todas as tags HTML restantes
         $text = strip_tags($text);
+
         // Colapsa espaços e quebras de linha
         $text = preg_replace('/\s+/', ' ', $text);
 

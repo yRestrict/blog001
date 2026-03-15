@@ -8,7 +8,7 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-lg-8 oredoo-content">
-                <div class="theiaStickySidebar" style="padding-top: 80px;">
+                <div class="theiaStickySidebar" style="padding-top: 20px;">
 
                     {{-- ── Título e meta ────────────────────────────────────── --}}
                     <div class="post-single-title">
@@ -32,8 +32,8 @@
                     </div>
 
                     {{-- ── Conteúdo ─────────────────────────────────────────── --}}
-                    <div class="post-single-content">
-                        {!! $post->content !!}
+                    <div class="post-single-content"><pre>
+                        {!! $post->content !!}</pre>
                     </div>
 
                     {{-- ── Botões de download (só aparece se tiver configurado) --}}
@@ -144,7 +144,9 @@
         }
 
         /* ── Esconde o <select> de linguagem no frontend ────────────────── */
-        .post-single-content .ql-code-block-container .ql-ui {
+        /* remove seletor de linguagem do Quill no frontend */
+        .post-single-content .ql-code-block-container > .ql-ui,
+        .post-single-content .ql-code-block-container select.ql-ui {
             display: none !important;
         }
 
@@ -173,4 +175,6 @@
             max-width: 100%;
         }
     </style>
+
+    
 @endpush

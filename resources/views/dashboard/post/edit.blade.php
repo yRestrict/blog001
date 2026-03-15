@@ -56,6 +56,14 @@
                         <label><b>Conteúdo</b></label>
                         <input type="hidden" name="content" id="content-input">
                         <div id="quill-editor">{!! old('content', $post->content) !!}</div>
+                        {{-- Preserva espaços de indentação nos code-blocks ANTES do Quill inicializar --}}
+                        <script>
+                        (function () {
+                            document.querySelectorAll('#quill-editor .ql-code-block').forEach(function (block) {
+                                block.innerHTML = block.innerHTML.replace(/^ /gm, '\u00a0');
+                            });
+                        })();
+                        </script>
                         @error('content')
                             <div class="text-danger small mt-1">{{ $message }}</div>
                         @enderror

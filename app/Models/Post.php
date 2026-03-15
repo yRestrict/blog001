@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Str;
 use Spatie\Sluggable\HasSlug;
 use Spatie\Sluggable\SlugOptions;
 
@@ -25,7 +26,7 @@ class Post extends Model
         'status',
         'meta_keywords',
         'meta_description',
-        'downloads',    // ← para o sistema de downloads (contador
+        'downloads',
     ];
 
     protected $casts = [
@@ -42,6 +43,21 @@ class Post extends Model
             ->saveSlugsTo('slug');
     }
 
+    // ─── Atributos Virtuais (Accessors) ───────────────────────────────────────
+
+    public function getCleanDescriptionAttribute()
+    {
+        $html = $this->content;
+
+        $htmlSemCodigo = preg_replace('/<pre\b[^>]*>(.*?)<\/pre>/is', '', $html);
+
+        $textoPuro = strip_tags($htmlSemCodigo);
+
+        $textoLimpo = trim(preg_replace('/\s+/', ' ', $textoPuro));
+
+        return Str::limit($textoLimpo, 150);
+    }
+
     // ─── Relacionamentos ──────────────────────────────────────────────────────
 
     public function author()
@@ -55,14 +71,9 @@ class Post extends Model
                     ->withDefault([
                         'name' => 'Sem Categoria',
                         'slug' => 'sem-categoria',
-                    ]);;
+                    ]);
     }
 
-    
-
-    /**
-     * Relação muitos-para-muitos com tags via tabela pivot post_tag.
-     */
     public function tags()
     {
         return $this->belongsToMany(Tag::class, 'post_tag', 'post_id', 'tag_id');
@@ -73,9 +84,6 @@ class Post extends Model
         return $this->hasMany(PostLike::class);
     }
 
-    /**
-     * Apenas comentários raiz aprovados (sem parent).
-     */
     public function comments()
     {
         return $this->hasMany(Comment::class)
@@ -84,23 +92,17 @@ class Post extends Model
                     ->oldest();
     }
 
-    /**
-     * Todos os comentários (para moderação no admin).
-     */
     public function allComments()
     {
         return $this->hasMany(Comment::class)->whereNull('parent_id')->latest();
     }
 
-    /**
-     * Verifica se o IP atual já deu like neste post.
-     */
     public function isLikedByIp(string $ip): bool
     {
         return $this->likes()->where('ip_address', $ip)->exists();
     }
 
-     public function downloadButtons()
+    public function downloadButtons()
     {
         return $this->hasMany(PostDownload::class)->orderBy('order');
     }

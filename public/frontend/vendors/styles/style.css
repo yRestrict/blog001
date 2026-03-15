@@ -3125,9 +3125,6 @@ input:checked + .slider:before {
     text-decoration: none;
 }
 
-.related-post-title a:hover {
-    color: #007bff;
-}
 
 .widget-popular-posts .small-post {
   display: -webkit-box;
@@ -3204,7 +3201,7 @@ input:checked + .slider:before {
 }
 
 .widget-popular-posts .small-post .small-post-content p a:hover {
-  color: #191B1D;
+  color: #ffffff;
   text-decoration: none;
   background-size: 100% 100%;
 }
@@ -4162,17 +4159,15 @@ input:checked + .slider:before {
   margin-bottom: 0;
   font-family: "League Spartan", sans-serif;
   display: inline;
-  background-image: linear-gradient(rgba(25, 27, 29, 0) calc(99% - 1px), #191B1D 1px);
-  background-repeat: no-repeat;
-  background-size: 0% 100%;
-  -webkit-transition: background-size 0.5s;
-  transition: background-size 0.5s;
+  text-decoration: none;
+  background-image: none;
+  background-size: 0 0;
 }
 
 .post-single-next-previous .small-post .small-post-content p a:hover {
   color: #191B1D;
   text-decoration: none;
-  background-size: 100% 100%;
+  background-image: none;
 }
 
 .post-single-next-previous .small-post .small-post-content small {
@@ -6573,28 +6568,29 @@ input:checked + .slider:before {
 .dark .post-single-next-previous .small-post .small-post-content p a {
   color: #ffffff;
   display: inline;
-  background-image: linear-gradient(rgba(255, 255, 255, 0) calc(99% - 1px), #ffffff 1px);
-  background-repeat: no-repeat;
-  background-size: 0% 100%;
-  -webkit-transition: background-size 0.5s;
-  transition: background-size 0.5s;
+  text-decoration: none;
+  background-image: none;
+  background-size: 0 0;
 }
+
 
 .dark .post-list .entry-title a:hover,
 .dark .post-list:hover .entry-title a:hover,
 .dark .widget-popular-posts .small-post .small-post-content a:hover,
 .dark .post-single-next-previous .small-post .small-post-content p a:hover {
   color: #ffffff;
-  /* text-decoration: none; */
-  /* background-size: 100% 100%; */
+  text-decoration: none;
+  background-image: none;
 }
 
 .dark .widget-popular-posts .small-post:hover .small-post-content a,
 .dark .post-list:hover .entry-title a {
   color: #ffffff;
-  /* text-decoration: none; */
-  /* background-size: 100% 100%; */
+  text-decoration: none;
+  background-image: none;
 }
+
+/* .dark .widget-popular-posts .small-post:hover .small-post-content a, .dark .post-list:hover .entry-title a */
 
 .dark .pagination-list ul li a.active,
 .dark .pagination-list ul li a:hover,
@@ -6833,7 +6829,7 @@ input:checked + .slider:before {
 }
 
 .dark .related-post-title a:hover {
-    color: #020202;
+    color: #ffffff;
 }
 
 .dark .section-title {

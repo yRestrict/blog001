@@ -5,8 +5,9 @@ Adicionar sistema download ao posts
 Search  -------- :  
 testa quill vazando
 campo password coloca lang 
-quill vazando no front
 titulo nao esta retornando false 
+sidebar vazando conteudo 
+categoria model nao esta mostrando posts 
 
 
 

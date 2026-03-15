@@ -9,7 +9,6 @@ use App\Models\Setting;
 use Artesaos\SEOTools\Facades\SEOMeta;
 use Artesaos\SEOTools\Facades\SEOTools;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Support\Str;
 
 class PostController extends Controller
 {
@@ -30,8 +29,8 @@ class PostController extends Controller
         $post->increment('views');
 
         // ── SEO ───────────────────────────────────────────────────────────────
-        $description = $post->meta_description
-                        ?? Str::limit(strip_tags($post->content), 160);
+        // Usa excerpt() que remove o <select> do code-block antes de strip_tags
+        $description = $post->meta_description ?: $post->excerpt(160);
 
         SEOTools::setTitle($post->title);
         SEOTools::setDescription($description);

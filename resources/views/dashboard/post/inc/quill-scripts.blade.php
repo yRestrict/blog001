@@ -1,13 +1,9 @@
-{{--
-    PARTIAL: quill-scripts.blade.php
-    Inclua com @include('dashboard.partials.quill-scripts') no final dos blades de post.
---}}
-
 @push('stylesheets')
     <link href="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.snow.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
     <style>
-        #quill-editor         { min-height: 420px; font-size: 15px; background: #fff; }
+        #quill-editor         { font-size: 15px; background: #fff; }
+        #quill-editor .ql-editor { min-height: 420px; }
         .ql-toolbar.ql-snow   { border-radius: 4px 4px 0 0; }
         .ql-container.ql-snow { border-radius: 0 0 4px 4px; }
         .ql-editor img        { cursor: pointer; max-width: 100%; }
@@ -45,6 +41,11 @@
 <script src="https://cdn.jsdelivr.net/gh/hunghg255/quill-resize-module/dist/quill-resize-image.min.js"></script>
 
 <script>
+window.hljs.configure({
+    languages: ['php', 'javascript', 'html', 'css', 'bash', 'xml', 'json'],
+    cssSelector: '.desativar-vazamento-global' 
+});
+
 // ── Registra o módulo ─────────────────────────────────────────────────────────
 Quill.register('modules/imageResize', window.QuillResizeImage);
 
@@ -67,7 +68,7 @@ const quill = new Quill('#quill-editor', {
             ],
             handlers: { image: imageHandler, video: videoHandler },
         },
-        syntax: { highlight: text => hljs.highlightAuto(text).value },
+        syntax: true,
         imageResize: {},
     },
 });
