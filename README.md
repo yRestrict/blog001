@@ -8,7 +8,7 @@ sidebar vazando conteudo
 categoria model nao esta mostrando posts 
 coloca sistema de log para quem esta logado entra mais facil no dashboard 
 olhinho das pagina login nao esta func
-
+....
 
 
 Style Front
