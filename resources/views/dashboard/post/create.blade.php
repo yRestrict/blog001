@@ -124,6 +124,11 @@
 
                         <hr>
 
+                        {{-- Downloads --}}
+                        <livewire:admin.post-downloads />
+
+                        <hr>
+
                         <div class="form-group">
                             <label><b>Destaque</b></label>
                             <div class="custom-control custom-checkbox mb-2">

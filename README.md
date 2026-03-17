@@ -1,23 +1,24 @@
-sistema de media 
-Coloca numero de posts na categorias
-Adicionar sistema download ao posts 
 Search  -------- :  
-campo password coloca lang 
-titulo nao esta retornando false 
+sistema de media 
+
+
 sidebar vazando conteudo 
-categoria model nao esta mostrando posts 
+
+
 coloca sistema de log para quem esta logado entra mais facil no dashboard 
-olhinho das pagina login nao esta func
 ....
+
+Custom Paginacao
+Widget Download
 
 
 Style Front
+Arruma sino da navbar 
 
-
+widget->download refazer frontend
 
 
 
 
 
 Dashboard -> Menu = arruma adicionar menu e padraonizar 
-https://preview.tabler.io/layout-combo.html

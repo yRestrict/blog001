@@ -145,6 +145,11 @@
 
                     <hr>
 
+                    {{-- Downloads --}}
+                    <livewire:admin.post-downloads :post="$post" />
+
+                    <hr>
+
                     <div class="form-group">
                         <label><b>Destaque</b></label>
                         <div class="custom-control custom-checkbox mb-2">
@@ -216,7 +221,7 @@
 </form>
 
 {{-- Modais do editor --}}
-@include('dashboard.post.inc.quill-modals')
+    @include('dashboard.post.inc.quill-modals')
 
 @endsection
 

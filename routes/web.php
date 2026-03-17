@@ -68,6 +68,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
         // Perfil
         Route::get('/profile', [ProfileController::class, 'profileView'])->name('profile');
         Route::post('/update-personal-picture', [ProfileController::class, 'UpdateProfilePicture'])->name('update_profile_picture');
+        Route::get('/{post}/downloads', [PostController::class, 'postDownloads'])->name('downloads');
+
 
         // ── Owner ─────────────────────────────────────────────────────────────
         Route::middleware(['role:owner'])->group(function () {
@@ -98,6 +100,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
                 Route::delete('/{post}', [PostController::class, 'postDestroy'])->name('destroy');
                 Route::patch('/{post}/approve', [PostController::class, 'approvePost'])->name('approve');
                 Route::patch('/{post}/reject', [PostController::class, 'rejectPost'])->name('reject');
+                Route::get('/{post}/downloads', [PostController::class, 'postDownloads'])->name('downloads');
             });
 
             // Tags

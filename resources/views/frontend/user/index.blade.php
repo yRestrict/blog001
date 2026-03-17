@@ -1,6 +1,6 @@
 @extends("frontend.master")
 
-@section("pageTitle", isset($pageTitle) ? $pageTitle : "user")
+@section("pageTitle", isset($pageTitle) ? $pageTitle : "User")
 @section('meta_tags')
     {!! SEO::generate() !!}
 @endsection

@@ -42,6 +42,16 @@ class Profile extends Component
         ]);
     }
 
+    protected function messages()
+    {
+        return [
+            'currentPassword.required' => 'Por favor, digite sua senha atual para continuar.',
+            'newPassword.required' => 'Você precisa definir uma nova senha.',
+            'newPassword.min' => 'A nova senha deve ter pelo menos 5 caracteres.',
+            'newPassword.confirmed' => 'As senhas digitadas não conferem.',
+        ];
+    }
+
     public function selectTab(string $tab)
     {
         abort_unless(in_array($tab, [

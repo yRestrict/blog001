@@ -40,6 +40,8 @@ class AppServiceProvider extends ServiceProvider
         View::composer('frontend.*', SidebarViewComposer::class);
 
         View::composer('components.header', HeaderViewComposer::class);
+        Livewire::component('admin.post-downloads', \App\Livewire\Admin\PostDownloads::class);
+
 
         //Redirect an authenticated user dashboard if tries to access login page
         RedirectIfAuthenticated::redirectUsing(function(){

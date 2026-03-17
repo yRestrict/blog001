@@ -23,17 +23,19 @@ class PopularDownloadsWidget extends BaseWidget
 
     public function resolve(Sidebar $widget): array
     {
-        $query = Post::where('status', true)
-            ->where('type', 'download') // ajuste para o seu campo de tipo
+        // Busca posts publicados que tenham pelo menos 1 download
+        $query = Post::where('status', 'published')
+            ->where('downloads', '>', 0)
             ->orderByDesc('downloads');
 
+        // Filtra por período se não for 'total'
         if ($widget->period_type === 'week') {
-            $query->where('created_at', '>=', Carbon::now()->subWeek());
+            $query->where('updated_at', '>=', Carbon::now()->subWeek());
         } elseif ($widget->period_type === 'month') {
-            $query->where('created_at', '>=', Carbon::now()->subMonth());
+            $query->where('updated_at', '>=', Carbon::now()->subMonth());
         }
 
-        return $query->limit($widget->limit)
+        return $query->limit($widget->limit ?? 5)
             ->get(['id', 'title', 'slug', 'thumbnail', 'downloads', 'created_at'])
             ->toArray();
     }

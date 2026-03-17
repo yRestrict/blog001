@@ -226,7 +226,7 @@ class Categories extends Component
     {
         return view('livewire.admin.categories', [
             'parentCategories'    => ParentCategory::withCount('categories')->orderBy('ordering')->get(),
-            'categories'          => Category::with('parentCategory')->orderBy('ordering')->get(),
+            'categories'          => Category::with('parentCategory')->withCount('posts')->orderBy('ordering')->get(),
             'allParentCategories' => ParentCategory::orderBy('name')->get(),
         ]);
     }

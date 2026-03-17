@@ -33,7 +33,7 @@ class PostController extends Controller
         // $description = $post->meta_description ?: $post->excerpt(160);
         $description = $post->meta_description ?? $post->clean_description;
 
-        SEOTools::setTitle($post->title);
+        SEOTools::setTitle($post->title, false);
         SEOTools::setDescription($description);
         SEOMeta::setKeywords($post->meta_keywords ?? '');
 

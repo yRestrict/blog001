@@ -136,6 +136,10 @@
         background: #fff;
         border-bottom: 2px solid #6366f1;
     }
+    #CropImagePreview {
+        max-width: 100%;
+        display: block;
+    }
     .mir-tab-content { padding: 28px; }
 
     /* ── Form fields (mir-) ──────────────────────────────────────────────── */
@@ -147,6 +151,13 @@
         border: 1.5px solid #e5e7eb; border-radius: 8px;
         font-size: .85rem; color: #1a1d23; background: #fff;
         outline: none; transition: border-color .15s, box-shadow .15s;
+    }
+
+    .img-container {
+        width: 100%;
+        max-height: 400px; /* Limita a altura da área de corte */
+        overflow: hidden;
+        background-color: #f8f9fa;
     }
     .mir-input:focus { border-color: #6366f1; box-shadow: 0 0 0 3px rgba(99,102,241,.12); }
     .mir-input.is-invalid { border-color: #ef4444; }
@@ -210,14 +221,22 @@
 
     /* Modal crop (mantido igual ao master.blade) */
     .mir-modal-overlay {
-        position: fixed; inset: 0;
-        background: rgba(17,24,39,.55);
-        backdrop-filter: blur(2px);
+        position: fixed; 
+        inset: 0;
+        background: rgba(17,24,39,.6);
+        backdrop-filter: blur(4px);
         z-index: 1060;
-        display: flex; align-items: center; justify-content: center;
-        padding: 16px;
+        display: flex; 
+        align-items: center; /* Centraliza verticalmente */
+        justify-content: center; /* Centraliza horizontalmente */
+        padding: 15px; /* Margem de segurança para mobile */
     }
-    .mir-modal-dialog-lg { width: 100%; max-width: 680px; animation: mir-modal-in .2s ease; }
+    .mir-modal-dialog-lg {
+        width: 100%;
+        max-width: 600px; /* Reduzi um pouco para caber melhor em tablets */
+        margin: auto; /* Garante centralização extra */
+        animation: mir-modal-in .2s ease-out;
+    }
     @keyframes mir-modal-in {
         from { opacity:0; transform:translateY(-12px) scale(.97); }
         to   { opacity:1; transform:translateY(0) scale(1); }
@@ -238,7 +257,11 @@
         transition: background .15s; font-size: .9rem;
     }
     .mir-modal-close:hover { background: #f3f4f6; color: #374151; }
-    .mir-modal-body   { padding: 22px; }
+    .mir-modal-body {
+        padding: 15px;
+        max-height: 80vh; /* Impede que o modal fique maior que a tela */
+        overflow-y: auto; /* Adiciona scroll se a imagem for muito alta */
+    }
     .mir-modal-footer {
         display: flex; justify-content: flex-end; gap: 10px;
         padding: 16px 22px; border-top: 1px solid #f0f0f0; background: #fafafa;

@@ -281,6 +281,14 @@ class PostController extends Controller
         return $tagIds;
     }
 
+    public function postDownloads(Post $post)
+    {
+        return view('dashboard.post.downloads', [
+            'pageTitle' => 'Downloads — ' . $post->title,
+            'post'      => $post,
+        ]);
+    }
+
     private function buildCategoriesHtml(?int $selectedId = null): string
     {
         $html = '<option value="">-- Selecione uma Categoria --</option>';

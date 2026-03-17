@@ -463,6 +463,10 @@
                                     </svg>
                                     {{ $category->parentCategory->name }}
                                 </span>
+                                <div class="mir-divider"></div>
+                                <span class="mir-badge-count" title="Nº Posts">
+                                    {{ $category->posts_count }}
+                                </span>
                             @else
                                 <span class="mir-badge-none">— sem pai —</span>
                             @endif

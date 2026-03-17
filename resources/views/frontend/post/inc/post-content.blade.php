@@ -4,115 +4,142 @@
 
 @section('content')
 
-<section class="post-single-layout-2">
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-lg-8 oredoo-content">
-                <div class="theiaStickySidebar" style="padding-top: 20px;">
+    <section class="post-single-layout-2">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-lg-8 oredoo-content">
+                    <div class="theiaStickySidebar" style="padding-top: 20px;">
 
-                    {{-- ── Título e meta ────────────────────────────────────── --}}
-                    <div class="post-single-title">
-                        <h1 class="text-center">{{ $post->title }}</h1>
-                        <ul class="entry-meta">
-                            <li class="post-author">
-                                <a href="{{ route('frontend.user', $post->author->username) }}">
-                                    {{ $post->author->name }}
-                                </a>
-                            </li>
-                            <li class="entry-cat">
-                                <a href="{{ route('frontend.category', $post->category->slug) }}"
-                                   class="category-style-1">
-                                    <span class="line"></span>{{ $post->category->name }}
-                                </a>
-                            </li>
-                            <li class="post-date">
-                                <span class="line"></span>{{ $post->created_at->diffForHumans() }}
-                            </li>
-                        </ul>
-                    </div>
-
-                    {{-- ── Conteúdo ─────────────────────────────────────────── --}}
-                    <div class="post-single-content"><pre>
-                        {!! $post->content !!}</pre>
-                    </div>
-
-                    {{-- ── Botões de download (só aparece se tiver configurado) --}}
-                    @if($post->hasDownloads())
-                        <div class="post-downloads mt-4">
-                            @foreach($post->downloadButtons as $btn)
-                                <div class="{{ $btn->alignment_class }} mb-2">
-                                    <a href="{{ route('frontend.post.download', $btn->id) }}"
-                                       class="btn btn-primary"
-                                       target="_blank"
-                                       rel="noopener noreferrer">
-                                        <i class="fas fa-download"></i> {{ $btn->label }}
+                        {{-- ── Título e meta ────────────────────────────────────── --}}
+                        <div class="post-single-title">
+                            <h1 class="text-center">{{ $post->title }}</h1>
+                            <ul class="entry-meta">
+                                <li class="post-author">
+                                    <a href="{{ route('frontend.user', $post->author->username) }}">
+                                        {{ $post->author->name }}
                                     </a>
-                                </div>
-                            @endforeach
-                            <small class="text-muted d-block mt-2">
-                                <i class="fas fa-download"></i>
-                                {{ number_format($post->downloads) }} downloads
-                            </small>
-                        </div>
-                    @endif
-
-                    {{-- ── Tags e compartilhar ─────────────────────────────── --}}
-                    <div class="post-single-bottom">
-
-                        @if($post->tags_count > 0)
-                            <div class="tags">
-                                <p>Tags:</p>
-                                <ul class="list-inline">
-                                    @foreach($post->tags as $tag)
-                                        <li>
-                                            <a href="{{ route('frontend.tag', ['id' => $tag->slug]) }}">
-                                                {{ $tag->name }}
-                                            </a>
-                                        </li>
-                                    @endforeach
-                                </ul>
-                            </div>
-                        @endif
-
-                        <div class="social-media">
-                            <p>Share on:</p>
-                            <ul class="list-inline">
-                                <li>
-                                    <a href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode(request()->url()) }}"
-                                       target="_blank"><i class="fab fa-facebook"></i></a>
                                 </li>
-                                <li>
-                                    <a href="https://www.instagram.com/?url={{ urlencode(request()->url()) }}"
-                                       target="_blank"><i class="fab fa-instagram"></i></a>
+                                <li class="entry-cat">
+                                    <a href="{{ route('frontend.category', $post->category->slug) }}"
+                                        class="category-style-1">
+                                        <span class="line"></span>{{ $post->category->name }}
+                                    </a>
                                 </li>
-                                <li>
-                                    <a href="https://twitter.com/intent/tweet?url={{ urlencode(request()->url()) }}"
-                                       target="_blank"><i class="fab fa-twitter"></i></a>
-                                </li>
-                                <li>
-                                    <a href="https://api.whatsapp.com/send?text={{ urlencode(request()->url()) }}"
-                                       target="_blank"><i class="fab fa-whatsapp" style="background-color: green;"></i></a>
+                                <li class="post-date">
+                                    <span class="line"></span>{{ $post->created_at->diffForHumans() }}
                                 </li>
                             </ul>
                         </div>
+
+                        {{-- ── Conteúdo ─────────────────────────────────────────── --}}
+                        <div class="post-single-content">
+                            <pre>
+                        {!! $post->content !!}</pre>
+                        </div>
+
+                        @if ($post->hasDownloads())
+                            <div class="post-downloads mt-4">
+
+                                {{-- Botões lado a lado (left / center / right) --}}
+                                @php
+                                    $inlineButtons = $post->downloadButtons->where('position', '!=', 'block');
+                                    $blockButtons = $post->downloadButtons->where('position', 'block');
+                                @endphp
+
+                                {{-- Inline: ficam na mesma linha com flex-wrap --}}
+                                @if ($inlineButtons->count() > 0)
+                                    <div class="d-flex flex-wrap mb-2" style="gap: 8px;">
+                                        @foreach ($inlineButtons as $btn)
+                                            @php
+                                                $justifyClass = match ($btn->position) {
+                                                    'center' => 'justify-content-center',
+                                                    'right' => 'justify-content-end',
+                                                    default => 'justify-content-start',
+                                                };
+                                            @endphp
+                                            <a href="{{ route('frontend.post.download', $btn->id) }}"
+                                                class="btn btn-primary" target="_blank" rel="noopener noreferrer">
+                                                <i class="fas fa-download"></i> {{ $btn->label }}
+                                            </a>
+                                        @endforeach
+                                    </div>
+                                @endif
+
+                                {{-- Block: um abaixo do outro, largura total --}}
+                                @foreach ($blockButtons as $btn)
+                                    <div class="mb-2">
+                                        <a href="{{ route('frontend.post.download', $btn->id) }}"
+                                            class="btn btn-primary btn-block" target="_blank" rel="noopener noreferrer">
+                                            <i class="fas fa-download"></i> {{ $btn->label }}
+                                        </a>
+                                    </div>
+                                @endforeach
+
+                                <small class="text-muted d-block mt-2">
+                                    <i class="fas fa-download"></i>
+                                    {{ number_format($post->downloads) }} downloads
+                                </small>
+                            </div>
+                        @endif
+
+                        {{-- ── Tags e compartilhar ─────────────────────────────── --}}
+                        <div class="post-single-bottom">
+
+                            @if ($post->tags_count > 0)
+                                <div class="tags">
+                                    <p>Tags:</p>
+                                    <ul class="list-inline">
+                                        @foreach ($post->tags as $tag)
+                                            <li>
+                                                <a href="{{ route('frontend.tag', ['id' => $tag->slug]) }}">
+                                                    {{ $tag->name }}
+                                                </a>
+                                            </li>
+                                        @endforeach
+                                    </ul>
+                                </div>
+                            @endif
+
+                            <div class="social-media">
+                                <p>Share on:</p>
+                                <ul class="list-inline">
+                                    <li>
+                                        <a href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode(request()->url()) }}"
+                                            target="_blank"><i class="fab fa-facebook"></i></a>
+                                    </li>
+                                    <li>
+                                        <a href="https://www.instagram.com/?url={{ urlencode(request()->url()) }}"
+                                            target="_blank"><i class="fab fa-instagram"></i></a>
+                                    </li>
+                                    <li>
+                                        <a href="https://twitter.com/intent/tweet?url={{ urlencode(request()->url()) }}"
+                                            target="_blank"><i class="fab fa-twitter"></i></a>
+                                    </li>
+                                    <li>
+                                        <a href="https://api.whatsapp.com/send?text={{ urlencode(request()->url()) }}"
+                                            target="_blank"><i class="fab fa-whatsapp"
+                                                style="background-color: green;"></i></a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        @include('frontend.post.inc.post-relacion')
+
+                        <livewire:post-like :post="$post" />
+                        <livewire:post-comments :post="$post" />
+
                     </div>
-
-                    @include('frontend.post.inc.post-relacion')
-
-                    <livewire:post-like :post="$post" />
-                    <livewire:post-comments :post="$post" />                      
-
                 </div>
-            </div>
 
-            <div class="col-lg-4 oredoo-sidebar">
-                <div class="theiaStickySidebar">
-                    @include('components.sidebar.index')
+                <div class="col-lg-4 oredoo-sidebar">
+                    <div class="theiaStickySidebar">
+                        @include('components.sidebar.index')
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-</section>
+    </section>
 
 @endsection
 
@@ -145,24 +172,60 @@
 
         /* ── Esconde o <select> de linguagem no frontend ────────────────── */
         /* remove seletor de linguagem do Quill no frontend */
-        .post-single-content .ql-code-block-container > .ql-ui,
+        .post-single-content .ql-code-block-container>.ql-ui,
         .post-single-content .ql-code-block-container select.ql-ui {
             display: none !important;
         }
 
         /* ── Cores do highlight (classes ql-token hljs-*) ───────────────── */
-        .post-single-content .ql-token.hljs-keyword   { color: #c678dd; }
-        .post-single-content .ql-token.hljs-string     { color: #98c379; }
-        .post-single-content .ql-token.hljs-variable   { color: #e06c75; }
-        .post-single-content .ql-token.hljs-title      { color: #61afef; }
-        .post-single-content .ql-token.hljs-function   { color: #61afef; }
-        .post-single-content .ql-token.hljs-class      { color: #e5c07b; }
-        .post-single-content .ql-token.hljs-meta       { color: #56b6c2; }
-        .post-single-content .ql-token.hljs-comment    { color: #5c6370; font-style: italic; }
-        .post-single-content .ql-token.hljs-number     { color: #d19a66; }
-        .post-single-content .ql-token.hljs-built_in   { color: #56b6c2; }
-        .post-single-content .ql-token.hljs-attr       { color: #e06c75; }
-        .post-single-content .ql-token.hljs-selector-tag { color: #e06c75; }
+        .post-single-content .ql-token.hljs-keyword {
+            color: #c678dd;
+        }
+
+        .post-single-content .ql-token.hljs-string {
+            color: #98c379;
+        }
+
+        .post-single-content .ql-token.hljs-variable {
+            color: #e06c75;
+        }
+
+        .post-single-content .ql-token.hljs-title {
+            color: #61afef;
+        }
+
+        .post-single-content .ql-token.hljs-function {
+            color: #61afef;
+        }
+
+        .post-single-content .ql-token.hljs-class {
+            color: #e5c07b;
+        }
+
+        .post-single-content .ql-token.hljs-meta {
+            color: #56b6c2;
+        }
+
+        .post-single-content .ql-token.hljs-comment {
+            color: #5c6370;
+            font-style: italic;
+        }
+
+        .post-single-content .ql-token.hljs-number {
+            color: #d19a66;
+        }
+
+        .post-single-content .ql-token.hljs-built_in {
+            color: #56b6c2;
+        }
+
+        .post-single-content .ql-token.hljs-attr {
+            color: #e06c75;
+        }
+
+        .post-single-content .ql-token.hljs-selector-tag {
+            color: #e06c75;
+        }
 
         /* ── Imagens responsivas ────────────────────────────────────────── */
         .post-single-content img {
@@ -175,6 +238,4 @@
             max-width: 100%;
         }
     </style>
-
-    
 @endpush

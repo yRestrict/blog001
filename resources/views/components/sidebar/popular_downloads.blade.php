@@ -3,9 +3,9 @@
     <ul class="sidebar-posts sidebar-posts--downloads">
         @foreach($data as $post)
             <li class="sidebar-posts__item">
-                <a href="{{ route('post.show', $post['slug']) }}" class="sidebar-posts__link">
+                <a href="{{ route('frontend.post', $post['slug']) }}" class="sidebar-posts__link">
                     @if($post['thumbnail'])
-                        <img src="{{ asset('storage/' . $post['thumbnail']) }}"
+                        <img src="{{ asset('uploads/posts/' . $post['thumbnail']) }}"
                              alt="{{ $post['title'] }}"
                              width="60" height="60"
                              class="sidebar-posts__thumb"

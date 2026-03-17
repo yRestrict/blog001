@@ -1,5 +1,5 @@
 @extends('frontend.master')
-@section("pageTitle", isset($pageTitle) ? $pageTitle : "Home")
+@section("pageTitle", isset($pageTitle) ? $pageTitle : "Tags")
 @section('meta_tags')
     {!! SEO::generate() !!}
 @endsection
