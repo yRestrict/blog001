@@ -3,16 +3,14 @@
     <ul class="sidebar-posts sidebar-posts--downloads">
         @foreach($data as $post)
             <li class="sidebar-posts__item">
-                <a href="{{ route('frontend.post', $post['slug']) }}" class="sidebar-posts__link">
-                    @if($post['thumbnail'])
-                        <img src="{{ asset('uploads/posts/' . $post['thumbnail']) }}"
-                             alt="{{ $post['title'] }}"
-                             width="60" height="60"
-                             class="sidebar-posts__thumb"
-                             loading="lazy">
-                    @endif
+                <a href="{{ route('frontend.post', ['slug' => $post['slug']]) }}" class="sidebar-posts__link">
                     <div class="sidebar-posts__info">
-                        <span class="sidebar-posts__title">{{ $post['title'] }}</span>
+                        <span class="sidebar-posts__title"
+                              title="{{ $post['title'] }}"
+                              style="display:-webkit-box;-webkit-line-clamp:1;
+                                     -webkit-box-orient:vertical;overflow:hidden;">
+                            {{ $post['title'] }}
+                        </span>
                         <span class="sidebar-posts__meta">
                             <i class="fas fa-download"></i> {{ number_format($post['downloads']) }}
                         </span>

@@ -270,7 +270,7 @@
                                             @endphp
                                             @if($pos === 'block')
                                                 <div style="width:100%;">
-                                                    <span style="{{ $s }}width:100%;justify-content:center;">
+                                                    <span style="{{ $s }}">
                                                         <i class="fa fa-download"></i> {{ $btn['label'] }}
                                                     </span>
                                                 </div>

@@ -69,7 +69,7 @@
                                 @foreach ($blockButtons as $btn)
                                     <div class="mb-2">
                                         <a href="{{ route('frontend.post.download', $btn->id) }}"
-                                            class="btn btn-primary btn-block" target="_blank" rel="noopener noreferrer">
+                                            class="btn btn-primary" target="_blank" rel="noopener noreferrer">
                                             <i class="fas fa-download"></i> {{ $btn->label }}
                                         </a>
                                     </div>
@@ -83,7 +83,7 @@
                         @endif
 
                         {{-- ── Tags e compartilhar ─────────────────────────────── --}}
-                        <div class="post-single-bottom">
+                        <div class="post-single-bottom mt-3">
 
                             @if ($post->tags_count > 0)
                                 <div class="tags">

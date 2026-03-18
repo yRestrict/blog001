@@ -16,7 +16,7 @@ class PopularDownloadsWidget extends BaseWidget
     public static function validationRules(array $context = []): array
     {
         return [
-            'limit'       => 'required|integer|min:1|max:20',
+            'limit'       => 'required|integer|min:1|max:6',
             'period_type' => 'required|in:week,month,total',
         ];
     }
@@ -35,7 +35,7 @@ class PopularDownloadsWidget extends BaseWidget
             $query->where('updated_at', '>=', Carbon::now()->subMonth());
         }
 
-        return $query->limit($widget->limit ?? 5)
+        return $query->limit($widget->limit ?? 5, 6)
             ->get(['id', 'title', 'slug', 'thumbnail', 'downloads', 'created_at'])
             ->toArray();
     }

@@ -5,54 +5,23 @@
     ─────────────────────────────────────────────── --}}
     <div class="header-left">
 
-        {{-- Botão de abrir/fechar a sidebar --}}
         <div class="menu-icon bi bi-list db-focus-ring" title="Toggle Menu"></div>
 
-        {{-- Botão de busca (visível apenas em mobile) --}}
         <div class="search-toggle-icon bi bi-search db-focus-ring"
              data-toggle="header_search"
              title="Search"></div>
 
-        {{-- Campo de busca avançada --}}
+        {{-- Busca do dashboard --}}
         <div class="header-search">
-            <form>
+            <form action="{{ route('admin.search') }}" method="GET" autocomplete="off">
                 <div class="form-group mb-0">
                     <i class="dw dw-search2 search-icon"></i>
                     <input type="text"
+                           name="q"
                            class="form-control search-input"
-                           placeholder="Search Here" />
-                    <div class="dropdown">
-                        <a class="dropdown-toggle no-arrow db-icon-btn"
-                           href="#"
-                           role="button"
-                           data-toggle="dropdown"
-                           title="Advanced Search">
-                            <i class="ion-arrow-down-c"></i>
-                        </a>
-                        <div class="dropdown-menu dropdown-menu-right">
-                            <div class="form-group row">
-                                <label class="col-sm-12 col-md-2 col-form-label">From</label>
-                                <div class="col-sm-12 col-md-10">
-                                    <input class="form-control form-control-sm form-control-line" type="text" />
-                                </div>
-                            </div>
-                            <div class="form-group row">
-                                <label class="col-sm-12 col-md-2 col-form-label">To</label>
-                                <div class="col-sm-12 col-md-10">
-                                    <input class="form-control form-control-sm form-control-line" type="text" />
-                                </div>
-                            </div>
-                            <div class="form-group row">
-                                <label class="col-sm-12 col-md-2 col-form-label">Subject</label>
-                                <div class="col-sm-12 col-md-10">
-                                    <input class="form-control form-control-sm form-control-line" type="text" />
-                                </div>
-                            </div>
-                            <div class="text-right">
-                                <button class="btn btn-primary">Search</button>
-                            </div>
-                        </div>
-                    </div>
+                           placeholder="Search Here"
+                           value="{{ request('q') }}"
+                           minlength="2">
                 </div>
             </form>
         </div>
@@ -64,7 +33,6 @@
     ─────────────────────────────────────────────── --}}
     <div class="header-right">
 
-        {{-- Botão de configurações (abre right-sidebar de layout) --}}
         <div class="dashboard-setting user-notification">
             <div class="dropdown">
                 <a class="dropdown-toggle no-arrow"
@@ -79,10 +47,8 @@
 
         @livewire('admin.notification-bell')
 
-        {{-- Dropdown de perfil do usuário (Livewire) --}}
         @livewire('admin.top-user-info')
 
-        {{-- Link do GitHub --}}
         <div class="github-link">
             <a href="https://github.com/dropways/deskapp"
                target="_blank"
