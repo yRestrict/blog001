@@ -9,14 +9,14 @@
     <div class="row align-items-center">
         <div class="col-md-6 col-sm-12">
             <div class="title">
-                <h4>Menu </h4>
+                <h4>Footer </h4>
             </div>
         </div>
         <div class="col-md-6 col-sm-12">
             <nav aria-label="breadcrumb" role="navigation">
                 <ol class="breadcrumb d-flex justify-content-end mb-0">
                     <li class="breadcrumb-item">
-                        <a href="{{ route('admin.dashboard') }}">Home</a>
+                        <a href="{{ route('admin.dashboard') }}">Inicio</a>
                     </li>
                     <li class="breadcrumb-item active" aria-current="page">
                         Menu
