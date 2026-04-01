@@ -1737,3 +1737,107 @@ select.mir-input {
 .footer-option-card.active .footer-option-check {
     color: #4d7cfe;
 }
+/* =============================================================
+   USUÁRIOS — Seção a adicionar no custom.css
+   Segue o mesmo padrão mir- do menu e categorias
+   ============================================================= */
+
+/* ── Formulários (create / edit) ──────────────────────────── */
+
+.usr-form-card {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 1px 4px rgba(0,0,0,.08);
+    overflow: hidden;
+    margin-bottom: 24px;
+}
+
+.usr-form-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 18px 24px;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.usr-form-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+.usr-form-icon-add  { background: #dcfce7; color: #16a34a; }
+.usr-form-icon-edit { background: #dbeafe; color: #2563eb; }
+
+.usr-form-title {
+    font-size: .93rem;
+    font-weight: 700;
+    color: #1a2332;
+    margin: 0 0 2px;
+}
+.usr-form-subtitle {
+    font-size: .75rem;
+    color: #8494a9;
+    margin: 0;
+}
+
+.usr-form-group {
+    margin-bottom: 20px;
+}
+
+.usr-form-footer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+    padding-top: 8px;
+    border-top: 1px solid #f1f5f9;
+    margin-top: 8px;
+}
+
+/* Bloco de configuração (ex: auto-aprovação) */
+.usr-setting-block {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 16px;
+    background: #f8fafc;
+    border: 1px solid #e8ecf2;
+    border-left: 4px solid #2563eb;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+.usr-setting-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    background: #dbeafe;
+    color: #2563eb;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+.usr-setting-content { flex: 1 1 auto; min-width: 0; }
+.usr-setting-title {
+    font-size: .85rem;
+    font-weight: 600;
+    color: #1a2332;
+    margin: 0 0 3px;
+}
+.usr-setting-desc {
+    font-size: .75rem;
+    color: #8494a9;
+    margin: 0;
+    line-height: 1.5;
+}
+
+/* Mensagem de erro inline */
+.mir-field-error {
+    font-size: .78rem;
+    color: #ef4444;
+    margin-top: 4px;
+}
