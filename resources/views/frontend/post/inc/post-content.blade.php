@@ -239,3 +239,37 @@
         }
     </style>
 @endpush
+
+@push('scripts')
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Quill 2.0 gera: <div class="ql-code-block" data-language="javascript">código</div>
+        // Precisamos converter para <code> blocks que o hljs entende, ou aplicar direto.
+        document.querySelectorAll('.post-single-content .ql-code-block-container').forEach(function (container) {
+            // Juntar todas as linhas .ql-code-block em um único texto
+            var lines = container.querySelectorAll('.ql-code-block');
+            if (!lines.length) return;
+
+            var lang = lines[0].getAttribute('data-language') || 'plaintext';
+            var code = Array.from(lines).map(function (line) {
+                return line.textContent;
+            }).join('\n');
+
+            // Criar o <pre><code> padrão do hljs
+            var pre = document.createElement('pre');
+            var codeEl = document.createElement('code');
+            codeEl.className = 'language-' + lang;
+            codeEl.textContent = code;
+            pre.appendChild(codeEl);
+            pre.style.cssText = 'background:#282c34;border-radius:6px;padding:16px;margin:16px 0;overflow-x:auto;font-family:"Fira Code","Consolas","Monaco",monospace;font-size:14px;line-height:1.6;';
+
+            // Aplicar highlight
+            hljs.highlightElement(codeEl);
+
+            // Substituir o container original
+            container.parentNode.replaceChild(pre, container);
+        });
+    });
+    </script>
+@endpush

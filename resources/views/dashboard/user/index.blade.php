@@ -1,24 +1,13 @@
 @extends('dashboard.master')
-@section('pageTitle', isset($pageTitle) ? $pageTitle : 'Page Title Here')
+@section('pageTitle', isset($pageTitle) ? $pageTitle : 'Usuários')
 @section('content')
-<div class="page-header">
-    <div class="row align-items-center">
-        <div class="col-md-6 col-sm-12">
-            <div class="title">
-                <h4>{{ $pageTitle ?? 'Usuários' }}</h4>
-            </div>
-        </div>
-        <div class="col-md-6 col-sm-12 text-right">
-            <a href="{{ route('admin.users.create') }}" class="btn btn-primary">
-                <i class="fa fa-plus"></i> Novo Usuário
-            </a>
-        </div>
-    </div>
-</div>
+
+<ul class="mir-breadcrumb">
+    <li class="mir-breadcrumb-item"><a href="{{ route('admin.dashboard') }}"><i class="fa-solid fa-house" style="font-size:.65rem"></i></a></li>
+    <li class="mir-breadcrumb-sep"><i class="fa-solid fa-chevron-right"></i></li>
+    <li class="mir-breadcrumb-item active">Usuários</li>
+</ul>
+
 <livewire:admin.user-table />
-
-
-
-
 
 @endsection

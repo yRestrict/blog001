@@ -53,6 +53,12 @@ Route::name('frontend.')->group(function () {
 // ─── Dashboard ────────────────────────────────────────────────────────────────
 Route::prefix('admin')->name('admin.')->group(function () {
 
+    Route::get('/', function () {
+        return auth()->check()
+            ? redirect()->route('admin.dashboard')
+            : redirect()->route('admin.login');
+    })->middleware('preventBackHistory')->name('index');
+
     // ── Convidado ─────────────────────────────────────────────────────────────
     Route::middleware(['guest', 'preventBackHistory'])->group(function () {
         Route::get('/login',                   [LoginController::class,          'showLoginForm'])->name('login');

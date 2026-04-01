@@ -11,42 +11,68 @@ class PostsTrash extends Component
     use WithPagination;
 
     public string $search = '';
-    public ?int $confirmingForceDelete = null;
+    public int $perPage = 10;
 
+    // ─── Modal de exclusão permanente ────────────────────────────────────────
+    public ?int $deletingPostId = null;
+    public string $deletingPostTitle = '';
+
+    // ─── Modal de esvaziar lixeira ───────────────────────────────────────────
+    public bool $confirmingEmptyTrash = false;
+
+    // ─── Busca ───────────────────────────────────────────────────────────────
     public function updatingSearch(): void
     {
         $this->resetPage();
     }
 
-    // ─── Restaurar post ───────────────────────────────────────────────────────
-    public function restore(int $id): void
+    public function updatingPerPage(): void
+    {
+        $this->resetPage();
+    }
+
+    // ─── Computed: contagem de itens na lixeira ─────────────────────────────
+    public function getTrashedCountProperty(): int
+    {
+        return Post::onlyTrashed()->count();
+    }
+
+    // ─── Restaurar post ─────────────────────────────────────────────────────
+    public function restorePost(int $id): void
     {
         Post::onlyTrashed()->findOrFail($id)->restore();
         $this->dispatch('notify', type: 'success', message: 'Post restaurado com sucesso!');
     }
 
-    // ─── Restaurar todos ──────────────────────────────────────────────────────
+    // ─── Restaurar todos ────────────────────────────────────────────────────
     public function restoreAll(): void
     {
         Post::onlyTrashed()->restore();
         $this->dispatch('notify', type: 'success', message: 'Todos os posts foram restaurados!');
     }
 
-    // ─── Confirmação de exclusão permanente ───────────────────────────────────
-    public function confirmForceDelete(int $id): void
+    // ─── Preparar exclusão permanente (abre modal) ──────────────────────────
+    public function prepareForceDelete(int $id): void
     {
-        $this->confirmingForceDelete = $id;
+        $post = Post::onlyTrashed()->findOrFail($id);
+        $this->deletingPostId = $post->id;
+        $this->deletingPostTitle = $post->title;
     }
 
     public function cancelForceDelete(): void
     {
-        $this->confirmingForceDelete = null;
+        $this->deletingPostId = null;
+        $this->deletingPostTitle = '';
     }
 
-    // ─── Excluir permanentemente ──────────────────────────────────────────────
-    public function forceDelete(int $id): void
+    // ─── Excluir permanentemente ────────────────────────────────────────────
+    public function forceDeletePost(): void
     {
-        $post = Post::onlyTrashed()->findOrFail($id);
+        if (!$this->deletingPostId) {
+            return;
+        }
+
+        $post = Post::onlyTrashed()->findOrFail($this->deletingPostId);
 
         // Remove imagem do disco se existir
         if ($post->thumbnail && file_exists(public_path('uploads/posts/' . $post->thumbnail))) {
@@ -58,11 +84,22 @@ class PostsTrash extends Component
 
         $post->forceDelete();
 
-        $this->confirmingForceDelete = null;
+        $this->deletingPostId = null;
+        $this->deletingPostTitle = '';
         $this->dispatch('notify', type: 'success', message: 'Post excluído permanentemente!');
     }
 
-    // ─── Esvaziar lixeira ────────────────────────────────────────────────────
+    // ─── Esvaziar lixeira (modal) ───────────────────────────────────────────
+    public function confirmEmptyTrash(): void
+    {
+        $this->confirmingEmptyTrash = true;
+    }
+
+    public function cancelEmptyTrash(): void
+    {
+        $this->confirmingEmptyTrash = false;
+    }
+
     public function emptyTrash(): void
     {
         $posts = Post::onlyTrashed()->get();
@@ -75,10 +112,11 @@ class PostsTrash extends Component
             $post->forceDelete();
         }
 
+        $this->confirmingEmptyTrash = false;
         $this->dispatch('notify', type: 'success', message: 'Lixeira esvaziada com sucesso!');
     }
 
-    // ─── Render ───────────────────────────────────────────────────────────────
+    // ─── Render ─────────────────────────────────────────────────────────────
     public function render()
     {
         $posts = Post::onlyTrashed()
@@ -87,11 +125,10 @@ class PostsTrash extends Component
                 $q->where('title', 'like', '%' . $this->search . '%')
             )
             ->latest('deleted_at')
-            ->paginate(10);
+            ->paginate($this->perPage);
 
         return view('livewire.admin.posts-trash', [
-            'posts'      => $posts,
-            'trashCount' => Post::onlyTrashed()->count(),
+            'posts' => $posts,
         ]);
     }
 }

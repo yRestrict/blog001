@@ -11,6 +11,10 @@ class Menus extends Component
     // ─── Tipo do menu ───────────────────────────────────────────────────────────
     public string $type;
 
+    // ─── Busca e Filtros ────────────────────────────────────────────────────────
+    public string $search       = '';
+    public string $filterStatus = '';
+
     // ─── Controle do formulário ──────────────────────────────────────────────────
     public bool   $showForm          = false;
     public ?int   $editingId         = null;
@@ -67,19 +71,35 @@ class Menus extends Component
     // ─── Render ──────────────────────────────────────────────────────────────────
     public function render(): View
     {
-        // Árvore de itens (raiz com filhos carregados recursivamente)
-        $items = Menu::where('type', $this->type)
+        $query = Menu::where('type', $this->type)
             ->whereNull('parent_id')
             ->with(['children.children.children'])
-            ->orderBy('order')
-            ->get();
+            ->orderBy('order');
+
+        if ($this->search) {
+            // Busca no item ou nos filhos
+            $search = $this->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('title', 'like', '%' . $search . '%')
+                  ->orWhereHas('children', fn($c) => $c->where('title', 'like', '%' . $search . '%'));
+            });
+        }
+
+        if ($this->filterStatus !== '') {
+            $active = $this->filterStatus === 'active';
+            $query->where('is_active', $active);
+        }
+
+        $items = $query->get();
+
+        $totalItems = Menu::where('type', $this->type)->count();
 
         // Lista plana para o select de "item pai" no formulário
         $allItems = Menu::where('type', $this->type)
             ->orderBy('order')
             ->get();
 
-        return view('livewire.admin.menus', compact('items', 'allItems'));
+        return view('livewire.admin.menus', compact('items', 'allItems', 'totalItems'));
     }
 
     // ─── Formulário: Abrir para adicionar ────────────────────────────────────────

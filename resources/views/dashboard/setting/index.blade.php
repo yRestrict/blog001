@@ -1,31 +1,13 @@
 @extends('dashboard.master')
-@section('pageTitle', isset($pageTitle) ? $pageTitle : 'Page Title Here')
+@section('pageTitle', isset($pageTitle) ? $pageTitle : 'Configurações')
 @section('content')
-    <div class="page-header">
-    <div class="row align-items-center">
-        <div class="col-md-6 col-sm-12">
-            <div class="title">
-                <h4>Settings</h4>
-            </div>
-        </div>
-        <div class="col-md-6 col-sm-12">
-            <nav aria-label="breadcrumb" role="navigation">
-                <ol class="breadcrumb d-flex justify-content-end mb-0">
-                    <li class="breadcrumb-item">
-                        <a href="{{ route('admin.dashboard') }}">Home</a>
-                    </li>
-                    <li class="breadcrumb-item active" aria-current="page">
-                        Settings
-                    </li>
-                </ol>
-            </nav>
-        </div>
-    </div>
-</div>
 
-<div class="pd-20 card-box mb-4">
-    @livewire('admin.settings')
-</div>
+<ul class="mir-breadcrumb">
+    <li class="mir-breadcrumb-item"><a href="{{ route('admin.dashboard') }}"><i class="fa-solid fa-house" style="font-size:.65rem"></i></a></li>
+    <li class="mir-breadcrumb-sep"><i class="fa-solid fa-chevron-right"></i></li>
+    <li class="mir-breadcrumb-item active">Configurações</li>
+</ul>
+
+@livewire('admin.settings')
 
 @endsection
-

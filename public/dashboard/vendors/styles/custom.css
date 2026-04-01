@@ -168,6 +168,7 @@
     height: 24px;
     background: #e5e7eb;
     flex-shrink: 0;
+    margin: 0 10px;
 }
 
 
@@ -394,6 +395,9 @@
     display: flex;
     align-items: center;
     gap: 4px;
+    width: 68px;
+    flex-shrink: 0;
+    justify-content: center;
 }
 
 /* Botão base de ação */
@@ -437,29 +441,24 @@
 }
 
 /* Botão: Editar */
-.mir-action-edit {
-    background: #f9fafb;
-    color: #6b7280;
-    border-color: #e5e7eb;
-}
-
 .mir-action-edit:hover {
-    background: #f3f4f6;
-    color: #111827;
-    border-color: #c8d0dc;
+    background: #ede9fe;
+    border-color: #c4b5fd;
+    color: #5b21b6;
 }
 
 /* Botão: Excluir */
-.mir-action-delete {
-    background: #f9fafb;
-    color: #d1d5db;
-    border-color: #e5e7eb;
+.mir-action-delete:hover {
+    background: #fee2e2;
+    border-color: #fca5a5;
+    color: #b91c1c;
 }
 
-.mir-action-delete:hover {
-    background: #fef2f2;
-    color: #ef4444;
-    border-color: #fecaca;
+/* Botão: Restaurar */
+.mir-action-restore:hover {
+    background: #d1fae5;
+    border-color: #6ee7b7;
+    color: #059669;
 }
 
 
@@ -559,19 +558,22 @@
     gap: 6px;
     height: 36px;
     padding: 0 16px;
-    background: #2563eb;
+    background: #6366f1;
     color: #fff;
     border: none;
     border-radius: 8px;
-    font-size: .8rem;
+    font-size: .82rem;
     font-weight: 600;
     cursor: pointer;
-    transition: background 160ms ease, box-shadow 160ms ease;
+    box-shadow: 0 1px 3px rgba(99,102,241,.25);
+    transition: all .15s ease;
+    text-decoration: none;
+    white-space: nowrap;
 }
 
 .mir-btn-primary-lg:hover {
-    background: #1d4ed8;
-    box-shadow: 0 4px 12px rgba(37, 99, 235, .3);
+    background: #4f46e5;
+    box-shadow: 0 2px 6px rgba(99,102,241,.3);
     color: #fff;
     text-decoration: none;
 }
@@ -583,19 +585,22 @@
     gap: 6px;
     height: 36px;
     padding: 0 16px;
-    background: #f1f5f9;
-    color: #64748b;
-    border: 1px solid #e3e8ef;
+    background: transparent;
+    color: #6d7279;
+    border: 1px solid #e0e0e0;
     border-radius: 8px;
-    font-size: .8rem;
+    font-size: .82rem;
     font-weight: 600;
     cursor: pointer;
-    transition: all 160ms ease;
+    transition: all .15s ease;
+    text-decoration: none;
+    white-space: nowrap;
 }
 
 .mir-btn-ghost:hover {
-    background: #e2e8f0;
-    color: #1a2332;
+    background: #f5f5f5;
+    color: #374151;
+    text-decoration: none;
 }
 
 
@@ -790,9 +795,9 @@ select.mir-input {
 
 .mir-input:focus {
     outline: none;
-    border-color: #93c5fd;
+    border-color: #6366f1;
     background: #fff;
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, .12);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, .12);
 }
 
 .mir-input.is-invalid {
@@ -938,7 +943,7 @@ select.mir-input {
 
 /* Estado: Ligado */
 .mir-switch-input:checked+.mir-switch-label .mir-switch-track {
-    background: #2563eb;
+    background: #6366f1;
 }
 
 .mir-switch-input:checked+.mir-switch-label .mir-switch-thumb {
@@ -959,37 +964,28 @@ select.mir-input {
    ============================================================= */
 
 .mir-empty-state {
-    border: 2px dashed #e3e8ef;
-    border-radius: 14px;
-    background: #f8fafc;
-    padding: 52px 24px;
+    padding: 48px 24px;
     text-align: center;
 }
 
-/* Ícone centralizado em caixa arredondada */
 .mir-empty-icon {
-    width: 60px;
-    height: 60px;
-    background: #eff6ff;
-    border-radius: 14px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto 18px;
+    display: inline-block;
     font-size: 1.5rem;
-    color: #93c5fd;
+    color: #d1d5db;
+    margin-bottom: 12px;
 }
 
 .mir-empty-title {
-    font-weight: 700;
-    color: #1a2332;
-    margin-bottom: 6px;
+    font-size: .9rem;
+    font-weight: 600;
+    color: #6d7279;
+    margin-bottom: 4px;
 }
 
 .mir-empty-desc {
-    font-size: .85rem;
-    color: #8494a9;
-    margin-bottom: 20px;
+    font-size: .8rem;
+    color: #9ca3af;
+    margin-bottom: 16px;
 }
 
 
@@ -998,8 +994,13 @@ select.mir-input {
    Empilhadas no canto inferior-direito da tela
    ============================================================= */
 
-/* Container fixo para as notificações */
-#mir-toast-container {
+/* Container fixo para as notificações (seletor genérico para todos os IDs) */
+#mir-toast-container,
+#post-toast-container,
+#sdb-toast-container,
+#cat-toast-container,
+#trash-toast-container,
+[id$="-toast-container"] {
     position: fixed;
     bottom: 24px;
     right: 24px;
@@ -1262,260 +1263,292 @@ select.mir-input {
 
 /* =============================================================
    19. SIDEBAR (LEFT SIDE BAR)
-   Refinamentos sobre .left-side-bar do template DeskApp.
-   O template já define width:280px, fixed, background:#142127.
+   Design system mir- aplicado sobre o template DeskApp.
+   Background dark: #0f172a (slate-900) com accents indigo.
    ============================================================= */
 
-/* Borda direita sutil para separar sidebar do conteúdo */
+/* ── Base (dark é o padrão) ───────────────────────────────────── */
 .left-side-bar {
-    border-right: 1px solid rgba(255, 255, 255, .06);
+    background: #0f172a;
+    border-right: 1px solid rgba(255,255,255,.06);
 }
 
 /* ── Logo / Brand ────────────────────────────────────────────── */
 .brand-logo {
-    border-bottom: 1px solid rgba(255, 255, 255, .08);
+    border-bottom: 1px solid rgba(255,255,255,.07);
 }
+.brand-logo a { transition: opacity 160ms ease; }
+.brand-logo a:hover { opacity: .85; }
 
-.brand-logo a {
-    transition: opacity 160ms ease;
-}
-
-.brand-logo a:hover {
-    opacity: .85;
-}
-
-/* Botão fechar sidebar (mobile) */
 .left-side-bar .close-sidebar {
-    width: 30px;
-    height: 30px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    width: 30px; height: 30px;
+    display: flex; align-items: center; justify-content: center;
     border-radius: 6px;
     transition: background 160ms ease, color 160ms ease;
 }
-
 .left-side-bar .close-sidebar:hover {
-    background: rgba(255, 255, 255, .1);
+    background: rgba(255,255,255,.1);
     color: #fff;
 }
 
-/* Light mode: botão fechar em fundo claro */
-.sidebar-light .left-side-bar .close-sidebar:hover {
-    background: rgba(0, 0, 0, .07);
-    color: #142127;
+/* ── Itens do menu (1º nível) ────────────────────────────────── */
+.sidebar-menu > ul > li {
+    padding: 2px 10px;
+    border-bottom: 1px solid rgba(255,255,255,.05);
 }
 
-/* ── Itens da lista principal ────────────────────────────────── */
-.sidebar-menu>ul>li {
-    padding: 1px 10px;
-}
-
-/* Link de item: transição mais suave */
 .sidebar-menu .dropdown-toggle {
     border-radius: 8px;
-    transition: background 160ms ease, color 160ms ease, padding-left 160ms ease;
+    border: none !important;
+    box-shadow: none !important;
+    outline: none !important;
+    transition: background 160ms ease, color 160ms ease;
+    color: rgba(255,255,255,.7);
 }
 
-/* Ícone lateral: micro-animação de escala */
 .sidebar-menu .dropdown-toggle .micon {
-    transition: color 160ms ease, transform 200ms cubic-bezier(.34, 1.56, .64, 1);
+    transition: color 160ms ease;
+    color: rgba(255,255,255,.45);
+    background: transparent !important;
+    box-shadow: none !important;
 }
 
-/* NOTA: a escala já está embutida no translateY do template (transform:translate(0,-50%)) */
-/* Para não conflitar, usamos apenas a cor no hover sem escala extra */
+/* Reset submenu items */
+.sidebar-menu .submenu li a {
+    border: none !important;
+    box-shadow: none !important;
+    outline: none !important;
+}
+
+.sidebar-menu .submenu li {
+    border: none !important;
+    box-shadow: none !important;
+}
+
+/* Hover — fundo sutil + ícone indigo */
+.sidebar-menu .dropdown-toggle:hover {
+    background: rgba(255,255,255,.06);
+    color: #fff;
+}
 .sidebar-menu .dropdown-toggle:hover .micon {
-    color: #93c5fd;
+    color: #818cf8;
 }
 
-.sidebar-menu .show>.dropdown-toggle .micon {
-    color: #93c5fd;
+/* Aberto (show) — fundo sutil + ícone indigo */
+.sidebar-menu .show > .dropdown-toggle {
+    background: rgba(99,102,241,.1);
+    color: #fff;
+}
+.sidebar-menu .show > .dropdown-toggle .micon {
+    color: #818cf8;
 }
 
-/* Estado ativo do item de 1º nível — dark sidebar: destaque branco-azulado */
-.sidebar-menu>ul>li>.dropdown-toggle.active {
-    background: rgba(255, 255, 255, .15);
+/* Ativo (página atual, item sem submenu) */
+.sidebar-menu > ul > li > .dropdown-toggle.active {
+    background: rgba(99,102,241,.15);
     color: #fff;
     font-weight: 600;
 }
-
-.sidebar-menu>ul>li>.dropdown-toggle.active .micon {
-    color: #93c5fd;
+.sidebar-menu > ul > li > .dropdown-toggle.active .micon {
+    color: #a5b4fc;
 }
 
-/* Hover e estado aberto — dark sidebar */
-.sidebar-menu .dropdown-toggle:hover,
-.sidebar-menu .show>.dropdown-toggle {
-    background: rgba(255, 255, 255, .09);
+/* Ícone de seta — rotação suave */
+.sidebar-menu .dropdown-toggle::after {
+    transition: transform 200ms cubic-bezier(.4, 0, .2, 1);
+    opacity: .5;
+}
+.sidebar-menu li.show > .dropdown-toggle::after {
+    transform: rotate(90deg);
+    opacity: .8;
 }
 
-/* ── Submenu ─────────────────────────────────────────────────── */
+/* ── Submenu: collapse via JS height + CSS transition ────────── */
 .sidebar-menu .submenu {
-    background: rgba(0, 0, 0, .15);
+    display: block !important;
+    background: rgba(0,0,0,.2);
     border-radius: 0 0 8px 8px;
-    padding: 2px 4px 4px;
+    margin: 0 4px;
+    padding: 0 !important;
+    overflow: hidden;
+    height: 0;
+    transition: height 200ms cubic-bezier(.4, 0, .2, 1);
+    visibility: hidden;
 }
 
-/* Item do submenu */
+.sidebar-menu li.show > .submenu {
+    visibility: visible;
+}
+
+/* Items do submenu */
 .sidebar-menu .submenu li a {
     border-radius: 6px;
     font-size: .8rem;
-    padding: 10px 15px 10px 58px;
-    transition: background 140ms ease, color 140ms ease, padding-left 140ms ease;
-    color: rgba(255, 255, 255, .75);
+    padding: 9px 14px;
+    margin: 1px 6px;
+    transition: background 140ms ease, color 140ms ease;
+    color: rgba(255,255,255,.55);
+    display: flex !important;
+    align-items: center;
+    gap: 10px;
 }
-
-/* Hover no submenu */
 .sidebar-menu .submenu li a:hover {
-    background: rgba(255, 255, 255, .08);
+    background: rgba(255,255,255,.07);
     color: #fff;
-    padding-left: 62px;
 }
-
-/* Item ativo do submenu */
 .sidebar-menu .submenu li a.active {
-    background: rgba(27, 0, 255, .25);
-    color: #fff;
+    background: rgba(99,102,241,.2);
+    color: #c7d2fe;
     font-weight: 500;
 }
 
-/* Ícone bullet do submenu */
-.sidebar-menu .submenu li>a:before {
-    transition: left 140ms ease, color 140ms ease;
+/* Esconder bullet padrão do template — usamos ícone .sub-icon */
+.sidebar-menu .submenu li > a:before {
+    display: none !important;
 }
 
-.sidebar-menu .submenu li:hover>a:before {
-    color: #93c5fd;
+/* Ícone do submenu */
+.sidebar-menu .submenu .sub-icon {
+    font-size: .68rem;
+    width: 20px;
+    flex-shrink: 0;
+    text-align: center;
+    opacity: .5;
+    transition: opacity 140ms ease, color 140ms ease;
+}
+.sidebar-menu .submenu li a:hover .sub-icon {
+    opacity: .9;
+    color: #818cf8;
+}
+.sidebar-menu .submenu li a.active .sub-icon {
+    opacity: 1;
+    color: #a5b4fc;
 }
 
-/* Submenu de 2º nível (child) — indentação extra */
-.sidebar-menu .submenu.child {
-    padding-left: 12px;
+/* ── Submenu child (2º nível) ────────────────────────────────── */
+.sidebar-menu .submenu .submenu {
+    margin: 0 0 0 8px;
+    background: rgba(0,0,0,.15);
+    border-radius: 0 0 6px 6px;
 }
-
 .sidebar-menu .submenu.child li a {
-    padding-left: 68px;
+    padding: 8px 14px;
     font-size: .78rem;
-    color: rgba(255, 255, 255, .6);
+    color: rgba(255,255,255,.45);
 }
-
 .sidebar-menu .submenu.child li a:hover {
-    padding-left: 72px;
     color: #fff;
 }
 
-/* ── Rótulo de seção (sidebar-small-cap) ─────────────────────── */
+/* ── Rótulo de seção ─────────────────────────────────────────── */
 .sidebar-menu .sidebar-small-cap {
-    font-size: .65rem;
+    font-size: .62rem;
     font-weight: 700;
-    letter-spacing: .1em;
-    color: rgba(255, 255, 255, .35);
-    padding: 14px 15px 6px;
+    letter-spacing: .12em;
+    color: rgba(255,255,255,.25);
+    padding: 18px 15px 6px;
     text-transform: uppercase;
 }
 
-/* ── Divisor entre seções ────────────────────────────────────── */
+/* ── Divisor ─────────────────────────────────────────────────── */
 .sidebar-menu .dropdown-divider {
-    border-color: rgba(255, 255, 255, .1);
+    border-color: rgba(255,255,255,.06);
     border-width: 1px;
-    margin: 10px 5px;
+    margin: 8px 12px;
 }
 
-/* ── Sidebar light mode ──────────────────────────────────────── */
+/* =============================================================
+   19b. SIDEBAR — LIGHT MODE
+   ============================================================= */
 .sidebar-light .left-side-bar {
-    border-right: 1px solid #e8ecf2;
+    background: #fff;
+    border-right: 1px solid #e5e7eb;
 }
 
 .sidebar-light .brand-logo {
-    border-bottom-color: rgba(0, 0, 0, .08);
+    border-bottom-color: #f0f0f0;
 }
 
-/* Rótulo de seção mais discreto no fundo claro */
-.sidebar-light .sidebar-menu .sidebar-small-cap {
-    color: rgba(11, 19, 43, .38);
-    letter-spacing: .12em;
+.sidebar-light .left-side-bar .close-sidebar:hover {
+    background: rgba(0,0,0,.05);
+    color: #374151;
 }
 
-/* Links do 1º nível: cor escura no fundo claro */
+/* Itens 1º nível — light */
 .sidebar-light .sidebar-menu .dropdown-toggle {
-    color: #1b2a38;
+    color: #4b5563;
 }
-
-/* Ícone do 1º nível: cor escura */
 .sidebar-light .sidebar-menu .dropdown-toggle .micon {
-    color: #1b2a38;
+    color: #9ca3af;
+}
+.sidebar-light .sidebar-menu .dropdown-toggle:hover {
+    background: #f3f4f6;
+    color: #1a1d23;
+}
+.sidebar-light .sidebar-menu .dropdown-toggle:hover .micon {
+    color: #6366f1;
+}
+.sidebar-light .sidebar-menu .show > .dropdown-toggle {
+    background: rgba(99,102,241,.06);
+    color: #4338ca;
+}
+.sidebar-light .sidebar-menu .show > .dropdown-toggle .micon {
+    color: #6366f1;
 }
 
-/* Hover no 1º nível — light sidebar */
-.sidebar-light .sidebar-menu .dropdown-toggle:hover,
-.sidebar-light .sidebar-menu .show>.dropdown-toggle {
-    background: rgba(27, 0, 255, .06);
-    color: #1b00ff;
-}
-
-.sidebar-light .sidebar-menu .dropdown-toggle:hover .micon,
-.sidebar-light .sidebar-menu .show>.dropdown-toggle .micon {
-    color: #1b00ff;
-}
-
-/* Active no 1º nível — accent azul suave, SEM fundo preto */
-.sidebar-light .sidebar-menu>ul>li>.dropdown-toggle.active {
-    background: rgba(27, 0, 255, .1);
-    color: #1b00ff;
-    font-weight: 700;
-    border-left: 3px solid #1b00ff;
-    padding-left: calc(67px - 3px);
-    /* compensa a borda esquerda */
-}
-
-.sidebar-light .sidebar-menu>ul>li>.dropdown-toggle.active .micon {
-    color: #1b00ff;
-}
-
-/* Submenu no light mode */
-.sidebar-light .sidebar-menu .submenu {
-    background: rgba(27, 0, 255, .03);
-    border-left: 2px solid rgba(27, 0, 255, .12);
-    margin-left: 14px;
-    border-radius: 0 0 6px 6px;
-}
-
-/* Links do submenu: texto escuro */
-.sidebar-light .sidebar-menu .submenu li a {
-    color: #4a5568;
-    font-weight: 400;
-}
-
-/* Hover no submenu light */
-.sidebar-light .sidebar-menu .submenu li a:hover {
-    background: rgba(27, 0, 255, .07);
-    color: #1b00ff;
-    padding-left: 62px;
-}
-
-.sidebar-light .sidebar-menu .submenu li:hover>a:before {
-    color: #1b00ff;
-}
-
-/* Item ativo do submenu no light mode */
-.sidebar-light .sidebar-menu .submenu li a.active {
-    background: rgba(27, 0, 255, .1);
-    color: #1b00ff;
+/* Ativo — light */
+.sidebar-light .sidebar-menu > ul > li > .dropdown-toggle.active {
+    background: rgba(99,102,241,.1);
+    color: #4338ca;
     font-weight: 600;
+    border-left: 3px solid #6366f1;
+    padding-left: calc(67px - 3px);
+}
+.sidebar-light .sidebar-menu > ul > li > .dropdown-toggle.active .micon {
+    color: #6366f1;
 }
 
-/* Submenu de 2º nível (child) no light mode */
-.sidebar-light .sidebar-menu .submenu.child li a {
+/* Submenu — light */
+.sidebar-light .sidebar-menu .submenu {
+    background: #f9fafb;
+    margin: 0 6px 2px;
+    border-left: 2px solid rgba(99,102,241,.15);
+}
+.sidebar-light .sidebar-menu .submenu li a {
     color: #6b7280;
 }
-
-.sidebar-light .sidebar-menu .submenu.child li a:hover {
-    color: #1b00ff;
+.sidebar-light .sidebar-menu .submenu li a:hover {
+    background: rgba(99,102,241,.06);
+    color: #4338ca;
+}
+.sidebar-light .sidebar-menu .submenu li a.active {
+    background: rgba(99,102,241,.1);
+    color: #4338ca;
+    font-weight: 600;
+}
+.sidebar-light .sidebar-menu .submenu li:hover > a:before {
+    color: #6366f1;
+}
+.sidebar-light .sidebar-menu .submenu li a.active:before {
+    color: #6366f1;
 }
 
-/* Divisor mais sutil no light mode */
+/* Submenu child — light */
+.sidebar-light .sidebar-menu .submenu.child li a {
+    color: #9ca3af;
+}
+.sidebar-light .sidebar-menu .submenu.child li a:hover {
+    color: #4338ca;
+}
+
+/* Section label — light */
+.sidebar-light .sidebar-menu .sidebar-small-cap {
+    color: #9ca3af;
+}
+
+/* Divisor — light */
 .sidebar-light .sidebar-menu .dropdown-divider {
-    border-color: rgba(0, 0, 0, .08);
+    border-color: #f0f0f0;
 }
 
 
@@ -1737,107 +1770,1112 @@ select.mir-input {
 .footer-option-card.active .footer-option-check {
     color: #4d7cfe;
 }
+
+
 /* =============================================================
-   USUÁRIOS — Seção a adicionar no custom.css
-   Segue o mesmo padrão mir- do menu e categorias
+   21. PAGE HEADER ACTION
+   Cabeçalho obrigatório de toda página do dashboard.
+   Substitui breadcrumbs e botões dispersos.
    ============================================================= */
 
-/* ── Formulários (create / edit) ──────────────────────────── */
+/* ── Breadcrumb mir- ────────────────────────────────────── */
+.mir-breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    list-style: none;
+    padding: 0;
+    margin: 0 0 14px;
+    font-size: .75rem;
+    font-weight: 500;
+}
 
-.usr-form-card {
-    background: #fff;
-    border-radius: 12px;
-    box-shadow: 0 1px 4px rgba(0,0,0,.08);
-    overflow: hidden;
+.mir-breadcrumb-item {
+    display: inline-flex;
+    align-items: center;
+}
+
+.mir-breadcrumb-item a {
+    color: #9ca3af;
+    text-decoration: none;
+    transition: color .15s;
+}
+
+.mir-breadcrumb-item a:hover {
+    color: #6366f1;
+}
+
+.mir-breadcrumb-sep {
+    margin: 0 8px;
+    color: #d1d5db;
+    font-size: .65rem;
+}
+
+.mir-breadcrumb-item.active {
+    color: #6d7279;
+    font-weight: 600;
+}
+
+.page-header-action {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     margin-bottom: 24px;
 }
 
-.usr-form-header {
+.page-header-left {
     display: flex;
-    align-items: center;
-    gap: 14px;
-    padding: 18px 24px;
-    border-bottom: 1px solid #f1f5f9;
+    flex-direction: column;
+    gap: 2px;
 }
 
-.usr-form-icon {
-    width: 40px;
-    height: 40px;
-    border-radius: 10px;
+.page-header-title {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: #1a1d23;
     display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.page-header-title-count {
+    display: inline-flex;
     align-items: center;
     justify-content: center;
-    flex-shrink: 0;
-}
-.usr-form-icon-add  { background: #dcfce7; color: #16a34a; }
-.usr-form-icon-edit { background: #dbeafe; color: #2563eb; }
-
-.usr-form-title {
-    font-size: .93rem;
+    min-width: 28px;
+    height: 24px;
+    padding: 0 8px;
+    border-radius: 50px;
+    font-size: .72rem;
     font-weight: 700;
-    color: #1a2332;
-    margin: 0 0 2px;
+    background: #ede9fe;
+    color: #6d28d9;
 }
-.usr-form-subtitle {
-    font-size: .75rem;
-    color: #8494a9;
+
+.page-header-sub {
+    font-size: .82rem;
+    color: #9ca3af;
+}
+
+.page-header-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+
+/* =============================================================
+   22. BOTÕES — NEUTRAL, SUCCESS, DANGER
+   Complementam mir-btn-primary-lg e mir-btn-ghost
+   ============================================================= */
+
+.mir-btn-neutral {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 36px;
+    padding: 0 16px;
+    border-radius: 8px;
+    background: #fff;
+    color: #374151;
+    font-size: .82rem;
+    font-weight: 600;
+    border: 1px solid #e5e7eb;
+    cursor: pointer;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, .06);
+    transition: all .15s ease;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.mir-btn-neutral:hover {
+    background: #f9fafb;
+    border-color: #d1d5db;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, .08);
+    color: #1a1d23;
+    text-decoration: none;
+}
+
+.mir-btn-success {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 36px;
+    padding: 0 16px;
+    border-radius: 8px;
+    background: #10b981;
+    color: #fff;
+    font-size: .82rem;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 1px 3px rgba(16, 185, 129, .25);
+    transition: all .15s ease;
+    white-space: nowrap;
+}
+
+.mir-btn-success:hover {
+    background: #059669;
+    box-shadow: 0 2px 6px rgba(16, 185, 129, .3);
+    color: #fff;
+}
+
+.mir-btn-danger {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 36px;
+    padding: 0 16px;
+    border-radius: 8px;
+    background: #ef4444;
+    color: #fff;
+    font-size: .82rem;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 1px 3px rgba(239, 68, 68, .25);
+    transition: all .15s ease;
+    white-space: nowrap;
+}
+
+.mir-btn-danger:hover {
+    background: #dc2626;
+    box-shadow: 0 2px 6px rgba(239, 68, 68, .3);
+    color: #fff;
+}
+
+
+/* =============================================================
+   23. SECTION CARD GENÉRICO (mir-section)
+   Container principal para agrupar dados.
+   ============================================================= */
+
+/* post-section e mir-section compartilham o mesmo estilo base */
+.mir-section,
+.post-section {
+    background: #fff;
+    border-radius: 10px;
+    border: 1px solid #e9ecef;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, .05);
+    margin-bottom: 24px;
+}
+
+.mir-section-header,
+.post-section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    border-bottom: 1px solid #f0f0f0;
+    gap: 16px;
+}
+
+.mir-section-title,
+.post-section-title {
+    font-size: .95rem;
+    font-weight: 700;
+    color: #1a1d23;
     margin: 0;
 }
 
-.usr-form-group {
-    margin-bottom: 20px;
+.mir-section-sub,
+.post-section-sub {
+    font-size: .78rem;
+    color: #9ca3af;
+    margin-top: 2px;
 }
 
-.usr-form-footer {
+.mir-section-header-right,
+.post-section-header-right {
     display: flex;
     align-items: center;
-    justify-content: flex-end;
-    gap: 8px;
-    padding-top: 8px;
-    border-top: 1px solid #f1f5f9;
-    margin-top: 8px;
+    gap: 10px;
+    flex-shrink: 0;
 }
 
-/* Bloco de configuração (ex: auto-aprovação) */
-.usr-setting-block {
+/* Section Header com ícone (formulários) */
+.section-icon-header {
     display: flex;
     align-items: center;
-    gap: 14px;
-    padding: 14px 16px;
-    background: #f8fafc;
-    border: 1px solid #e8ecf2;
-    border-left: 4px solid #2563eb;
-    border-radius: 10px;
-    margin-bottom: 20px;
+    gap: 12px;
 }
-.usr-setting-icon {
+
+.section-icon {
     width: 36px;
     height: 36px;
-    border-radius: 8px;
-    background: #dbeafe;
-    color: #2563eb;
+    border-radius: 9px;
     display: flex;
     align-items: center;
     justify-content: center;
+    font-size: .9rem;
     flex-shrink: 0;
 }
-.usr-setting-content { flex: 1 1 auto; min-width: 0; }
-.usr-setting-title {
-    font-size: .85rem;
-    font-weight: 600;
-    color: #1a2332;
-    margin: 0 0 3px;
-}
-.usr-setting-desc {
-    font-size: .75rem;
-    color: #8494a9;
-    margin: 0;
-    line-height: 1.5;
+
+.section-icon-indigo { background: rgba(99, 102, 241, .12); color: #6366f1; }
+.section-icon-green  { background: rgba(16, 185, 129, .12); color: #059669; }
+.section-icon-amber  { background: rgba(245, 158, 11, .12); color: #d97706; }
+.section-icon-cyan   { background: rgba(6, 182, 212, .12);  color: #0891b2; }
+.section-icon-red    { background: rgba(239, 68, 68, .12);  color: #ef4444; }
+
+
+/* =============================================================
+   24. TABLE HEADER + COLUNAS (mir-table-header, plh-*)
+   Cabeçalho de colunas acima das data rows.
+   ============================================================= */
+
+.mir-table-header {
+    display: flex;
+    align-items: center;
+    padding: 10px 20px;
+    gap: 14px;
+    border-bottom: 1px solid #e9ecef;
+    background: #f8fafc;
 }
 
-/* Mensagem de erro inline */
-.mir-field-error {
+.mir-table-header span {
+    font-size: .68rem;
+    font-weight: 700;
+    color: #9ca3af;
+    text-transform: uppercase;
+    letter-spacing: .6px;
+    white-space: nowrap;
+}
+
+/* Larguras de coluna padrão */
+.plh-thumb   { width: 48px; flex-shrink: 0; }
+.plh-body    { flex: 1 1 0; min-width: 0; }
+.plh-meta    { width: 160px; flex-shrink: 0; text-align: right; }
+.plh-divider { width: 1px; height: 16px; background: #e5e7eb; margin: 0 10px; flex-shrink: 0; }
+.plh-status  { width: 90px; flex-shrink: 0; text-align: center; }
+.plh-actions { width: 68px; flex-shrink: 0; text-align: center; }
+
+
+/* =============================================================
+   25. DATA ROW GENÉRICA (mir-data-row)
+   ============================================================= */
+
+.mir-data-list {
+    padding: 4px 0;
+}
+
+.mir-data-row {
+    display: flex;
+    align-items: center;
+    padding: 12px 20px;
+    border-bottom: 1px solid #f5f5f5;
+    transition: background .15s;
+    gap: 14px;
+}
+
+.mir-data-row:last-child {
+    border-bottom: none;
+}
+
+.mir-data-row:hover {
+    background: #f9fafb;
+}
+
+/* ── Thumbnail global ─────────────────────────────────── */
+.mir-thumb {
+    width: 48px;
+    height: 48px;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+    flex-shrink: 0;
+    background: #f3f4f6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #d1d5db;
+    font-size: 1.1rem;
+    overflow: hidden;
+}
+
+.mir-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* ── Body / Name / Info (global) ──────────────────────── */
+.mir-body {
+    flex: 1 1 0;
+    min-width: 0;
+}
+
+.mir-name {
+    font-size: .875rem;
+    font-weight: 600;
+    color: #1a1d23;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.mir-info {
+    font-size: .72rem;
+    color: #9ca3af;
+    margin-top: 2px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.mir-info-dot {
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    background: #d1d5db;
+}
+
+/* ── Loading track ─────────────────────────────────────── */
+.mir-loading-track {
+    height: 3px;
+    background: #f0f0f0;
+    position: relative;
+    overflow: hidden;
+}
+
+.mir-loading-track.mir-loading-active::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -40%;
+    width: 40%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, #6366f1, transparent);
+    border-radius: 2px;
+    animation: mir-loading-slide 1.2s ease-in-out infinite;
+}
+
+
+/* =============================================================
+   26. PAGINAÇÃO (mir-pagination)
+   Barra de 3 zonas no rodapé da section card.
+   ============================================================= */
+
+.mir-pagination {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 20px;
+    border-top: 1px solid #f0f0f0;
+}
+
+.mir-pagination-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.mir-pagination-left-label {
     font-size: .78rem;
-    color: #ef4444;
+    color: #9ca3af;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.mir-per-page {
+    width: 64px;
+    padding: 4px 8px;
+    border: 1.5px solid #e5e7eb;
+    border-radius: 6px;
+    font-size: .78rem;
+    color: #1a1d23;
+    background: #fff;
+    font-family: inherit;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 12 12'%3E%3Cpath d='M2 4l4 4 4-4' stroke='%239ca3af' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 6px center;
+    padding-right: 22px;
+    cursor: pointer;
+    transition: border-color .15s;
+}
+
+.mir-per-page:focus {
+    border-color: #6366f1;
+    outline: none;
+}
+
+.mir-pagination-center {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.mir-page-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 32px;
+    height: 32px;
+    padding: 0 8px;
+    border-radius: 6px;
+    font-size: .78rem;
+    font-weight: 600;
+    border: 1px solid #e5e7eb;
+    background: #fff;
+    color: #6d7279;
+    cursor: pointer;
+    transition: all .15s;
+}
+
+.mir-page-btn:hover {
+    background: #f3f4f6;
+    border-color: #d1d5db;
+}
+
+.mir-page-btn.active {
+    background: #6366f1;
+    color: #fff;
+    border-color: #6366f1;
+}
+
+.mir-page-btn.disabled {
+    opacity: .4;
+    cursor: default;
+    pointer-events: none;
+}
+
+.mir-pagination-right {
+    font-size: .78rem;
+    color: #9ca3af;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+
+/* =============================================================
+   27. STAT WIDGETS (widget-card)
+   Grid de cards estatísticos com faixa lateral colorida.
+   ============================================================= */
+
+.widgets-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
+    transition: opacity 150ms ease;
+}
+
+.widgets-grid.widgets-loading {
+    opacity: .5;
+    pointer-events: none;
+}
+
+@media (max-width: 900px) {
+    .widgets-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 540px) {
+    .widgets-grid { grid-template-columns: 1fr; }
+}
+
+.widget-card {
+    background: #fff;
+    border-radius: 10px;
+    border: 1px solid #e9ecef;
+    padding: 18px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    transition: all .2s ease;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, .04);
+    position: relative;
+    overflow: hidden;
+}
+
+.widget-card::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    border-radius: 0 3px 3px 0;
+}
+
+.widget-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, .08);
+}
+
+/* Faixa lateral por tipo */
+.widget-card-total::before     { background: #f59e0b; }
+.widget-card-published::before { background: #10b981; }
+.widget-card-draft::before     { background: #9ca3af; }
+.widget-card-private::before   { background: #6366f1; }
+.widget-card-pending::before   { background: #f59e0b; }
+.widget-card-approved::before  { background: #10b981; }
+.widget-card-rejected::before  { background: #ef4444; }
+.widget-card-tags::before      { background: #8b5cf6; }
+.widget-card-categories::before { background: #06b6d4; }
+.widget-card-likes::before     { background: #ec4899; }
+.widget-card-comments::before  { background: #f59e0b; }
+
+.widget-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.widget-label {
+    font-size: .7rem;
+    font-weight: 700;
+    color: #9ca3af;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+}
+
+.widget-value {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #1a1d23;
+    line-height: 1;
+}
+
+.widget-trend {
+    font-size: .7rem;
+    font-weight: 600;
+    margin-top: 2px;
+    display: flex;
+    align-items: center;
+    gap: 3px;
+}
+
+.widget-trend-up      { color: #059669; }
+.widget-trend-neutral { color: #9ca3af; }
+
+.widget-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+}
+
+.widget-icon-total      { background: #fef3c7; color: #d97706; }
+.widget-icon-published  { background: #d1fae5; color: #059669; }
+.widget-icon-draft      { background: #f3f4f6; color: #6b7280; }
+.widget-icon-private    { background: #e0e7ff; color: #4f46e5; }
+.widget-icon-pending    { background: #fef3c7; color: #d97706; }
+.widget-icon-approved   { background: #d1fae5; color: #059669; }
+.widget-icon-rejected   { background: #fee2e2; color: #ef4444; }
+.widget-icon-tags       { background: #ede9fe; color: #7c3aed; }
+.widget-icon-categories { background: #cffafe; color: #0891b2; }
+.widget-icon-likes      { background: #fce7f3; color: #db2777; }
+.widget-icon-comments   { background: #fef3c7; color: #d97706; }
+
+
+/* =============================================================
+   28. LOADING STATE (mir-loading-bar, mir-loading-overlay)
+   ============================================================= */
+
+.mir-loading-bar {
+    height: 3px;
+    background: #f0f0f0;
+    position: relative;
+    overflow: hidden;
+}
+
+.mir-loading-bar::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -40%;
+    width: 40%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, #6366f1, transparent);
+    border-radius: 2px;
+    animation: mir-loading-slide 1.2s ease-in-out infinite;
+}
+
+@keyframes mir-loading-slide {
+    0%   { left: -40%; }
+    100% { left: 100%; }
+}
+
+.mir-loading-overlay {
+    position: relative;
+}
+
+.mir-loading-overlay::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(255, 255, 255, .6);
+    z-index: 10;
+    border-radius: 0 0 10px 10px;
+    pointer-events: none;
+    backdrop-filter: blur(1px);
+}
+
+
+/* =============================================================
+   29. TOOLTIPS (mir-tooltip)
+   Posicionamento inteligente via JS.
+   ============================================================= */
+
+.mir-tooltip {
+    position: fixed;
+    padding: 6px 11px;
+    border-radius: 6px;
+    background: #1e1e2e;
+    color: #f1f5f9;
+    font-size: .7rem;
+    font-weight: 600;
+    white-space: nowrap;
+    line-height: 1.3;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, .25);
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity .12s ease;
+}
+
+.mir-tooltip.visible {
+    opacity: 1;
+    visibility: visible;
+}
+
+.mir-tooltip-arrow {
+    position: absolute;
+    width: 0;
+    height: 0;
+    border: 5px solid transparent;
+}
+
+.mir-tooltip-arrow.top    { bottom: -10px; left: 50%; transform: translateX(-50%); border-top-color: #1e1e2e; }
+.mir-tooltip-arrow.bottom { top: -10px;    left: 50%; transform: translateX(-50%); border-bottom-color: #1e1e2e; }
+.mir-tooltip-arrow.left   { right: -10px;  top: 50%;  transform: translateY(-50%); border-left-color: #1e1e2e; }
+.mir-tooltip-arrow.right  { left: -10px;   top: 50%;  transform: translateY(-50%); border-right-color: #1e1e2e; }
+
+
+/* =============================================================
+   30. BADGES GLOBAIS
+   ============================================================= */
+
+.mir-badge-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 24px;
+    height: 24px;
+    padding: 0 7px;
+    border-radius: 50px;
+    font-size: .72rem;
+    font-weight: 700;
+    background: #ede9fe;
+    color: #6d28d9;
+}
+
+.mir-badge-parent {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 9px;
+    border-radius: 50px;
+    font-size: .72rem;
+    font-weight: 600;
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.mir-badge-deleted {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 9px;
+    border-radius: 50px;
+    font-size: .72rem;
+    font-weight: 600;
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.mir-badge-feat {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    padding: 2px 8px;
+    border-radius: 50px;
+    font-size: .68rem;
+    font-weight: 700;
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.mir-badge-none {
+    font-size: .75rem;
+    color: #c4c8cf;
+}
+
+
+/* =============================================================
+   31. STATUS PILLS (publicado, rascunho, privado)
+   Extensão do .mir-status para contexto de posts.
+   ============================================================= */
+
+.mir-status.is-published { background: #d1fae5; color: #065f46; }
+.mir-status.is-published:hover { background: #a7f3d0; }
+.mir-status.is-published .mir-status-ring { background: #10b981; }
+
+.mir-status.is-draft { background: #f3f4f6; color: #6b7280; }
+.mir-status.is-draft:hover { background: #e5e7eb; }
+.mir-status.is-draft .mir-status-ring { background: #9ca3af; }
+
+.mir-status.is-private { background: #e0e7ff; color: #3730a3; }
+.mir-status.is-private:hover { background: #c7d2fe; }
+.mir-status.is-private .mir-status-ring { background: #6366f1; }
+
+.mir-status.is-pending { background: #fef3c7; color: #92400e; }
+.mir-status.is-pending:hover { background: #fde68a; }
+.mir-status.is-pending .mir-status-ring { background: #f59e0b; }
+
+.mir-status.is-approved { background: #d1fae5; color: #065f46; }
+.mir-status.is-approved:hover { background: #a7f3d0; }
+.mir-status.is-approved .mir-status-ring { background: #10b981; }
+
+.mir-status.is-rejected { background: #fee2e2; color: #991b1b; }
+.mir-status.is-rejected:hover { background: #fecaca; }
+.mir-status.is-rejected .mir-status-ring { background: #ef4444; }
+
+
+/* =============================================================
+   32. FILTER DROPDOWN
+   Painel dropdown de filtros para listagens.
+   ============================================================= */
+
+.filter-dropdown-wrap {
+    position: relative;
+}
+
+.filter-dropdown-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    border-radius: 8px;
+    border: 1.5px solid #e5e7eb;
+    background: #fff;
+    font-size: .82rem;
+    font-weight: 600;
+    color: #6d7279;
+    cursor: pointer;
+    transition: all .15s;
+    white-space: nowrap;
+}
+
+.filter-dropdown-btn:hover {
+    border-color: #d1d5db;
+    background: #f9fafb;
+}
+
+.filter-dropdown-btn.open {
+    border-color: #6366f1;
+    color: #4f46e5;
+    background: #f5f3ff;
+}
+
+.filter-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    border-radius: 50px;
+    font-size: .65rem;
+    font-weight: 700;
+    background: #6366f1;
+    color: #fff;
+}
+
+.filter-dropdown-panel {
+    display: none;
+    position: absolute;
+    top: calc(100% + 6px);
+    right: 0;
+    width: 280px;
+    background: #fff;
+    border-radius: 10px;
+    border: 1px solid #e9ecef;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, .12);
+    z-index: 50;
+    overflow: hidden;
+    animation: mir-modal-in .15s ease;
+}
+
+.filter-dropdown-panel.open {
+    display: block;
+}
+
+.filter-panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.filter-panel-title {
+    font-size: .82rem;
+    font-weight: 700;
+    color: #1a1d23;
+}
+
+.filter-panel-clear {
+    font-size: .72rem;
+    font-weight: 600;
+    color: #6366f1;
+    cursor: pointer;
+    background: none;
+    border: none;
+    transition: opacity .15s;
+}
+
+.filter-panel-clear:hover {
+    opacity: .7;
+}
+
+.filter-panel-body {
+    padding: 12px 16px;
+}
+
+.filter-group {
+    margin-bottom: 12px;
+}
+
+.filter-group:last-child {
+    margin-bottom: 0;
+}
+
+.filter-group-label {
+    font-size: .72rem;
+    font-weight: 700;
+    color: #9ca3af;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    margin-bottom: 6px;
+}
+
+.filter-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.filter-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    border-radius: 50px;
+    font-size: .72rem;
+    font-weight: 600;
+    border: 1.5px solid #e5e7eb;
+    background: #fff;
+    color: #6d7279;
+    cursor: pointer;
+    transition: all .15s;
+}
+
+.filter-chip:hover {
+    border-color: #c4b5fd;
+    background: #f5f3ff;
+    color: #5b21b6;
+}
+
+.filter-chip.active {
+    border-color: #6366f1;
+    background: #ede9fe;
+    color: #4f46e5;
+}
+
+.filter-chip-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.filter-panel-footer {
+    padding: 10px 16px;
+    border-top: 1px solid #f0f0f0;
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    background: #fafafa;
+}
+
+
+/* =============================================================
+   33. FORM UTILITIES
+   Status pills, upload area, warning box, form layout.
+   ============================================================= */
+
+/* ── Status Radio Pills (formulários) ───────────────── */
+.status-pills {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 6px 14px;
+    border-radius: 50px;
+    font-size: .78rem;
+    font-weight: 600;
+    border: 1.5px solid #e5e7eb;
+    background: #f9fafb;
+    color: #6b7280;
+    cursor: pointer;
+    transition: all .15s;
+}
+
+.status-pill input { display: none; }
+
+.status-pill-ring {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #d1d5db;
+    transition: all .15s;
+}
+
+.status-pill.selected-published { background: #d1fae5; color: #065f46; border-color: #6ee7b7; }
+.status-pill.selected-published .status-pill-ring { background: #10b981; }
+.status-pill.selected-draft { background: #f3f4f6; color: #374151; border-color: #d1d5db; }
+.status-pill.selected-draft .status-pill-ring { background: #9ca3af; }
+.status-pill.selected-private { background: #e0e7ff; color: #3730a3; border-color: #a5b4fc; }
+.status-pill.selected-private .status-pill-ring { background: #6366f1; }
+
+/* ── Upload Area ────────────────────────────────────── */
+.upload-area {
+    border: 2px dashed #e5e7eb;
+    border-radius: 10px;
+    padding: 28px 20px;
+    text-align: center;
+    transition: all .15s;
+    cursor: pointer;
+}
+
+.upload-area:hover {
+    border-color: #6366f1;
+    background: rgba(99, 102, 241, .03);
+}
+
+.upload-icon {
+    font-size: 1.6rem;
+    color: #c4b5fd;
+    margin-bottom: 8px;
+}
+
+.upload-text {
+    font-size: .82rem;
+    font-weight: 600;
+    color: #6d7279;
+}
+
+.upload-hint {
+    font-size: .72rem;
+    color: #9ca3af;
+    margin-top: 2px;
+}
+
+/* ── Warning Box ────────────────────────────────────── */
+.warning-box {
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: 8px;
+    padding: 12px 14px;
+    font-size: .82rem;
+    color: #991b1b;
+    margin-top: 12px;
+}
+
+.warning-box ul {
+    margin: 6px 0 0 16px;
+}
+
+.warning-box li {
+    margin-bottom: 2px;
+}
+
+/* ── Form Layout (2 colunas) ────────────────────────── */
+.form-layout {
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    gap: 24px;
+}
+
+@media (max-width: 900px) {
+    .form-layout { grid-template-columns: 1fr; }
+}
+
+.form-group {
+    margin-bottom: 16px;
+}
+
+.form-divider {
+    border: none;
+    border-top: 1px solid #f0f0f0;
+    margin: 16px 0;
+}
+
+.form-timestamps {
+    padding-top: 12px;
+    border-top: 1px solid #f0f0f0;
+}
+
+.form-timestamps span {
+    display: block;
+    font-size: .75rem;
+    color: #9ca3af;
+}
+
+.form-timestamps span + span {
     margin-top: 4px;
+}
+
+/* ── Image Preview ──────────────────────────────────── */
+.img-preview {
+    width: 100%;
+    max-height: 160px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+    margin-bottom: 12px;
+}
+
+
+/* =============================================================
+   34. MODAL — VARIANTES DE ÍCONE EXTRAS
+   ============================================================= */
+
+.mir-modal-icon-delete {
+    background: rgba(239, 68, 68, .12);
+    color: #ef4444;
+}
+
+.mir-modal-icon-success {
+    background: rgba(16, 185, 129, .12);
+    color: #10b981;
+}
+
+.mir-modal-icon-warning {
+    background: rgba(245, 158, 11, .12);
+    color: #f59e0b;
 }

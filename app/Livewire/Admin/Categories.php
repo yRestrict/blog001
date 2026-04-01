@@ -8,6 +8,13 @@ use App\Models\ParentCategory;
 
 class Categories extends Component
 {
+    // ─── Busca e Filtros ────────────────────────────────────────────────────────
+
+    public string $searchParent     = '';
+    public string $searchCategory   = '';
+    public string $filterStatus     = '';
+    public string $filterParent     = '';
+
     // ─── Estado dos modais ────────────────────────────────────────────────────
 
     public bool $showParentCategoryModal = false;
@@ -224,9 +231,30 @@ class Categories extends Component
 
     public function render()
     {
+        $catQuery = Category::with('parentCategory')->withCount('posts')->orderBy('ordering');
+
+        if ($this->searchCategory) {
+            $catQuery->where('name', 'like', '%' . $this->searchCategory . '%');
+        }
+
+        if ($this->filterStatus !== '') {
+            $catQuery->where('status', $this->filterStatus === 'active');
+        }
+
+        if ($this->filterParent !== '') {
+            $catQuery->where('parent_category_id', $this->filterParent);
+        }
+
+        $parentQuery = ParentCategory::withCount('categories')->orderBy('ordering');
+
+        if ($this->searchParent) {
+            $parentQuery->where('name', 'like', '%' . $this->searchParent . '%');
+        }
+
         return view('livewire.admin.categories', [
-            'parentCategories'    => ParentCategory::withCount('categories')->orderBy('ordering')->get(),
-            'categories'          => Category::with('parentCategory')->withCount('posts')->orderBy('ordering')->get(),
+            'parentCategories'    => $parentQuery->get(),
+            'categories'          => $catQuery->get(),
+            'allCategories'       => Category::count(),
             'allParentCategories' => ParentCategory::orderBy('name')->get(),
         ]);
     }

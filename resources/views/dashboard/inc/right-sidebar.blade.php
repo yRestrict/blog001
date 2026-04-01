@@ -1,189 +1,122 @@
 <div class="left-side-bar">
 
-    {{-- ───────────────────────────────────────────────
-         LOGO / BRAND
-    ─────────────────────────────────────────────── --}}
+    {{-- ── LOGO ─────────────────────────────────────────── --}}
     <div class="brand-logo">
         <a href="{{ route('admin.dashboard') }}" title="Dashboard">
-            <img src="/dashboard/vendors/images/deskapp-logo.svg"
-                 alt="DeskApp"
-                 class="dark-logo" />
-            <img src="/dashboard/vendors/images/deskapp-logo-white.svg"
-                 alt="DeskApp"
-                 class="light-logo" />
+            <img src="/dashboard/vendors/images/deskapp-logo.svg" alt="" class="dark-logo" />
+            <img src="/dashboard/vendors/images/deskapp-logo-white.svg" alt="" class="light-logo" />
         </a>
-        <div class="close-sidebar db-focus-ring" data-toggle="left-sidebar-close" title="Close Menu">
+        <div class="close-sidebar" data-toggle="left-sidebar-close">
             <i class="ion-close-round"></i>
         </div>
     </div>
 
-    {{-- ───────────────────────────────────────────────
-         MENU DE NAVEGAÇÃO
-    ─────────────────────────────────────────────── --}}
+    {{-- ── MENU ─────────────────────────────────────────── --}}
     <div class="menu-block customscroll">
         <div class="sidebar-menu">
             <ul id="accordion-menu">
 
-                {{-- ── Home ──────────────────── --}}
                 <li>
                     <a href="{{ route('admin.dashboard') }}"
-                       class="dropdown-toggle no-arrow db-focus-ring {{ Route::is('admin.dashboard') ? 'active' : '' }}">
+                       class="dropdown-toggle no-arrow {{ Route::is('admin.dashboard') ? 'active' : '' }}">
                         <span class="micon fa fa-home"></span>
                         <span class="mtext">Home</span>
                     </a>
                 </li>
 
-                {{-- ── Media ─────────────────── --}}
                 <li>
-                    <a href=""
-                       class="dropdown-toggle no-arrow db-focus-ring">
+                    <a href="{{ route('admin.media') }}"
+                       class="dropdown-toggle no-arrow {{ Route::is('admin.media') ? 'active' : '' }}">
                         <span class="micon fa fa-file"></span>
                         <span class="mtext">Media</span>
                     </a>
                 </li>
 
-                {{-- ── Posts ─────────────────── --}}
-                <li class="dropdown {{ Route::is('admin.posts.index') || Route::is('admin.posts.create') ? 'active' : '' }}">
-                    <a href="javascript:;" class="dropdown-toggle db-focus-ring">
+                <li class="dropdown {{ Route::is('admin.posts.*') ? 'active' : '' }}">
+                    <a href="javascript:;" class="dropdown-toggle">
                         <span class="micon fa fa-newspaper-o"></span>
                         <span class="mtext">Posts</span>
                     </a>
                     <ul class="submenu">
-                        <li>
-                            <a href="{{ route('admin.posts.create') }}"
-                               class="db-focus-ring {{ Route::is('admin.posts.create') ? 'active' : '' }}">
-                                Novo
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{ route('admin.posts.index') }}"
-                               class="db-focus-ring {{ Route::is('admin.posts.index') ? 'active' : '' }}">
-                                Posts
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{ route('admin.posts.trash') }}"
-                               class="db-focus-ring {{ Route::is('admin.posts.trash') ? 'active' : '' }}">
-                                Excluidos
-                            </a>
-                        </li>
+                        <li><a href="{{ route('admin.posts.create') }}" class="{{ Route::is('admin.posts.create') ? 'active' : '' }}"><i class="fa fa-plus sub-icon"></i> Novo Post</a></li>
+                        <li><a href="{{ route('admin.posts.index') }}" class="{{ Route::is('admin.posts.index') ? 'active' : '' }}"><i class="fa fa-list sub-icon"></i> Todos os Posts</a></li>
+                        <li><a href="{{ route('admin.posts.trash') }}" class="{{ Route::is('admin.posts.trash') ? 'active' : '' }}"><i class="fa fa-trash sub-icon"></i> Lixeira</a></li>
                     </ul>
                 </li>
 
-                {{-- ── Comments ──────────────── --}}
-                <li class="dropdown {{ Route::is('admin.comments.index') ? 'active' : '' }}">
-                    <a href="javascript:;" class="dropdown-toggle db-focus-ring">
+                <li class="dropdown {{ Route::is('admin.comments.*') ? 'active' : '' }}">
+                    <a href="javascript:;" class="dropdown-toggle">
                         <span class="micon fa fa-comments"></span>
                         <span class="mtext">Comentários</span>
                     </a>
                     <ul class="submenu">
-                        <li><a href="{{ route('admin.comments.index') }}" class="db-focus-ring">Comentários</a></li>
-                        <li><a href="" class="db-focus-ring">Reprovados</a></li>
+                        <li><a href="{{ route('admin.comments.index') }}" class="{{ Route::is('admin.comments.index') ? 'active' : '' }}"><i class="fa fa-comment sub-icon"></i> Comentários</a></li>
+                        {{-- Rota ainda não implementada --}}
+                        {{-- <li><a href=""><i class="fa fa-ban sub-icon"></i> Reprovados</a></li> --}}
                     </ul>
                 </li>
 
-                {{-- ── Categories ────────────── --}}
                 <li class="dropdown {{ Route::is('admin.categories.*') ? 'active' : '' }}">
-                    <a href="javascript:;" class="dropdown-toggle db-focus-ring">
+                    <a href="javascript:;" class="dropdown-toggle">
                         <span class="micon fa fa-th-list"></span>
                         <span class="mtext">Categorias</span>
                     </a>
                     <ul class="submenu">
-                        <li>
-                            <a href="{{ route('admin.categories.index') }}" class="db-focus-ring">
-                                Categorias
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{ route('admin.categories.trash') }}" class="db-focus-ring">
-                                Excluidos
-                            </a>
-                        </li>
+                        <li><a href="{{ route('admin.categories.index') }}" class="{{ Route::is('admin.categories.index') ? 'active' : '' }}"><i class="fa fa-folder sub-icon"></i> Categorias</a></li>
+                        <li><a href="{{ route('admin.categories.trash') }}" class="{{ Route::is('admin.categories.trash') ? 'active' : '' }}"><i class="fa fa-trash sub-icon"></i> Lixeira</a></li>
                     </ul>
                 </li>
 
-                {{-- ── Tags ──────────────────── --}}
                 <li class="dropdown {{ Route::is('admin.tags.*') ? 'active' : '' }}">
-                    <a href="javascript:;" class="dropdown-toggle db-focus-ring">
+                    <a href="javascript:;" class="dropdown-toggle">
                         <span class="micon fa fa-tags"></span>
                         <span class="mtext">Tags</span>
                     </a>
                     <ul class="submenu">
-                        <li>
-                            <a href="{{ route('admin.tags.index') }}"
-                               class="db-focus-ring {{ Route::is('admin.tags.index') ? 'active' : '' }}">
-                                Tags
-                            </a>
-                        </li>
+                        <li><a href="{{ route('admin.tags.index') }}" class="{{ Route::is('admin.tags.index') ? 'active' : '' }}"><i class="fa fa-tag sub-icon"></i> Tags</a></li>
                     </ul>
                 </li>
 
-                {{-- ── Divider ───────────────── --}}
-                <li>
-                    <div class="dropdown-divider"></div>
-                </li>
-                <li>
-                    <div class="sidebar-small-cap">Config</div>
-                </li>
+                <li><div class="dropdown-divider"></div></li>
+                <li><div class="sidebar-small-cap">Config</div></li>
 
-                {{-- ── Profile ───────────────── --}}
                 <li>
                     <a href="{{ route('admin.profile') }}"
-                       class="dropdown-toggle no-arrow db-focus-ring {{ Route::is('admin.profile') ? 'active' : '' }}">
+                       class="dropdown-toggle no-arrow {{ Route::is('admin.profile') ? 'active' : '' }}">
                         <span class="micon fa fa-user-circle"></span>
                         <span class="mtext">Perfil</span>
                     </a>
                 </li>
 
                 @if(auth()->user()->isOwner())
-
-                    {{-- ── Users ─────────────── --}}
                     <li>
                         <a href="{{ route('admin.users.index') }}"
-                           class="dropdown-toggle no-arrow db-focus-ring {{ Route::is('admin.users.index') ? 'active' : '' }}">
+                           class="dropdown-toggle no-arrow {{ Route::is('admin.users.*') ? 'active' : '' }}">
                             <span class="micon fa fa-users"></span>
                             <span class="mtext">Usuários</span>
                         </a>
                     </li>
 
-                    {{-- ── Sidebars ──────────── --}}
                     <li>
-                        <a href="{{ route('admin.sidebars') }}" class="dropdown-toggle no-arrow db-focus-ring">
+                        <a href="{{ route('admin.sidebars') }}"
+                           class="dropdown-toggle no-arrow {{ Route::is('admin.sidebars') ? 'active' : '' }}">
                             <span class="micon fa fa-columns"></span>
                             <span class="mtext">Sidebars</span>
                         </a>
                     </li>
 
-                    {{-- ── General (Settings) ── --}}
-                    <li>
-                        <a href="javascript:;" class="dropdown-toggle db-focus-ring">
+                    <li class="dropdown {{ Route::is('admin.settings') || Route::is('admin.header') || Route::is('admin.footer') ? 'active' : '' }}">
+                        <a href="javascript:;" class="dropdown-toggle">
                             <span class="micon fa fa-cogs"></span>
                             <span class="mtext">Geral</span>
                         </a>
                         <ul class="submenu">
-                            <li>
-                                <a href="{{ route('admin.settings') }}" class="db-focus-ring">
-                                    Configurações
-                                </a>
-                            </li>
+                            <li><a href="{{ route('admin.settings') }}" class="{{ Route::is('admin.settings') ? 'active' : '' }}"><i class="fa fa-sliders sub-icon"></i> Configurações</a></li>
                             <li class="dropdown">
-                                <a href="javascript:;"
-                                   class="dropdown-toggle db-focus-ring"
-                                   data-option="off">
-                                    <span class="micon fa fa-plug"></span>
-                                    <span class="mtext">Menus</span>
-                                </a>
+                                <a href="javascript:;" class="dropdown-toggle"><i class="fa fa-bars sub-icon"></i> Menus</a>
                                 <ul class="submenu child">
-                                    <li>
-                                        <a href="{{ route('admin.header') }}" class="db-focus-ring">
-                                            Header
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="{{ route('admin.footer') }}" class="db-focus-ring">
-                                            Footer
-                                        </a>
-                                    </li>
+                                    <li><a href="{{ route('admin.header') }}" class="{{ Route::is('admin.header') ? 'active' : '' }}"><i class="fa fa-arrow-up sub-icon"></i> Header</a></li>
+                                    <li><a href="{{ route('admin.footer') }}" class="{{ Route::is('admin.footer') ? 'active' : '' }}"><i class="fa fa-arrow-down sub-icon"></i> Footer</a></li>
                                 </ul>
                             </li>
                         </ul>
@@ -193,3 +126,124 @@
         </div>
     </div>
 </div>
+
+{{-- ── JS DA SIDEBAR (inline, roda após o DOM) ───────────── --}}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    // Aguarda o script.min.js rodar e depois desabilita o vmenuModule
+    setTimeout(function () { initSidebarAccordion(); }, 50);
+});
+
+function initSidebarAccordion() {
+    var menu = document.getElementById('accordion-menu');
+    if (!menu) return;
+
+    // Remover todos os handlers jQuery do vmenuModule nos links do accordion
+    if (window.jQuery) {
+        jQuery('#accordion-menu').find('a').off('click');
+    }
+
+    // Encontrar todos os <li> que contêm <ul> submenu direto
+    var parents = menu.querySelectorAll('li:has(> ul)');
+
+    // Fallback para browsers que não suportam :has() no querySelectorAll
+    if (!parents.length) {
+        parents = [];
+        menu.querySelectorAll('li').forEach(function (li) {
+            if (li.querySelector(':scope > ul')) parents.push(li);
+        });
+    }
+
+    function getSubmenu(li) {
+        return li.querySelector(':scope > ul');
+    }
+
+    function collapse(li) {
+        var ul = getSubmenu(li);
+        if (!ul || !li.classList.contains('show')) return;
+
+        // Fechar filhos primeiro
+        li.querySelectorAll('.show').forEach(function (child) {
+            var childUl = getSubmenu(child);
+            if (childUl) {
+                childUl.style.height = '0';
+                child.classList.remove('show');
+            }
+        });
+
+        // Travar no height atual, depois colapsar
+        ul.style.height = ul.scrollHeight + 'px';
+        ul.offsetHeight; // force reflow
+        ul.style.height = '0';
+        li.classList.remove('show');
+    }
+
+    function expand(li) {
+        var ul = getSubmenu(li);
+        if (!ul) return;
+
+        li.classList.add('show');
+        ul.style.height = ul.scrollHeight + 'px';
+
+        function done(e) {
+            if (e.target !== ul) return;
+            ul.removeEventListener('transitionend', done);
+            if (li.classList.contains('show')) {
+                ul.style.height = 'auto';
+            }
+        }
+        ul.addEventListener('transitionend', done);
+    }
+
+    // Bind clicks
+    parents.forEach(function (li) {
+        var link = li.querySelector(':scope > a');
+        if (!link) return;
+
+        link.addEventListener('click', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            var isOpen = li.classList.contains('show');
+
+            // Fechar siblings
+            var sibs = li.parentElement.querySelectorAll(':scope > li.show');
+            sibs.forEach(function (sib) {
+                if (sib !== li) collapse(sib);
+            });
+
+            // Toggle
+            if (isOpen) {
+                collapse(li);
+            } else {
+                expand(li);
+            }
+        });
+    });
+
+    // Abrir itens ativos no load (sem animação)
+    menu.querySelectorAll('a.active').forEach(function (a) {
+        var li = a.closest('li');
+        while (li && li !== menu) {
+            var ul = getSubmenu(li);
+            if (ul) {
+                li.classList.add('show');
+                ul.style.height = 'auto';
+            }
+            li = li.parentElement ? li.parentElement.closest('li') : null;
+        }
+    });
+
+    // Resetar qualquer style inline que o vmenuModule tenha setado
+    menu.querySelectorAll('.submenu').forEach(function (ul) {
+        var li = ul.parentElement;
+        if (li.classList.contains('show')) {
+            ul.style.display = '';
+            ul.style.height = 'auto';
+        } else {
+            ul.style.display = '';
+            ul.style.height = '0';
+        }
+    });
+}
+</script>

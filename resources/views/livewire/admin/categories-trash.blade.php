@@ -1,320 +1,288 @@
 {{-- livewire/admin/categories-trash.blade.php --}}
 <div>
 
+    @php $totalTrashed = $trashedCategories->count() + $trashedParentCategories->count(); @endphp
+
     {{-- ================================================================ --}}
-    {{-- ESTILOS: Mesmo padrão mir- das categorias                        --}}
+    {{-- PAGE HEADER ACTION                                               --}}
     {{-- ================================================================ --}}
-    <style>
+    <div class="page-header-action">
+        <div class="page-header-left">
+            <h1 class="page-header-title">
+                Lixeira de Categorias
+                @if ($totalTrashed > 0)
+                    <span class="page-header-title-count" style="background:#fee2e2;color:#991b1b;">{{ $totalTrashed }}</span>
+                @endif
+            </h1>
+            <span class="page-header-sub">Restaure ou exclua permanentemente categorias</span>
+        </div>
+        <div class="page-header-right">
+            <a href="{{ route('admin.categories.index') }}" class="mir-btn-neutral">
+                <i class="fa-solid fa-arrow-left"></i> Voltar
+            </a>
+            @if ($totalTrashed > 0)
+                <button class="mir-btn-success" wire:click="restoreAll" wire:loading.attr="disabled" wire:target="restoreAll">
+                    <i class="fa-solid fa-rotate-left"></i> Restaurar Tudo
+                </button>
+            @endif
+        </div>
+    </div>
 
-        /* ── Seções ─────────────────────────────────────────────────── */
-        .cat-section {
-            background: #fff;
-            border-radius: 10px;
-            border: 1px solid #e9ecef;
-            box-shadow: 0 1px 4px rgba(0,0,0,.05);
-            margin-bottom: 24px;
-            overflow: hidden;
-        }
-        .cat-section-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 16px 20px;
-            border-bottom: 1px solid #f0f0f0;
-        }
-        .cat-section-title {
-            font-size: .95rem;
-            font-weight: 700;
-            color: #1a1d23;
-            margin: 0;
-        }
-        .cat-section-sub {
-            font-size: .78rem;
-            color: #9ca3af;
-            margin-top: 2px;
-        }
 
-        /* ── Rows ───────────────────────────────────────────────────── */
-        .cat-list { padding: 8px 0; }
+    {{-- ================================================================ --}}
+    {{-- ESTADO VAZIO GLOBAL                                               --}}
+    {{-- ================================================================ --}}
+    @if ($trashedCategories->isEmpty() && $trashedParentCategories->isEmpty())
+        <div class="cat-trash-section">
+            <div class="mir-empty-state">
+                <div class="mir-empty-icon"><i class="fa-solid fa-trash-can"></i></div>
+                <h5 class="mir-empty-title">A lixeira está vazia</h5>
+                <p class="mir-empty-desc">Categorias excluídas aparecerão aqui para que você possa restaurá-las.</p>
+            </div>
+        </div>
+    @endif
 
-        .cat-row {
-            display: flex;
-            align-items: center;
-            padding: 10px 16px;
-            border-bottom: 1px solid #f5f5f5;
-            transition: background .15s;
-        }
-        .cat-row:last-child { border-bottom: none; }
-        .cat-row:hover { background: #f9fafb; }
 
-        .cat-body { flex: 1; min-width: 0; }
-        .cat-name {
-            font-size: .875rem;
-            font-weight: 600;
-            color: #1a1d23;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        .cat-slug {
-            font-size: .72rem;
-            color: #9ca3af;
-            font-family: ui-monospace, monospace;
-            margin-top: 1px;
-        }
+    {{-- ================================================================ --}}
+    {{-- SEÇÃO: CATEGORIAS PAI NA LIXEIRA                                  --}}
+    {{-- ================================================================ --}}
+    @if ($trashedParentCategories->isNotEmpty())
+    <div class="cat-trash-section">
+        <div class="cat-trash-section-header">
+            <div class="cat-trash-section-header-left">
+                <h2 class="cat-trash-section-title">Categorias Pai</h2>
+                <span class="cat-trash-section-sub">Categorias pai que foram excluídas</span>
+            </div>
+            <span class="mir-badge-count">{{ $trashedParentCategories->count() }}</span>
+        </div>
 
-        .cat-meta {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            flex-shrink: 0;
-            margin: 0 20px;
-        }
+        {{-- Table Header --}}
+        <div wire:loading class="mir-loading-bar"></div>
 
-        /* Badges */
-        .mir-badge-count {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            min-width: 24px;
-            height: 24px;
-            padding: 0 7px;
-            border-radius: 50px;
-            font-size: .72rem;
-            font-weight: 700;
-            background: #ede9fe;
-            color: #6d28d9;
-        }
-        .mir-badge-parent {
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            padding: 3px 9px;
-            border-radius: 50px;
-            font-size: .72rem;
-            font-weight: 600;
-            background: #d1fae5;
-            color: #065f46;
-        }
-        .mir-badge-none { font-size: .75rem; color: #c4c8cf; }
+        <div class="mir-table-header">
+            <span class="ctt-plh-icon"></span>
+            <span class="ctt-plh-body">Nome</span>
+            <span class="ctt-plh-meta" style="text-align:right;">Filhas / Excluído em</span>
+            <span class="plh-divider"></span>
+            <span class="ctt-plh-actions" style="text-align:center;">Ações</span>
+        </div>
 
-        /* Badge de data de exclusão */
-        .mir-badge-deleted {
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            padding: 3px 9px;
-            border-radius: 50px;
-            font-size: .72rem;
-            font-weight: 600;
-            background: #fee2e2;
-            color: #991b1b;
-        }
+        <div class="mir-data-list" wire:loading.class="mir-loading-overlay">
+            @foreach ($trashedParentCategories as $parent)
+                <div class="mir-data-row" wire:key="trash-parent-{{ $parent->id }}">
 
-        /* Divider */
-        .mir-divider {
-            width: 1px;
-            height: 28px;
-            background: #e9ecef;
-            margin: 0 10px;
-            flex-shrink: 0;
-        }
+                    {{-- Ícone de lixeira --}}
+                    <div class="ctt-trash-icon">
+                        <i class="fa-solid fa-trash-can"></i>
+                    </div>
 
-        /* Botões de ação */
-        .mir-actions { display: flex; align-items: center; gap: 4px; flex-shrink: 0; }
-        .mir-action-btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 30px;
-            height: 30px;
-            border-radius: 6px;
-            border: 1px solid transparent;
-            background: transparent;
-            cursor: pointer;
-            transition: background .15s, border-color .15s, color .15s;
-            color: #6d7279;
-        }
-        .mir-action-restore:hover { background: #d1fae5; border-color: #6ee7b7; color: #065f46; }
-        .mir-action-delete:hover  { background: #fee2e2; border-color: #fca5a5; color: #b91c1c; }
+                    {{-- Body --}}
+                    <div class="ctt-body">
+                        <div class="ctt-name">{{ $parent->name }}</div>
+                        <div class="ctt-slug">{{ $parent->slug }}</div>
+                    </div>
 
-        /* Empty state */
-        .mir-empty-state {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 48px 24px;
-            text-align: center;
-        }
-        .mir-empty-icon {
-            width: 56px; height: 56px;
-            border-radius: 14px;
-            background: #f3f4f6;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 1.5rem; color: #9ca3af;
-            margin-bottom: 14px;
-        }
-        .mir-empty-title { font-size: .95rem; font-weight: 700; color: #374151; margin: 0 0 6px; }
-        .mir-empty-desc  { font-size: .82rem; color: #9ca3af; margin: 0 0 16px; }
+                    {{-- Meta --}}
+                    <div class="ctt-meta">
+                        <span class="mir-badge-count" data-tooltip="{{ $parent->categories_count }} subcategorias">
+                            {{ $parent->categories_count }}
+                        </span>
+                        <span class="mir-badge-deleted">
+                            <i class="fa-solid fa-clock" style="font-size:.6rem;"></i>
+                            {{ $parent->deleted_at->format('d/m/Y H:i') }}
+                        </span>
+                    </div>
 
-        /* Botões */
-        .mir-btn-primary-lg {
-            display: inline-flex; align-items: center; gap: 6px;
-            padding: 8px 16px;
-            border-radius: 8px;
-            background: linear-gradient(135deg, #6366f1, #4f46e5);
-            color: #fff;
-            font-size: .82rem; font-weight: 600;
-            border: none; cursor: pointer;
-            transition: opacity .15s;
-            box-shadow: 0 2px 8px rgba(99,102,241,.35);
-        }
-        .mir-btn-primary-lg:hover { opacity: .9; }
+                    <div class="mir-divider"></div>
 
-        .mir-btn-danger-lg {
-            display: inline-flex; align-items: center; gap: 6px;
-            padding: 8px 16px;
-            border-radius: 8px;
-            background: linear-gradient(135deg, #ef4444, #dc2626);
-            color: #fff;
-            font-size: .82rem; font-weight: 600;
-            border: none; cursor: pointer;
-            transition: opacity .15s;
-            box-shadow: 0 2px 8px rgba(239,68,68,.35);
-        }
-        .mir-btn-danger-lg:hover { opacity: .9; }
+                    {{-- Ações --}}
+                    <div class="mir-actions">
+                        <button class="mir-action-btn mir-action-restore"
+                                wire:click="restoreParentCategory({{ $parent->id }})"
+                                wire:loading.attr="disabled"
+                                wire:target="restoreParentCategory({{ $parent->id }})"
+                                data-tooltip="Restaurar">
+                            <i class="fa-solid fa-rotate-left" style="font-size:.7rem;"></i>
+                        </button>
+                        <button class="mir-action-btn mir-action-delete"
+                                wire:click="$dispatch('confirm-force-delete-parent', { id: {{ $parent->id }}, name: '{{ addslashes($parent->name) }}' })"
+                                data-tooltip="Excluir permanentemente">
+                            <i class="fa-solid fa-trash-can" style="font-size:.7rem;"></i>
+                        </button>
+                    </div>
+                </div>
+            @endforeach
+        </div>
+    </div>
+    @endif
 
-        .mir-btn-ghost {
-            display: inline-flex; align-items: center; gap: 6px;
-            padding: 8px 16px;
-            border-radius: 8px;
-            background: transparent;
-            color: #6d7279;
-            font-size: .82rem; font-weight: 600;
-            border: 1px solid #e0e0e0;
-            cursor: pointer;
-            transition: background .15s;
-            text-decoration: none;
-        }
-        .mir-btn-ghost:hover { background: #f5f5f5; color: #6d7279; }
 
-        .mir-btn-success {
-            display: inline-flex; align-items: center; gap: 6px;
-            padding: 8px 16px;
-            border-radius: 8px;
-            background: linear-gradient(135deg, #10b981, #059669);
-            color: #fff;
-            font-size: .82rem; font-weight: 600;
-            border: none; cursor: pointer;
-            transition: opacity .15s;
-            box-shadow: 0 2px 8px rgba(16,185,129,.35);
-        }
-        .mir-btn-success:hover { opacity: .9; }
+    {{-- ================================================================ --}}
+    {{-- SEÇÃO: CATEGORIAS NA LIXEIRA                                      --}}
+    {{-- ================================================================ --}}
+    @if ($trashedCategories->isNotEmpty())
+    <div class="cat-trash-section">
+        <div class="cat-trash-section-header">
+            <div class="cat-trash-section-header-left">
+                <h2 class="cat-trash-section-title">Categorias</h2>
+                <span class="cat-trash-section-sub">Categorias que foram excluídas</span>
+            </div>
+            <span class="mir-badge-count">{{ $trashedCategories->count() }}</span>
+        </div>
 
-        /* Header da lixeira */
-        .trash-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 24px;
-        }
-        .trash-header-left {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-        }
-        .trash-header-title {
-            font-size: 1.05rem;
-            font-weight: 700;
-            color: #1a1d23;
-        }
-        .trash-header-count {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            min-width: 24px;
-            height: 24px;
-            padding: 0 8px;
-            border-radius: 50px;
-            font-size: .72rem;
-            font-weight: 700;
-            background: #fee2e2;
-            color: #991b1b;
-        }
+        {{-- Table Header --}}
+        <div wire:loading class="mir-loading-bar"></div>
 
-        /* Modais */
-        .mir-modal-overlay {
-            position: fixed; inset: 0;
-            background: rgba(17,24,39,.55);
-            backdrop-filter: blur(2px);
-            z-index: 1060;
-            display: flex; align-items: center; justify-content: center;
-            padding: 16px;
-        }
-        .mir-modal-dialog { width: 100%; max-width: 540px; animation: mir-modal-in .2s ease; }
-        @keyframes mir-modal-in {
-            from { opacity: 0; transform: translateY(-12px) scale(.97); }
-            to   { opacity: 1; transform: translateY(0) scale(1); }
-        }
-        .mir-modal-content {
-            background: #fff;
-            border-radius: 14px;
-            box-shadow: 0 20px 60px rgba(0,0,0,.18);
-            overflow: hidden;
-        }
-        .mir-modal-header {
-            display: flex; align-items: center; justify-content: space-between;
-            padding: 18px 22px;
-            border-bottom: 1px solid #f0f0f0;
-        }
-        .mir-modal-title { display: flex; align-items: center; gap: 12px; }
-        .mir-modal-icon {
-            width: 36px; height: 36px;
-            border-radius: 9px;
-            display: flex; align-items: center; justify-content: center;
-            font-size: .95rem; flex-shrink: 0;
-        }
-        .mir-modal-icon-delete { background: rgba(239,68,68,.12); color: #ef4444; }
-        .mir-modal-title-text  { font-size: .93rem; font-weight: 700; color: #1a1d23; }
-        .mir-modal-subtitle    { font-size: .75rem; color: #9ca3af; margin-top: 1px; }
-        .mir-modal-close {
-            width: 32px; height: 32px; border-radius: 8px;
-            border: none; background: transparent; color: #9ca3af;
-            cursor: pointer; display: flex; align-items: center; justify-content: center;
-            transition: background .15s, color .15s; font-size: .9rem;
-        }
-        .mir-modal-close:hover { background: #f3f4f6; color: #374151; }
-        .mir-modal-body   { padding: 22px; }
-        .mir-modal-footer {
-            display: flex; justify-content: flex-end; gap: 10px;
-            padding: 16px 22px;
-            border-top: 1px solid #f0f0f0;
-            background: #fafafa;
-        }
+        <div class="mir-table-header">
+            <span class="ctt-plh-icon"></span>
+            <span class="ctt-plh-body">Categoria</span>
+            <span class="ctt-plh-catmeta" style="text-align:right;">Pai / Excluído em</span>
+            <span class="plh-divider"></span>
+            <span class="ctt-plh-actions" style="text-align:center;">Ações</span>
+        </div>
 
-        /* Toast */
-        #trash-toast-container {
-            position: fixed; bottom: 24px; right: 24px;
-            z-index: 9999;
-            display: flex; flex-direction: column; gap: 10px;
-        }
-        .mir-toast {
-            display: flex; align-items: center; gap: 10px;
-            padding: 11px 16px; border-radius: 10px;
-            font-size: .83rem; font-weight: 500;
-            box-shadow: 0 4px 20px rgba(0,0,0,.14);
-            animation: mir-toast-in .25s ease;
-            min-width: 240px; max-width: 340px;
-        }
-        @keyframes mir-toast-in  { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
-        @keyframes mir-toast-out { to { opacity:0; transform:translateY(12px); } }
-        .mir-toast-success { background: #d1fae5; color: #065f46; }
-        .mir-toast-error   { background: #fee2e2; color: #991b1b; }
-        .mir-toast-info    { background: #ede9fe; color: #4c1d95; }
-        .mir-toast-icon    { font-size: 1rem; flex-shrink: 0; }
+        <div class="mir-data-list" wire:loading.class="mir-loading-overlay">
+            @foreach ($trashedCategories as $category)
+                <div class="mir-data-row" wire:key="trash-cat-{{ $category->id }}">
 
-    </style>
+                    {{-- Ícone de lixeira --}}
+                    <div class="ctt-trash-icon">
+                        <i class="fa-solid fa-trash-can"></i>
+                    </div>
+
+                    {{-- Body --}}
+                    <div class="ctt-body">
+                        <div class="ctt-name">{{ $category->name }}</div>
+                        <div class="ctt-slug">{{ $category->slug }}</div>
+                    </div>
+
+                    {{-- Meta --}}
+                    <div class="ctt-catmeta">
+                        @if ($category->parentCategory)
+                            <span class="mir-badge-parent">
+                                <svg width="8" height="8" viewBox="0 0 8 8" fill="none">
+                                    <path d="M1 1h2.5v2.5M1 7h6V4.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                                {{ $category->parentCategory->name }}
+                            </span>
+                        @else
+                            <span class="ctt-no-parent">— sem pai —</span>
+                        @endif
+                        <span class="mir-badge-deleted">
+                            <i class="fa-solid fa-clock" style="font-size:.6rem;"></i>
+                            {{ $category->deleted_at->format('d/m/Y H:i') }}
+                        </span>
+                    </div>
+
+                    <div class="mir-divider"></div>
+
+                    {{-- Ações --}}
+                    <div class="mir-actions">
+                        <button class="mir-action-btn mir-action-restore"
+                                wire:click="restoreCategory({{ $category->id }})"
+                                wire:loading.attr="disabled"
+                                wire:target="restoreCategory({{ $category->id }})"
+                                data-tooltip="Restaurar">
+                            <i class="fa-solid fa-rotate-left" style="font-size:.7rem;"></i>
+                        </button>
+                        <button class="mir-action-btn mir-action-delete"
+                                wire:click="$dispatch('confirm-force-delete-category', { id: {{ $category->id }}, name: '{{ addslashes($category->name) }}' })"
+                                data-tooltip="Excluir permanentemente">
+                            <i class="fa-solid fa-trash-can" style="font-size:.7rem;"></i>
+                        </button>
+                    </div>
+                </div>
+            @endforeach
+        </div>
+    </div>
+    @endif
+
+
+    {{-- ================================================================ --}}
+    {{-- MODAL: EXCLUSÃO PERMANENTE — CATEGORIA PAI                        --}}
+    {{-- ================================================================ --}}
+    <div x-data="{ show: false, itemId: null, itemName: '' }"
+         x-on:confirm-force-delete-parent.window="itemId = $event.detail.id; itemName = $event.detail.name; show = true"
+         x-show="show" x-cloak class="mir-modal-overlay" tabindex="-1">
+        <div class="mir-modal-dialog" style="max-width:440px;">
+            <div class="mir-modal-content">
+                <div class="mir-modal-header">
+                    <div class="mir-modal-title">
+                        <div class="mir-modal-icon mir-modal-icon-delete">
+                            <i class="fa-solid fa-triangle-exclamation"></i>
+                        </div>
+                        <div>
+                            <div class="mir-modal-title-text">Excluir Permanentemente</div>
+                            <div class="mir-modal-subtitle">Esta ação não pode ser desfeita</div>
+                        </div>
+                    </div>
+                    <button type="button" class="mir-modal-close" x-on:click="show = false">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+                <div class="mir-modal-body">
+                    <p style="color:#6d7279;font-size:.9rem;line-height:1.6;margin:0;">
+                        Tem certeza que deseja excluir <strong>permanentemente</strong> a categoria pai
+                        <strong style="color:#1a1d23;" x-text="itemName"></strong>?
+                    </p>
+                    <div class="ctt-warning-box">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                        As subcategorias excluídas junto também serão removidas permanentemente.
+                    </div>
+                </div>
+                <div class="mir-modal-footer">
+                    <button class="mir-btn-ghost" x-on:click="show = false">Cancelar</button>
+                    <button class="mir-btn-danger" x-on:click="$wire.forceDeleteParentCategory(itemId); show = false">
+                        <i class="fa-solid fa-trash-can"></i> Sim, excluir permanentemente
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    {{-- ================================================================ --}}
+    {{-- MODAL: EXCLUSÃO PERMANENTE — CATEGORIA                            --}}
+    {{-- ================================================================ --}}
+    <div x-data="{ show: false, itemId: null, itemName: '' }"
+         x-on:confirm-force-delete-category.window="itemId = $event.detail.id; itemName = $event.detail.name; show = true"
+         x-show="show" x-cloak class="mir-modal-overlay" tabindex="-1">
+        <div class="mir-modal-dialog" style="max-width:440px;">
+            <div class="mir-modal-content">
+                <div class="mir-modal-header">
+                    <div class="mir-modal-title">
+                        <div class="mir-modal-icon mir-modal-icon-delete">
+                            <i class="fa-solid fa-triangle-exclamation"></i>
+                        </div>
+                        <div>
+                            <div class="mir-modal-title-text">Excluir Permanentemente</div>
+                            <div class="mir-modal-subtitle">Esta ação não pode ser desfeita</div>
+                        </div>
+                    </div>
+                    <button type="button" class="mir-modal-close" x-on:click="show = false">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+                <div class="mir-modal-body">
+                    <p style="color:#6d7279;font-size:.9rem;line-height:1.6;margin:0;">
+                        Tem certeza que deseja excluir <strong>permanentemente</strong> a categoria
+                        <strong style="color:#1a1d23;" x-text="itemName"></strong>?
+                    </p>
+                    <div class="ctt-warning-box">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                        Este processo é irreversível. A categoria será removida permanentemente do sistema.
+                    </div>
+                </div>
+                <div class="mir-modal-footer">
+                    <button class="mir-btn-ghost" x-on:click="show = false">Cancelar</button>
+                    <button class="mir-btn-danger" x-on:click="$wire.forceDeleteCategory(itemId); show = false">
+                        <i class="fa-solid fa-trash-can"></i> Sim, excluir permanentemente
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 
     {{-- ================================================================ --}}
     {{-- TOAST                                                             --}}
@@ -323,330 +291,76 @@
 
 
     {{-- ================================================================ --}}
-    {{-- HEADER DA LIXEIRA                                                 --}}
+    {{-- SCOPED STYLES (apenas ctt- específicos)                          --}}
     {{-- ================================================================ --}}
-    <div class="trash-header">
-        <div class="trash-header-left">
-            <a href="{{ route('admin.categories.index') }}" class="mir-btn-ghost">
-                <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-                    <path d="M7.5 1.5L3 6l4.5 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-                Voltar
-            </a>
-            <div>
-                <div class="trash-header-title">Lixeira de Categorias</div>
-            </div>
-            @php $totalTrashed = $trashedCategories->count() + $trashedParentCategories->count(); @endphp
-            @if ($totalTrashed > 0)
-                <span class="trash-header-count">{{ $totalTrashed }} {{ $totalTrashed === 1 ? 'item' : 'itens' }}</span>
-            @endif
-        </div>
+    <style>
+        /* ── Section Card ──────────────────────────────────── */
+        .cat-trash-section {
+            background: #fff;
+            border-radius: 10px;
+            border: 1px solid #e9ecef;
+            box-shadow: 0 1px 4px rgba(0,0,0,.05);
+            margin-bottom: 24px;
+        }
+        .cat-trash-section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 20px;
+            border-bottom: 1px solid #f0f0f0;
+            gap: 16px;
+        }
+        .cat-trash-section-header-left { min-width: 0; }
+        .cat-trash-section-title { font-size: .95rem; font-weight: 700; color: #1a1d23; margin: 0; }
+        .cat-trash-section-sub { font-size: .78rem; color: #9ca3af; margin-top: 2px; }
 
-        @if ($totalTrashed > 0)
-            <div style="display: flex; gap: 8px;">
-                <button class="mir-btn-success" wire:click="restoreAll" wire:loading.attr="disabled" wire:target="restoreAll">
-                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-                        <path d="M1.5 6.5a4.5 4.5 0 018.14-2.64M10.5 1.5v2.36h-2.36" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
-                        <path d="M10.5 5.5a4.5 4.5 0 01-8.14 2.64M1.5 10.5V8.14h2.36" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                    Restaurar Tudo
-                </button>
-            </div>
-        @endif
-    </div>
+        /* ── Table Header: larguras ────────────────────────── */
+        .ctt-plh-icon    { width: 24px; flex-shrink: 0; }
+        .ctt-plh-body    { flex: 1 1 0; min-width: 0; }
+        .ctt-plh-meta    { width: 200px; flex-shrink: 0; text-align: right; }
+        .ctt-plh-catmeta { width: 240px; flex-shrink: 0; text-align: right; }
+        .ctt-plh-actions { width: 68px; flex-shrink: 0; }
 
+        /* ── Trash icon ────────────────────────────────────── */
+        .ctt-trash-icon {
+            width: 24px; flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center;
+            color: #ef4444; opacity: .4; font-size: .75rem;
+        }
 
-    {{-- ================================================================ --}}
-    {{-- SEÇÃO: CATEGORIAS PAI NA LIXEIRA                                  --}}
-    {{-- ================================================================ --}}
-    <div class="cat-section">
-        <div class="cat-section-header">
-            <div>
-                <div class="cat-section-title">Categorias Pai</div>
-                <div class="cat-section-sub">Categorias pai que foram excluidas</div>
-            </div>
-            @if ($trashedParentCategories->isNotEmpty())
-                <span class="mir-badge-count">{{ $trashedParentCategories->count() }}</span>
-            @endif
-        </div>
+        /* ── Body ──────────────────────────────────────────── */
+        .ctt-body { flex: 1 1 0; min-width: 0; }
+        .ctt-name {
+            font-size: .875rem; font-weight: 600; color: #1a1d23;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+        .ctt-slug {
+            font-size: .72rem; color: #9ca3af;
+            font-family: ui-monospace, monospace; margin-top: 1px;
+        }
 
-        @if ($trashedParentCategories->isEmpty())
-            <div class="mir-empty-state">
-                <div class="mir-empty-icon"><i class="fa fa-folder-open"></i></div>
-                <h5 class="mir-empty-title">Nenhuma categoria pai na lixeira</h5>
-                <p class="mir-empty-desc">Categorias pai excluidas aparecerao aqui.</p>
-            </div>
-        @else
-            <div class="cat-list">
-                @foreach ($trashedParentCategories as $parent)
-                    <div class="cat-row" wire:key="trash-parent-{{ $parent->id }}">
+        /* ── Meta (parent categories) ──────────────────────── */
+        .ctt-meta {
+            display: flex; align-items: center; gap: 8px;
+            flex-shrink: 0; width: 200px; justify-content: flex-end;
+        }
 
-                        {{-- Icone de lixeira no lugar do handle --}}
-                        <div style="padding: 4px 10px 4px 0; flex-shrink: 0; display: flex; align-items: center; color: #ef4444; opacity: .5;">
-                            <svg width="14" height="14" viewBox="0 0 12 14" fill="none">
-                                <path d="M1 3.5h10M4 3.5V2.5h4v1M2 3.5l.8 8a1 1 0 001 .9h4.4a1 1 0 001-.9l.8-8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
-                            </svg>
-                        </div>
+        /* ── Meta (categories — pai + deleted) ─────────────── */
+        .ctt-catmeta {
+            display: flex; align-items: center; gap: 8px;
+            flex-shrink: 0; width: 240px; justify-content: flex-end;
+        }
+        .ctt-no-parent { font-size: .75rem; color: #c4c8cf; }
 
-                        <div class="cat-body">
-                            <div class="cat-name">{{ $parent->name }}</div>
-                            <div class="cat-slug">{{ $parent->slug }}</div>
-                        </div>
-
-                        <div class="cat-meta">
-                            <span class="mir-badge-count" title="Subcategorias excluidas junto">
-                                {{ $parent->categories_count }}
-                            </span>
-
-                            <span class="mir-badge-deleted">
-                                <svg width="10" height="10" viewBox="0 0 12 12" fill="none">
-                                    <circle cx="6" cy="6" r="5" stroke="currentColor" stroke-width="1.2"/>
-                                    <path d="M6 3.5V6.5L7.5 7.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
-                                </svg>
-                                {{ $parent->deleted_at->format('d/m/Y H:i') }}
-                            </span>
-                        </div>
-
-                        <div class="mir-divider"></div>
-
-                        <div class="mir-actions">
-                            <button class="mir-action-btn mir-action-restore"
-                                    wire:click="restoreParentCategory({{ $parent->id }})"
-                                    wire:loading.attr="disabled"
-                                    wire:target="restoreParentCategory({{ $parent->id }})"
-                                    title="Restaurar">
-                                <svg width="13" height="13" viewBox="0 0 12 12" fill="none">
-                                    <path d="M1.5 6.5a4.5 4.5 0 018.14-2.64M10.5 1.5v2.36h-2.36" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
-                                    <path d="M10.5 5.5a4.5 4.5 0 01-8.14 2.64M1.5 10.5V8.14h2.36" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
-                                </svg>
-                            </button>
-                            <button class="mir-action-btn mir-action-delete"
-                                    wire:click="$dispatch('confirm-force-delete-parent', { id: {{ $parent->id }}, name: '{{ addslashes($parent->name) }}' })"
-                                    title="Excluir permanentemente">
-                                <svg width="12" height="13" viewBox="0 0 12 14" fill="none">
-                                    <path d="M1 3.5h10M4 3.5V2.5h4v1M2 3.5l.8 8a1 1 0 001 .9h4.4a1 1 0 001-.9l.8-8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
-                @endforeach
-            </div>
-        @endif
-    </div>
-
-
-    {{-- ================================================================ --}}
-    {{-- SEÇÃO: CATEGORIAS NA LIXEIRA                                      --}}
-    {{-- ================================================================ --}}
-    <div class="cat-section">
-        <div class="cat-section-header">
-            <div>
-                <div class="cat-section-title">Categorias</div>
-                <div class="cat-section-sub">Categorias que foram excluidas</div>
-            </div>
-            @if ($trashedCategories->isNotEmpty())
-                <span class="mir-badge-count">{{ $trashedCategories->count() }}</span>
-            @endif
-        </div>
-
-        @if ($trashedCategories->isEmpty())
-            <div class="mir-empty-state">
-                <div class="mir-empty-icon"><i class="fa fa-tags"></i></div>
-                <h5 class="mir-empty-title">Nenhuma categoria na lixeira</h5>
-                <p class="mir-empty-desc">Categorias excluidas aparecerao aqui.</p>
-            </div>
-        @else
-            <div class="cat-list">
-                @foreach ($trashedCategories as $category)
-                    <div class="cat-row" wire:key="trash-cat-{{ $category->id }}">
-
-                        {{-- Icone de lixeira no lugar do handle --}}
-                        <div style="padding: 4px 10px 4px 0; flex-shrink: 0; display: flex; align-items: center; color: #ef4444; opacity: .5;">
-                            <svg width="14" height="14" viewBox="0 0 12 14" fill="none">
-                                <path d="M1 3.5h10M4 3.5V2.5h4v1M2 3.5l.8 8a1 1 0 001 .9h4.4a1 1 0 001-.9l.8-8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
-                            </svg>
-                        </div>
-
-                        <div class="cat-body">
-                            <div class="cat-name">{{ $category->name }}</div>
-                            <div class="cat-slug">{{ $category->slug }}</div>
-                        </div>
-
-                        <div class="cat-meta">
-                            @if ($category->parentCategory)
-                                <span class="mir-badge-parent">
-                                    <svg width="8" height="8" viewBox="0 0 8 8" fill="none">
-                                        <path d="M1 1h2.5v2.5M1 7h6V4.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
-                                    </svg>
-                                    {{ $category->parentCategory->name }}
-                                </span>
-                            @else
-                                <span class="mir-badge-none">&mdash; sem pai &mdash;</span>
-                            @endif
-
-                            <span class="mir-badge-deleted">
-                                <svg width="10" height="10" viewBox="0 0 12 12" fill="none">
-                                    <circle cx="6" cy="6" r="5" stroke="currentColor" stroke-width="1.2"/>
-                                    <path d="M6 3.5V6.5L7.5 7.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
-                                </svg>
-                                {{ $category->deleted_at->format('d/m/Y H:i') }}
-                            </span>
-                        </div>
-
-                        <div class="mir-divider"></div>
-
-                        <div class="mir-actions">
-                            <button class="mir-action-btn mir-action-restore"
-                                    wire:click="restoreCategory({{ $category->id }})"
-                                    wire:loading.attr="disabled"
-                                    wire:target="restoreCategory({{ $category->id }})"
-                                    title="Restaurar">
-                                <svg width="13" height="13" viewBox="0 0 12 12" fill="none">
-                                    <path d="M1.5 6.5a4.5 4.5 0 018.14-2.64M10.5 1.5v2.36h-2.36" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
-                                    <path d="M10.5 5.5a4.5 4.5 0 01-8.14 2.64M1.5 10.5V8.14h2.36" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
-                                </svg>
-                            </button>
-                            <button class="mir-action-btn mir-action-delete"
-                                    wire:click="$dispatch('confirm-force-delete-category', { id: {{ $category->id }}, name: '{{ addslashes($category->name) }}' })"
-                                    title="Excluir permanentemente">
-                                <svg width="12" height="13" viewBox="0 0 12 14" fill="none">
-                                    <path d="M1 3.5h10M4 3.5V2.5h4v1M2 3.5l.8 8a1 1 0 001 .9h4.4a1 1 0 001-.9l.8-8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
-                @endforeach
-            </div>
-        @endif
-    </div>
-
-
-    {{-- ================================================================ --}}
-    {{-- ESTADO VAZIO GLOBAL (nada na lixeira)                             --}}
-    {{-- ================================================================ --}}
-    @if ($trashedCategories->isEmpty() && $trashedParentCategories->isEmpty())
-        <div class="cat-section">
-            <div class="mir-empty-state" style="padding: 64px 24px;">
-                <div class="mir-empty-icon" style="background: #fee2e2;">
-                    <i class="fa fa-trash" style="color: #ef4444;"></i>
-                </div>
-                <h5 class="mir-empty-title">A lixeira esta vazia</h5>
-                <p class="mir-empty-desc">Categorias excluidas aparecerao aqui para que voce possa restaura-las.</p>
-                <a href="{{ route('admin.categories.index') }}" class="mir-btn-primary-lg">
-                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-                        <path d="M7.5 1.5L3 6l4.5 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                    Voltar para categorias
-                </a>
-            </div>
-        </div>
-    @endif
-
-
-    {{-- ================================================================ --}}
-    {{-- MODAL: CONFIRMAÇÃO EXCLUSÃO PERMANENTE — CATEGORIA PAI            --}}
-    {{-- ================================================================ --}}
-    <div x-data="{ show: false, itemId: null, itemName: '' }"
-         x-on:confirm-force-delete-parent.window="itemId = $event.detail.id; itemName = $event.detail.name; show = true"
-         x-show="show"
-         x-cloak
-         class="mir-modal-overlay"
-         tabindex="-1">
-
-        <div class="mir-modal-dialog">
-            <div class="mir-modal-content">
-
-                <div class="mir-modal-header">
-                    <div class="mir-modal-title">
-                        <span class="mir-modal-icon mir-modal-icon-delete">
-                            <i class="fa fa-exclamation-triangle"></i>
-                        </span>
-                        <div>
-                            <div class="mir-modal-title-text">Excluir Permanentemente</div>
-                            <div class="mir-modal-subtitle">Esta acao nao pode ser desfeita</div>
-                        </div>
-                    </div>
-                    <button type="button" class="mir-modal-close" x-on:click="show = false">
-                        <i class="fa fa-times"></i>
-                    </button>
-                </div>
-
-                <div class="mir-modal-body">
-                    <p style="color:#6d7279; font-size:.9rem; line-height:1.6; margin:0;">
-                        Tem certeza que deseja excluir <strong>permanentemente</strong> a categoria pai
-                        <strong style="color:#ef4444;" x-text="itemName"></strong>?
-                        <br>
-                        <span style="font-size:.8rem; color:#991b1b; margin-top:6px; display:block; background: #fee2e2; padding: 8px 12px; border-radius: 6px;">
-                            <i class="fa fa-exclamation-triangle" style="margin-right:4px;"></i>
-                            As subcategorias excluidas junto tambem serao removidas permanentemente. Este processo e irreversivel.
-                        </span>
-                    </p>
-                </div>
-
-                <div class="mir-modal-footer">
-                    <button class="mir-btn-ghost" x-on:click="show = false">Cancelar</button>
-                    <button class="mir-btn-danger-lg"
-                            x-on:click="$wire.forceDeleteParentCategory(itemId); show = false">
-                        <i class="fa fa-trash"></i> Sim, excluir permanentemente
-                    </button>
-                </div>
-
-            </div>
-        </div>
-    </div>
-
-
-    {{-- ================================================================ --}}
-    {{-- MODAL: CONFIRMAÇÃO EXCLUSÃO PERMANENTE — CATEGORIA                --}}
-    {{-- ================================================================ --}}
-    <div x-data="{ show: false, itemId: null, itemName: '' }"
-         x-on:confirm-force-delete-category.window="itemId = $event.detail.id; itemName = $event.detail.name; show = true"
-         x-show="show"
-         x-cloak
-         class="mir-modal-overlay"
-         tabindex="-1">
-
-        <div class="mir-modal-dialog">
-            <div class="mir-modal-content">
-
-                <div class="mir-modal-header">
-                    <div class="mir-modal-title">
-                        <span class="mir-modal-icon mir-modal-icon-delete">
-                            <i class="fa fa-exclamation-triangle"></i>
-                        </span>
-                        <div>
-                            <div class="mir-modal-title-text">Excluir Permanentemente</div>
-                            <div class="mir-modal-subtitle">Esta acao nao pode ser desfeita</div>
-                        </div>
-                    </div>
-                    <button type="button" class="mir-modal-close" x-on:click="show = false">
-                        <i class="fa fa-times"></i>
-                    </button>
-                </div>
-
-                <div class="mir-modal-body">
-                    <p style="color:#6d7279; font-size:.9rem; line-height:1.6; margin:0;">
-                        Tem certeza que deseja excluir <strong>permanentemente</strong> a categoria
-                        <strong style="color:#ef4444;" x-text="itemName"></strong>?
-                        <br>
-                        <span style="font-size:.8rem; color:#991b1b; margin-top:6px; display:block; background: #fee2e2; padding: 8px 12px; border-radius: 6px;">
-                            <i class="fa fa-exclamation-triangle" style="margin-right:4px;"></i>
-                            Este processo e irreversivel. A categoria sera removida permanentemente do sistema.
-                        </span>
-                    </p>
-                </div>
-
-                <div class="mir-modal-footer">
-                    <button class="mir-btn-ghost" x-on:click="show = false">Cancelar</button>
-                    <button class="mir-btn-danger-lg"
-                            x-on:click="$wire.forceDeleteCategory(itemId); show = false">
-                        <i class="fa fa-trash"></i> Sim, excluir permanentemente
-                    </button>
-                </div>
-
-            </div>
-        </div>
-    </div>
+        /* ── Warning box (modais) ──────────────────────────── */
+        .ctt-warning-box {
+            display: flex; align-items: flex-start; gap: 8px;
+            margin-top: 12px; padding: 10px 14px;
+            background: #fee2e2; border-radius: 8px;
+            font-size: .8rem; color: #991b1b; line-height: 1.5;
+        }
+        .ctt-warning-box i { margin-top: 2px; flex-shrink: 0; }
+    </style>
 
 
     {{-- ================================================================ --}}
@@ -656,11 +370,11 @@
     <script>
     function trashShowToast(type, message) {
         const container = document.getElementById('trash-toast-container');
-        const icons = { success: 'fa-check-circle', error: 'fa-exclamation-circle', info: 'fa-info-circle' };
+        const icons = { success: 'fa-circle-check', error: 'fa-circle-exclamation', info: 'fa-circle-info' };
         const toast = document.createElement('div');
         toast.className = `mir-toast mir-toast-${type}`;
         toast.innerHTML = `
-            <i class="fa ${icons[type] || icons.info} mir-toast-icon"></i>
+            <i class="fa-solid ${icons[type] || icons.info} mir-toast-icon"></i>
             <span class="mir-toast-msg">${message}</span>
         `;
         container.appendChild(toast);
