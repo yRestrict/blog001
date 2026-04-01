@@ -16,13 +16,16 @@
       <!-- Google Font -->
       <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
 
+      <!-- Font Awesome 6 -->
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
       <!-- CSS -->
       <link rel="stylesheet" type="text/css" href="{{ asset('dashboard/vendors/styles/core.css') }}" />
       <link rel="stylesheet" type="text/css" href="{{ asset('dashboard/vendors/styles/icon-font.min.css') }}" />
       <link rel="stylesheet" type="text/css" href="{{ asset('dashboard/vendors/styles/style.css') }}" />
       <link rel="stylesheet" type="text/css" href="{{ asset('dashboard/vendors/styles/toastr.min.css') }}" />
       <link rel="stylesheet" type="text/css" href="{{ asset('dashboard/vendors/styles/cropper.min.css') }}" />
-      <link rel="stylesheet" type="text/css" href="{{ asset('dashboard/vendors/styles/custom.css') }}" />
+      <link rel="stylesheet" type="text/css" href="{{ asset('dashboard/vendors/styles/custom.css') }}?v={{ filemtime(public_path('dashboard/vendors/styles/custom.css')) }}" />
 
 
       @stack('stylesheets')
@@ -30,177 +33,22 @@
 
    </head>
    <body>
+      {{-- Aplicar tema ANTES do primeiro render para evitar flash --}}
+      <script>
+         (function(){
+            try {
+               var o = JSON.parse(localStorage.getItem('optionsObject'));
+               if (o) {
+                  if (o.headerBackground) document.body.classList.add(o.headerBackground);
+                  if (o.navigationBackground) document.body.classList.add(o.navigationBackground);
+               }
+            } catch(e) {}
+         })();
+      </script>
       {{-- NavBar --}}
       @include("dashboard.inc.navbar")
 
-      {{-- Config Color  --}}
-      <div class="right-sidebar">
-         <div class="sidebar-title">
-            <h3 class="weight-600 font-16 text-blue">
-               Layout Settings
-               <span class="btn-block font-weight-400 font-12"
-                  >User Interface Settings</span
-                  >
-            </h3>
-            <div class="close-sidebar" data-toggle="right-sidebar-close">
-               <i class="icon-copy ion-close-round"></i>
-            </div>
-         </div>
-         <div class="right-sidebar-body customscroll">
-            <div class="right-sidebar-body-content">
-               <h4 class="weight-600 font-18 pb-10">Header Background</h4>
-               <div class="sidebar-btn-group pb-30 mb-10">
-                  <a
-                     href="javascript:void(0);"
-                     class="btn btn-outline-primary header-white active"
-                     >White</a
-                     >
-                  <a
-                     href="javascript:void(0);"
-                     class="btn btn-outline-primary header-dark"
-                     >Dark</a
-                     >
-               </div>
-               <h4 class="weight-600 font-18 pb-10">Sidebar Background</h4>
-               <div class="sidebar-btn-group pb-30 mb-10">
-                  <a
-                     href="javascript:void(0);"
-                     class="btn btn-outline-primary sidebar-light"
-                     >White</a
-                     >
-                  <a
-                     href="javascript:void(0);"
-                     class="btn btn-outline-primary sidebar-dark active"
-                     >Dark</a
-                     >
-               </div>
-               <h4 class="weight-600 font-18 pb-10">Menu Dropdown Icon</h4>
-               <div class="sidebar-radio-group pb-10 mb-10">
-                  <div class="custom-control custom-radio custom-control-inline">
-                     <input
-                        type="radio"
-                        id="sidebaricon-1"
-                        name="menu-dropdown-icon"
-                        class="custom-control-input"
-                        value="icon-style-1"
-                        checked=""
-                        />
-                     <label class="custom-control-label" for="sidebaricon-1"
-                        ><i class="fa fa-angle-down"></i
-                        ></label>
-                  </div>
-                  <div class="custom-control custom-radio custom-control-inline">
-                     <input
-                        type="radio"
-                        id="sidebaricon-2"
-                        name="menu-dropdown-icon"
-                        class="custom-control-input"
-                        value="icon-style-2"
-                        />
-                     <label class="custom-control-label" for="sidebaricon-2"
-                        ><i class="ion-plus-round"></i
-                        ></label>
-                  </div>
-                  <div class="custom-control custom-radio custom-control-inline">
-                     <input
-                        type="radio"
-                        id="sidebaricon-3"
-                        name="menu-dropdown-icon"
-                        class="custom-control-input"
-                        value="icon-style-3"
-                        />
-                     <label class="custom-control-label" for="sidebaricon-3"
-                        ><i class="fa fa-angle-double-right"></i
-                        ></label>
-                  </div>
-               </div>
-               <h4 class="weight-600 font-18 pb-10">Menu List Icon</h4>
-               <div class="sidebar-radio-group pb-30 mb-10">
-                  <div class="custom-control custom-radio custom-control-inline">
-                     <input
-                        type="radio"
-                        id="sidebariconlist-1"
-                        name="menu-list-icon"
-                        class="custom-control-input"
-                        value="icon-list-style-1"
-                        checked=""
-                        />
-                     <label class="custom-control-label" for="sidebariconlist-1"
-                        ><i class="ion-minus-round"></i
-                        ></label>
-                  </div>
-                  <div class="custom-control custom-radio custom-control-inline">
-                     <input
-                        type="radio"
-                        id="sidebariconlist-2"
-                        name="menu-list-icon"
-                        class="custom-control-input"
-                        value="icon-list-style-2"
-                        />
-                     <label class="custom-control-label" for="sidebariconlist-2"
-                        ><i class="fa fa-circle-o" aria-hidden="true"></i
-                        ></label>
-                  </div>
-                  <div class="custom-control custom-radio custom-control-inline">
-                     <input
-                        type="radio"
-                        id="sidebariconlist-3"
-                        name="menu-list-icon"
-                        class="custom-control-input"
-                        value="icon-list-style-3"
-                        />
-                     <label class="custom-control-label" for="sidebariconlist-3"
-                        ><i class="dw dw-check"></i
-                        ></label>
-                  </div>
-                  <div class="custom-control custom-radio custom-control-inline">
-                     <input
-                        type="radio"
-                        id="sidebariconlist-4"
-                        name="menu-list-icon"
-                        class="custom-control-input"
-                        value="icon-list-style-4"
-                        checked=""
-                        />
-                     <label class="custom-control-label" for="sidebariconlist-4"
-                        ><i class="icon-copy dw dw-next-2"></i
-                        ></label>
-                  </div>
-                  <div class="custom-control custom-radio custom-control-inline">
-                     <input
-                        type="radio"
-                        id="sidebariconlist-5"
-                        name="menu-list-icon"
-                        class="custom-control-input"
-                        value="icon-list-style-5"
-                        />
-                     <label class="custom-control-label" for="sidebariconlist-5"
-                        ><i class="dw dw-fast-forward-1"></i
-                        ></label>
-                  </div>
-                  <div class="custom-control custom-radio custom-control-inline">
-                     <input
-                        type="radio"
-                        id="sidebariconlist-6"
-                        name="menu-list-icon"
-                        class="custom-control-input"
-                        value="icon-list-style-6"
-                        />
-                     <label class="custom-control-label" for="sidebariconlist-6"
-                        ><i class="dw dw-next"></i
-                        ></label>
-                  </div>
-               </div>
-               <div class="reset-options pt-30 text-center">
-                  <button class="btn btn-danger" id="reset-settings">
-                  Reset Settings
-                  </button>
-               </div>
-            </div>
-         </div>
-      </div>
-      
-      {{-- Right Sidebar --}}
+      {{-- Left Sidebar --}}
       @include("dashboard.inc.right-sidebar")
 
       <div class="mobile-menu-overlay"></div>
@@ -312,5 +160,55 @@
       @stack('scripts')
       @livewireScripts
       <script src="https://cdn.jsdelivr.net/gh/livewire/sortable@v1.x.x/dist/livewire-sortable.js"></script>
+
+      {{-- Tooltip inteligente global (design system mir-) --}}
+      <script>
+      (function() {
+          var GAP = 8;
+          var tip = document.createElement('div');
+          tip.className = 'mir-tooltip';
+          var arrow = document.createElement('div');
+          arrow.className = 'mir-tooltip-arrow top';
+          var textNode = document.createTextNode('');
+          tip.appendChild(textNode);
+          tip.appendChild(arrow);
+          document.body.appendChild(tip);
+
+          function show(el) {
+              var text = el.getAttribute('data-tooltip');
+              if (!text) return;
+              textNode.textContent = text;
+              tip.style.visibility = 'hidden';
+              tip.classList.add('visible');
+              var tw = tip.offsetWidth, th = tip.offsetHeight;
+              var rect = el.getBoundingClientRect();
+              var vw = window.innerWidth, vh = window.innerHeight;
+              var top, left, dir;
+              if (rect.top - th - GAP > 4) { top = rect.top - th - GAP; left = rect.left + rect.width/2 - tw/2; dir = 'top'; }
+              else if (rect.bottom + th + GAP < vh - 4) { top = rect.bottom + GAP; left = rect.left + rect.width/2 - tw/2; dir = 'bottom'; }
+              else if (rect.left - tw - GAP > 4) { top = rect.top + rect.height/2 - th/2; left = rect.left - tw - GAP; dir = 'left'; }
+              else { top = rect.top + rect.height/2 - th/2; left = rect.right + GAP; dir = 'right'; }
+              if (left < 4) left = 4;
+              if (left + tw > vw - 4) left = vw - tw - 4;
+              if (top < 4) top = 4;
+              if (top + th > vh - 4) top = vh - th - 4;
+              tip.style.top = top + 'px';
+              tip.style.left = left + 'px';
+              tip.style.visibility = 'visible';
+              arrow.className = 'mir-tooltip-arrow ' + dir;
+              arrow.removeAttribute('style');
+              if (dir === 'top' || dir === 'bottom') {
+                  var ax = rect.left + rect.width/2 - left;
+                  ax = Math.max(10, Math.min(tw - 10, ax));
+                  arrow.style.left = ax + 'px';
+              }
+          }
+
+          function hide() { tip.classList.remove('visible'); tip.style.visibility = 'hidden'; }
+
+          document.addEventListener('mouseover', function(e) { var el = e.target.closest('[data-tooltip]'); if (el) show(el); });
+          document.addEventListener('mouseout', function(e) { var el = e.target.closest('[data-tooltip]'); if (el) hide(); });
+      })();
+      </script>
    </body>
 </html>

@@ -228,79 +228,85 @@ jQuery(document).ready(function () {
 		$(this).css("border", $(this).attr("data-border"));
 	});
 
-	$("#accordion-menu").vmenuModule({
-		Speed: 400,
-		autostart: false,
-		autohide: true,
-	});
+	// ── Sidebar menu: accordion com height real ──
+	(function () {
+		var $menu = $("#accordion-menu");
+		if (!$menu.length) return;
+
+		// Desabilitar Bootstrap dropdown nativo no sidebar
+		$menu.find(".dropdown-toggle").off("click.bs.dropdown");
+
+		function collapseSubmenu(li) {
+			var ul = li.querySelector(":scope > ul");
+			if (!ul) return;
+			ul.style.height = ul.scrollHeight + "px";
+			// Force reflow para o browser registrar o height atual
+			ul.offsetHeight;
+			ul.style.height = "0";
+			li.classList.remove("show");
+		}
+
+		function expandSubmenu(li) {
+			var ul = li.querySelector(":scope > ul");
+			if (!ul) return;
+			li.classList.add("show");
+			ul.style.height = ul.scrollHeight + "px";
+			// Após a transição, remover height fixo para permitir resize
+			function onEnd() {
+				ul.removeEventListener("transitionend", onEnd);
+				if (li.classList.contains("show")) {
+					ul.style.height = "auto";
+				}
+			}
+			ul.addEventListener("transitionend", onEnd);
+		}
+
+		// Bind click em cada <li> que tem submenu
+		$menu.find("li").has("> ul").each(function () {
+			var li = this;
+			var $link = $(li).children("a").first();
+
+			$link.on("click.sidebar", function (e) {
+				e.preventDefault();
+				e.stopPropagation();
+				e.stopImmediatePropagation();
+
+				var isOpen = li.classList.contains("show");
+
+				// Fechar siblings abertos (mesmo nível)
+				$(li).siblings(".show").each(function () {
+					collapseSubmenu(this);
+					// Fechar sub-filhos também
+					$(this).find(".show").each(function () { collapseSubmenu(this); });
+				});
+
+				// Toggle
+				if (isOpen) {
+					// Fechar sub-filhos primeiro
+					$(li).find(".show").each(function () { collapseSubmenu(this); });
+					collapseSubmenu(li);
+				} else {
+					expandSubmenu(li);
+				}
+
+				return false;
+			});
+		});
+
+		// Autostart: abrir itens ativos sem animação
+		$menu.find("a.active").each(function () {
+			$(this).parents("li").each(function () {
+				var ul = this.querySelector(":scope > ul");
+				if (ul) {
+					this.classList.add("show");
+					ul.style.height = "auto";
+				}
+			});
+		});
+	})();
 });
 
-// sidebar menu accordion
-(function ($) {
-	$.fn.vmenuModule = function (option) {
-		var obj, item;
-		var options = $.extend(
-			{
-				Speed: 220,
-				autostart: true,
-				autohide: 1,
-			},
-			option
-		);
-		obj = $(this);
-
-		item = obj.find("ul").parent("li").children("a");
-		item.attr("data-option", "off");
-
-		item.unbind("click").on("click", function () {
-			var a = $(this);
-			if (options.autohide) {
-				a.parent()
-					.parent()
-					.find("a[data-option='on']")
-					.parent("li")
-					.children("ul")
-					.slideUp(options.Speed / 1.2, function () {
-						$(this).parent("li").children("a").attr("data-option", "off");
-						$(this).parent("li").removeClass("show");
-					});
-			}
-			if (a.attr("data-option") == "off") {
-				a.parent("li")
-					.children("ul")
-					.slideDown(options.Speed, function () {
-						a.attr("data-option", "on");
-						a.parent("li").addClass("show");
-					});
-			}
-			if (a.attr("data-option") == "on") {
-				a.attr("data-option", "off");
-				a.parent("li").children("ul").slideUp(options.Speed);
-				a.parent("li").removeClass("show");
-			}
-		});
-		if (options.autostart) {
-			obj.find("a").each(function () {
-				$(this)
-					.parent("li")
-					.parent("ul")
-					.slideDown(options.Speed, function () {
-						$(this).parent("li").children("a").attr("data-option", "on");
-					});
-			});
-		} else {
-			obj.find("a.active").each(function () {
-				$(this)
-					.parent("li")
-					.parent("ul")
-					.slideDown(options.Speed, function () {
-						$(this).parent("li").children("a").attr("data-option", "on");
-						$(this).parent("li").addClass("show");
-					});
-			});
-		}
-	};
-})(window.jQuery || window.Zepto);
+// vmenuModule removido — substituído por CSS accordion acima
 
 // copy to clipboard function
 function CopyToClipboard(value, showNotification, notificationText) {

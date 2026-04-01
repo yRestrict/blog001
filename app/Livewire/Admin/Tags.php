@@ -10,12 +10,14 @@ class Tags extends Component
 {
     use WithPagination;
 
-    public bool    $showModal  = false;
-    public bool    $isEditing  = false;
-    public ?int    $tagId      = null;
-    public string  $tagName    = '';
-    public string  $search     = '';
-    public ?int    $confirmingDelete = null;
+    public int     $perPage          = 10;
+    public bool    $showModal        = false;
+    public bool    $isEditing        = false;
+    public ?int    $tagId            = null;
+    public string  $tagName          = '';
+    public string  $search           = '';
+    public ?int    $deletingTagId    = null;
+    public string  $deletingTagName  = '';
 
     protected $messages = [
         'tagName.required' => 'O nome da tag é obrigatório.',
@@ -24,6 +26,11 @@ class Tags extends Component
     ];
 
     public function updatingSearch(): void
+    {
+        $this->resetPage();
+    }
+
+    public function updatingPerPage(): void
     {
         $this->resetPage();
     }
@@ -44,13 +51,13 @@ class Tags extends Component
         ];
     }
 
-    public function openAdd(): void
+    public function openCreateModal(): void
     {
         $this->resetForm();
         $this->showModal = true;
     }
 
-    public function openEdit(int $id): void
+    public function openEditModal(int $id): void
     {
         $tag = Tag::findOrFail($id);
 
@@ -60,14 +67,14 @@ class Tags extends Component
         $this->showModal = true;
     }
 
-    public function save(): void
+    public function saveTag(): void
     {
         $this->tagName = mb_strtoupper(trim($this->tagName), 'UTF-8');
         $this->validate($this->tagRules());
 
         if ($this->isEditing) {
             $tag       = Tag::findOrFail($this->tagId);
-            $tag->name = $this->tagName; // setNameAttribute já aplica strtoupper
+            $tag->name = $this->tagName;
             $tag->slug = null;
             $tag->save();
 
@@ -86,23 +93,27 @@ class Tags extends Component
         $this->resetForm();
     }
 
-    public function confirmDelete(int $id): void
+    public function prepareDelete(int $id): void
     {
-        $this->confirmingDelete = $id;
+        $tag = Tag::findOrFail($id);
+        $this->deletingTagId   = $tag->id;
+        $this->deletingTagName = $tag->name;
     }
 
     public function cancelDelete(): void
     {
-        $this->confirmingDelete = null;
+        $this->deletingTagId   = null;
+        $this->deletingTagName = '';
     }
 
-    public function deleteTag(int $id): void
+    public function deleteTag(): void
     {
-        $tag = Tag::findOrFail($id);
+        $tag = Tag::findOrFail($this->deletingTagId);
         $tag->posts()->detach();
         $tag->delete();
 
-        $this->confirmingDelete = null;
+        $this->deletingTagId   = null;
+        $this->deletingTagName = '';
         $this->dispatch('notify', type: 'success', message: 'Tag removida com sucesso!');
     }
 
@@ -121,10 +132,13 @@ class Tags extends Component
                 $q->where('name', 'like', '%' . mb_strtoupper($this->search, 'UTF-8') . '%')
             )
             ->orderBy('name')
-            ->paginate(15);
+            ->paginate($this->perPage);
+
+        $totalTags = Tag::count();
 
         return view('livewire.admin.tags', [
-            'tags' => $tags,
+            'tags'      => $tags,
+            'totalTags' => $totalTags,
         ]);
     }
 }

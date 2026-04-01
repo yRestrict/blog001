@@ -11,8 +11,6 @@ class Settings extends Component
 {
     use WithFileUploads;
 
-    public string $tab = 'general_settings';
-
     // General Settings
     public $site_title;
     public $site_description;
@@ -33,10 +31,6 @@ class Settings extends Component
     public $footer_category_order;
 
     public $site_social_links = []; 
-
-    protected $queryString = [
-        'tab' => ['keep' => true],
-    ];
 
     public function mount()
     {
@@ -60,17 +54,6 @@ class Settings extends Component
                 'youtube_url' => ''
             ];
         }
-    }
-
-    public function selectTab(string $tab)
-    {
-        abort_unless(in_array($tab, [
-            'general_settings',
-            'logo_favicon',
-            "social_link"
-        ]), 404);
-
-        $this->tab = $tab;
     }
 
     public function updateSocialLinks()

@@ -1,0 +1,1972 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wireframe — Posts (Design System mir-)</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+/* ══════════════════════════════════════════════════════════════
+   RESET & BASE
+   ══════════════════════════════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: #f0f2f5;
+    color: #1a1d23;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   NAV DE TELAS (wireframe)
+   ══════════════════════════════════════════════════════════════ */
+.wf-nav {
+    position: sticky; top: 0; z-index: 100;
+    background: #1e1e2e;
+    display: flex; align-items: center; gap: 0;
+    padding: 0 24px;
+    box-shadow: 0 2px 12px rgba(0,0,0,.2);
+}
+.wf-nav-title {
+    font-size: .8rem; font-weight: 700; color: #6366f1;
+    letter-spacing: .5px; text-transform: uppercase;
+    padding: 14px 20px 14px 0;
+    border-right: 1px solid rgba(255,255,255,.1);
+    margin-right: 8px;
+}
+.wf-tab {
+    padding: 14px 18px;
+    font-size: .82rem; font-weight: 600;
+    color: rgba(255,255,255,.5);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all .15s;
+}
+.wf-tab:hover { color: rgba(255,255,255,.8); }
+.wf-tab.active { color: #fff; border-bottom-color: #6366f1; }
+
+.wf-screen { display: none; padding: 32px; max-width: 1200px; margin: 0 auto; }
+.wf-screen.active { display: block; }
+
+.wf-screen-label {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: .72rem; font-weight: 700; color: #6366f1;
+    letter-spacing: .8px; text-transform: uppercase;
+    background: #ede9fe; padding: 5px 12px; border-radius: 6px;
+    margin-bottom: 20px;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   DESIGN SYSTEM mir- (extraido de categorias)
+   ══════════════════════════════════════════════════════════════ */
+
+/* ── Sections ─────────────────────────────────────────────── */
+.post-section {
+    background: #fff;
+    border-radius: 10px;
+    border: 1px solid #e9ecef;
+    box-shadow: 0 1px 4px rgba(0,0,0,.05);
+    margin-bottom: 24px;
+    overflow: hidden;
+}
+.post-section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    border-bottom: 1px solid #f0f0f0;
+    gap: 16px;
+}
+.post-section-title {
+    font-size: .95rem;
+    font-weight: 700;
+    color: #1a1d23;
+    margin: 0;
+}
+.post-section-sub {
+    font-size: .78rem;
+    color: #9ca3af;
+    margin-top: 2px;
+}
+.post-section-header-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+}
+
+/* ── Section Header com icone (usado no form) ───────────── */
+.section-icon-header {
+    display: flex; align-items: center; gap: 12px;
+}
+.section-icon {
+    width: 36px; height: 36px; border-radius: 9px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: .9rem; flex-shrink: 0;
+}
+.section-icon-indigo  { background: rgba(99,102,241,.12);  color: #6366f1; }
+.section-icon-green   { background: rgba(16,185,129,.12);  color: #059669; }
+.section-icon-amber   { background: rgba(245,158,11,.12);  color: #d97706; }
+.section-icon-cyan    { background: rgba(6,182,212,.12);   color: #0891b2; }
+.section-icon-red     { background: rgba(239,68,68,.12);   color: #ef4444; }
+
+/* ── Rows ─────────────────────────────────────────────────── */
+.post-list { padding: 4px 0; }
+
+.post-row {
+    display: flex;
+    align-items: center;
+    padding: 12px 20px;
+    border-bottom: 1px solid #f5f5f5;
+    transition: background .15s;
+    gap: 14px;
+}
+.post-row:last-child { border-bottom: none; }
+.post-row:hover { background: #f9fafb; }
+
+.post-thumb {
+    width: 48px; height: 48px;
+    border-radius: 8px;
+    object-fit: cover;
+    border: 1px solid #e5e7eb;
+    flex-shrink: 0;
+    background: #f3f4f6;
+    display: flex; align-items: center; justify-content: center;
+    color: #d1d5db; font-size: 1.1rem;
+    overflow: hidden;
+}
+.post-thumb img { width: 100%; height: 100%; object-fit: cover; }
+
+.post-body { flex: 1 1 0; min-width: 0; }
+.post-name {
+    font-size: .875rem; font-weight: 600; color: #1a1d23;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    display: flex; align-items: center; gap: 6px;
+}
+.post-info {
+    font-size: .72rem; color: #9ca3af; margin-top: 2px;
+    display: flex; align-items: center; gap: 6px;
+}
+.post-info-dot { width: 3px; height: 3px; border-radius: 50%; background: #d1d5db; }
+
+.post-meta {
+    display: flex; align-items: center; gap: 8px;
+    flex-shrink: 0; width: 160px; justify-content: flex-end;
+}
+
+/* ── Badges ───────────────────────────────────────────────── */
+.mir-badge-count {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-width: 24px; height: 24px; padding: 0 7px;
+    border-radius: 50px; font-size: .72rem; font-weight: 700;
+    background: #ede9fe; color: #6d28d9;
+}
+.mir-badge-parent {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 3px 9px; border-radius: 50px;
+    font-size: .72rem; font-weight: 600;
+    background: #d1fae5; color: #065f46;
+}
+.post-badge-feat {
+    display: inline-flex; align-items: center; gap: 3px;
+    padding: 2px 8px; border-radius: 50px;
+    font-size: .68rem; font-weight: 700;
+    background: #fef3c7; color: #92400e;
+}
+.mir-badge-deleted {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 3px 9px; border-radius: 50px;
+    font-size: .72rem; font-weight: 600;
+    background: #fee2e2; color: #991b1b;
+}
+.post-trash-ago { font-size: .7rem; color: #9ca3af; margin-top: 2px; }
+.post-trash-count {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-width: 24px; height: 24px; padding: 0 8px;
+    border-radius: 50px; font-size: .75rem; font-weight: 700;
+    background: #fee2e2; color: #991b1b;
+    margin-left: 8px;
+}
+
+/* ── Status pill ──────────────────────────────────────────── */
+.mir-status {
+    display: inline-flex; align-items: center; justify-content: center; gap: 5px;
+    padding: 4px 10px; border-radius: 50px;
+    font-size: .72rem; font-weight: 600;
+    border: none; cursor: pointer;
+    transition: background .15s; flex-shrink: 0;
+    min-width: 90px;
+}
+.mir-status.is-published { background: #d1fae5; color: #065f46; }
+.mir-status.is-published:hover { background: #a7f3d0; }
+.mir-status.is-draft { background: #f3f4f6; color: #6b7280; }
+.mir-status.is-draft:hover { background: #e5e7eb; }
+.mir-status.is-private { background: #e0e7ff; color: #3730a3; }
+.mir-status.is-private:hover { background: #c7d2fe; }
+.mir-status-ring { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+.is-published .mir-status-ring { background: #10b981; }
+.is-draft .mir-status-ring { background: #9ca3af; }
+.is-private .mir-status-ring { background: #6366f1; }
+
+/* ── Divider ──────────────────────────────────────────────── */
+.mir-divider {
+    width: 1px; height: 28px;
+    background: #e9ecef; margin: 0 10px; flex-shrink: 0;
+}
+
+/* ── Tooltip (posicionado via JS) ──────────────────────────── */
+.mir-tooltip {
+    position: fixed;
+    padding: 6px 11px;
+    border-radius: 6px;
+    background: #1e1e2e;
+    color: #f1f5f9;
+    font-size: .7rem;
+    font-weight: 600;
+    white-space: nowrap;
+    line-height: 1.3;
+    box-shadow: 0 4px 14px rgba(0,0,0,.25);
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity .12s ease;
+}
+.mir-tooltip.visible { opacity: 1; visibility: visible; }
+.mir-tooltip-arrow {
+    position: absolute;
+    width: 0; height: 0;
+    border: 5px solid transparent;
+}
+.mir-tooltip-arrow.top    { bottom: -10px; left: 50%; transform: translateX(-50%); border-top-color: #1e1e2e; }
+.mir-tooltip-arrow.bottom { top: -10px;    left: 50%; transform: translateX(-50%); border-bottom-color: #1e1e2e; }
+.mir-tooltip-arrow.left   { right: -10px;  top: 50%;  transform: translateY(-50%); border-left-color: #1e1e2e; }
+.mir-tooltip-arrow.right  { left: -10px;   top: 50%;  transform: translateY(-50%); border-right-color: #1e1e2e; }
+
+/* ── Action Buttons ───────────────────────────────────────── */
+.mir-actions { display: flex; align-items: center; justify-content: center; gap: 4px; flex-shrink: 0; width: 68px; }
+.mir-action-btn {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 30px; height: 30px; border-radius: 6px;
+    border: 1px solid transparent; background: transparent;
+    cursor: pointer; transition: all .15s; color: #6d7279;
+    font-size: .8rem; position: relative;
+}
+.mir-action-edit:hover   { background: #ede9fe; border-color: #c4b5fd; color: #5b21b6; }
+.mir-action-delete:hover { background: #fee2e2; border-color: #fca5a5; color: #b91c1c; }
+.mir-action-restore:hover { background: #d1fae5; border-color: #6ee7b7; color: #059669; }
+
+/* ── Empty State ──────────────────────────────────────────── */
+.mir-empty-state {
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    padding: 48px 24px; text-align: center;
+}
+.mir-empty-icon {
+    width: 56px; height: 56px; border-radius: 14px;
+    background: #f3f4f6;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.5rem; color: #9ca3af; margin-bottom: 14px;
+}
+.mir-empty-title { font-size: .95rem; font-weight: 700; color: #374151; margin: 0 0 6px; }
+.mir-empty-desc  { font-size: .82rem; color: #9ca3af; margin: 0 0 16px; max-width: 300px; }
+
+/* ── Buttons ──────────────────────────────────────────────── */
+/* Botão base — tamanho padrão compartilhado */
+.mir-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    height: 36px; padding: 0 16px; border-radius: 8px;
+    font-size: .82rem; font-weight: 600;
+    border: none; cursor: pointer;
+    transition: all .15s ease;
+    text-decoration: none; white-space: nowrap;
+}
+.mir-btn:hover { filter: brightness(.92); }
+
+.mir-btn-primary-lg {
+    display: inline-flex; align-items: center; gap: 6px;
+    height: 36px; padding: 0 16px; border-radius: 8px;
+    background: #6366f1;
+    color: #fff; font-size: .82rem; font-weight: 600;
+    border: none; cursor: pointer;
+    box-shadow: 0 1px 3px rgba(99,102,241,.25);
+    transition: all .15s ease; text-decoration: none; white-space: nowrap;
+}
+.mir-btn-primary-lg:hover { background: #4f46e5; box-shadow: 0 2px 6px rgba(99,102,241,.3); }
+
+.mir-btn-ghost {
+    display: inline-flex; align-items: center; gap: 6px;
+    height: 36px; padding: 0 16px; border-radius: 8px;
+    background: transparent; color: #6d7279;
+    font-size: .82rem; font-weight: 600;
+    border: 1px solid #e0e0e0; cursor: pointer;
+    transition: all .15s ease; text-decoration: none; white-space: nowrap;
+}
+.mir-btn-ghost:hover { background: #f5f5f5; }
+
+.mir-btn-neutral {
+    display: inline-flex; align-items: center; gap: 6px;
+    height: 36px; padding: 0 16px; border-radius: 8px;
+    background: #fff;
+    color: #374151; font-size: .82rem; font-weight: 600;
+    border: 1px solid #e5e7eb; cursor: pointer;
+    box-shadow: 0 1px 3px rgba(0,0,0,.06);
+    transition: all .15s ease; text-decoration: none; white-space: nowrap;
+}
+.mir-btn-neutral:hover { background: #f9fafb; border-color: #d1d5db; box-shadow: 0 2px 6px rgba(0,0,0,.08); color: #1a1d23; }
+
+.mir-btn-danger {
+    display: inline-flex; align-items: center; gap: 6px;
+    height: 36px; padding: 0 16px; border-radius: 8px;
+    background: #ef4444;
+    color: #fff; font-size: .82rem; font-weight: 600;
+    border: none; cursor: pointer;
+    box-shadow: 0 1px 3px rgba(239,68,68,.25);
+    transition: all .15s ease; white-space: nowrap;
+}
+.mir-btn-danger:hover { background: #dc2626; box-shadow: 0 2px 6px rgba(239,68,68,.3); }
+
+.mir-btn-success {
+    display: inline-flex; align-items: center; gap: 6px;
+    height: 36px; padding: 0 16px; border-radius: 8px;
+    background: #10b981;
+    color: #fff; font-size: .82rem; font-weight: 600;
+    border: none; cursor: pointer;
+    box-shadow: 0 1px 3px rgba(16,185,129,.25);
+    transition: all .15s ease; white-space: nowrap;
+}
+.mir-btn-success:hover { background: #059669; box-shadow: 0 2px 6px rgba(16,185,129,.3); }
+
+/* ── Inputs ───────────────────────────────────────────────── */
+.mir-label { display: block; font-size: .8rem; font-weight: 600; color: #374151; margin-bottom: 6px; }
+.mir-required { color: #ef4444; }
+.mir-input {
+    width: 100%; padding: 8px 12px;
+    border: 1.5px solid #e5e7eb; border-radius: 8px;
+    font-size: .85rem; color: #1a1d23;
+    background: #fff; outline: none;
+    transition: border-color .15s, box-shadow .15s;
+    font-family: inherit;
+}
+.mir-input:focus { border-color: #6366f1; box-shadow: 0 0 0 3px rgba(99,102,241,.12); }
+select.mir-input { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2 4l4 4 4-4' stroke='%239ca3af' stroke-width='1.5' fill='none'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 32px; }
+textarea.mir-input { resize: vertical; min-height: 80px; }
+
+/* ── Switch ───────────────────────────────────────────────── */
+.mir-switch-wrap { display: flex; align-items: center; }
+.mir-switch-input { display: none; }
+.mir-switch-label { display: inline-flex; align-items: center; gap: 10px; cursor: pointer; }
+.mir-switch-track {
+    position: relative; width: 38px; height: 22px;
+    border-radius: 50px; background: #d1d5db;
+    transition: background .2s; flex-shrink: 0;
+}
+.mir-switch-input:checked + .mir-switch-label .mir-switch-track { background: #6366f1; }
+.mir-switch-thumb {
+    position: absolute; top: 3px; left: 3px;
+    width: 16px; height: 16px; border-radius: 50%;
+    background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,.2);
+    transition: transform .2s;
+}
+.mir-switch-input:checked + .mir-switch-label .mir-switch-thumb { transform: translateX(16px); }
+.mir-switch-text { font-size: .82rem; font-weight: 600; color: #374151; }
+
+/* ── Status Radio Pills ───────────────────────────────────── */
+.status-pills { display: flex; gap: 8px; flex-wrap: wrap; }
+.status-pill {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 6px 14px; border-radius: 50px;
+    font-size: .78rem; font-weight: 600;
+    border: 1.5px solid #e5e7eb; background: #f9fafb;
+    color: #6b7280; cursor: pointer; transition: all .15s;
+}
+.status-pill input { display: none; }
+.status-pill-ring { width: 7px; height: 7px; border-radius: 50%; background: #d1d5db; transition: all .15s; }
+.status-pill.selected-published { background: #d1fae5; color: #065f46; border-color: #6ee7b7; }
+.status-pill.selected-published .status-pill-ring { background: #10b981; }
+.status-pill.selected-draft { background: #f3f4f6; color: #374151; border-color: #d1d5db; }
+.status-pill.selected-draft .status-pill-ring { background: #9ca3af; }
+.status-pill.selected-private { background: #e0e7ff; color: #3730a3; border-color: #a5b4fc; }
+.status-pill.selected-private .status-pill-ring { background: #6366f1; }
+
+/* ── Upload Area ──────────────────────────────────────────── */
+.upload-area {
+    border: 2px dashed #e5e7eb; border-radius: 10px;
+    padding: 28px 20px; text-align: center;
+    transition: all .15s; cursor: pointer;
+}
+.upload-area:hover { border-color: #6366f1; background: rgba(99,102,241,.03); }
+.upload-icon { font-size: 1.6rem; color: #c4b5fd; margin-bottom: 8px; }
+.upload-text { font-size: .82rem; font-weight: 600; color: #6d7279; }
+.upload-hint { font-size: .72rem; color: #9ca3af; margin-top: 2px; }
+
+/* ── Warning Box ──────────────────────────────────────────── */
+.warning-box {
+    background: #fef2f2; border: 1px solid #fecaca;
+    border-radius: 8px; padding: 12px 14px;
+    font-size: .82rem; color: #991b1b; margin-top: 12px;
+}
+.warning-box ul { margin: 6px 0 0 16px; }
+.warning-box li { margin-bottom: 2px; }
+
+/* ── Modal ────────────────────────────────────────────────── */
+.mir-modal-overlay {
+    position: fixed; inset: 0;
+    background: rgba(17,24,39,.55);
+    backdrop-filter: blur(2px);
+    z-index: 1060;
+    display: none; align-items: center; justify-content: center;
+    padding: 16px;
+}
+.mir-modal-overlay.show { display: flex; }
+.mir-modal-dialog { width: 100%; max-width: 540px; animation: mir-modal-in .2s ease; }
+@keyframes mir-modal-in {
+    from { opacity: 0; transform: translateY(-12px) scale(.97); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+.mir-modal-content {
+    background: #fff; border-radius: 14px;
+    box-shadow: 0 20px 60px rgba(0,0,0,.18); overflow: hidden;
+}
+.mir-modal-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 18px 22px; border-bottom: 1px solid #f0f0f0;
+}
+.mir-modal-title { display: flex; align-items: center; gap: 12px; }
+.mir-modal-icon {
+    width: 36px; height: 36px; border-radius: 9px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: .95rem; flex-shrink: 0;
+}
+.mir-modal-icon-delete { background: rgba(239,68,68,.12); color: #ef4444; }
+.mir-modal-title-text { font-size: .93rem; font-weight: 700; color: #1a1d23; }
+.mir-modal-subtitle { font-size: .75rem; color: #9ca3af; margin-top: 1px; }
+.mir-modal-close {
+    width: 32px; height: 32px; border-radius: 8px;
+    border: none; background: transparent; color: #9ca3af;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    transition: background .15s, color .15s; font-size: .9rem;
+}
+.mir-modal-close:hover { background: #f3f4f6; color: #374151; }
+.mir-modal-body { padding: 22px; }
+.mir-modal-body p { color: #6d7279; font-size: .9rem; line-height: 1.6; }
+.mir-modal-body strong { color: #ef4444; }
+.mir-modal-footer {
+    display: flex; justify-content: flex-end; gap: 10px;
+    padding: 16px 22px; border-top: 1px solid #f0f0f0;
+    background: #fafafa;
+}
+
+/* ── Paginacao ────────────────────────────────────────────── */
+.post-pagination {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 20px;
+    border-top: 1px solid #f0f0f0;
+}
+.pagination-left {
+    display: flex; align-items: center; gap: 8px;
+}
+.pagination-left-label {
+    font-size: .78rem; color: #9ca3af; font-weight: 500; white-space: nowrap;
+}
+.pagination-per-page {
+    width: 64px; padding: 4px 8px;
+    border: 1.5px solid #e5e7eb; border-radius: 6px;
+    font-size: .78rem; color: #1a1d23;
+    background: #fff; font-family: inherit;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 12 12'%3E%3Cpath d='M2 4l4 4 4-4' stroke='%239ca3af' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 6px center;
+    padding-right: 22px;
+    cursor: pointer;
+    transition: border-color .15s;
+}
+.pagination-per-page:focus { border-color: #6366f1; outline: none; }
+.pagination-center {
+    display: flex; align-items: center; gap: 4px;
+}
+.page-btn {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-width: 32px; height: 32px; padding: 0 8px;
+    border-radius: 6px; font-size: .78rem; font-weight: 600;
+    border: 1px solid #e5e7eb; background: #fff;
+    color: #6d7279; cursor: pointer; transition: all .15s;
+}
+.page-btn:hover { background: #f3f4f6; border-color: #d1d5db; }
+.page-btn.active { background: #6366f1; color: #fff; border-color: #6366f1; }
+.page-btn.disabled { opacity: .4; cursor: default; pointer-events: none; }
+.pagination-right {
+    font-size: .78rem; color: #9ca3af; font-weight: 500; white-space: nowrap;
+}
+
+/* ── Page Header Action ───────────────────────────────────── */
+.page-header-action {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+}
+.page-header-left {
+    display: flex; flex-direction: column; gap: 2px;
+}
+.page-header-title {
+    font-size: 1.25rem; font-weight: 800; color: #1a1d23;
+    display: flex; align-items: center; gap: 10px;
+}
+.page-header-title-count {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-width: 28px; height: 24px; padding: 0 8px;
+    border-radius: 50px; font-size: .72rem; font-weight: 700;
+    background: #ede9fe; color: #6d28d9;
+}
+.page-header-sub {
+    font-size: .82rem; color: #9ca3af;
+}
+.page-header-right {
+    display: flex; align-items: center; gap: 10px;
+}
+
+/* ── Stat Widgets ─────────────────────────────────────────── */
+.widgets-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
+}
+@media (max-width: 900px) { .widgets-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 540px) { .widgets-grid { grid-template-columns: 1fr; } }
+
+.widget-card {
+    background: #fff;
+    border-radius: 10px;
+    border: 1px solid #e9ecef;
+    padding: 18px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    transition: all .2s ease;
+    box-shadow: 0 1px 4px rgba(0,0,0,.04);
+    position: relative;
+    overflow: hidden;
+}
+.widget-card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    border-radius: 0 3px 3px 0;
+}
+.widget-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0,0,0,.08);
+}
+.widget-card-published::before { background: #10b981; }
+.widget-card-draft::before    { background: #9ca3af; }
+.widget-card-private::before  { background: #6366f1; }
+.widget-card-total::before    { background: #f59e0b; }
+
+.widget-info { display: flex; flex-direction: column; gap: 2px; }
+.widget-label {
+    font-size: .7rem; font-weight: 700; color: #9ca3af;
+    text-transform: uppercase; letter-spacing: .5px;
+}
+.widget-value {
+    font-size: 1.5rem; font-weight: 800; color: #1a1d23;
+    line-height: 1;
+}
+.widget-trend {
+    font-size: .7rem; font-weight: 600; margin-top: 2px;
+    display: flex; align-items: center; gap: 3px;
+}
+.widget-trend-up { color: #059669; }
+.widget-trend-neutral { color: #9ca3af; }
+
+.widget-icon {
+    width: 44px; height: 44px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.1rem; flex-shrink: 0;
+}
+.widget-icon-published { background: #d1fae5; color: #059669; }
+.widget-icon-draft     { background: #f3f4f6; color: #6b7280; }
+.widget-icon-private   { background: #e0e7ff; color: #4f46e5; }
+.widget-icon-total     { background: #fef3c7; color: #d97706; }
+
+/* ── Quill placeholder ────────────────────────────────────── */
+.quill-placeholder {
+    border: 1.5px solid #e5e7eb; border-radius: 8px; overflow: hidden;
+}
+.quill-toolbar {
+    background: #f9fafb; padding: 8px 12px;
+    border-bottom: 1px solid #e5e7eb;
+    display: flex; gap: 6px; flex-wrap: wrap;
+}
+.quill-toolbar-btn {
+    width: 28px; height: 28px; border-radius: 4px;
+    background: #fff; border: 1px solid #e5e7eb;
+    display: flex; align-items: center; justify-content: center;
+    color: #6d7279; font-size: .7rem; cursor: pointer;
+}
+.quill-toolbar-sep { width: 1px; height: 20px; background: #e5e7eb; align-self: center; }
+.quill-body {
+    min-height: 300px; padding: 16px;
+    color: #9ca3af; font-size: .85rem;
+}
+
+/* ── Form layout ──────────────────────────────────────────── */
+.form-layout { display: grid; grid-template-columns: 1fr 380px; gap: 24px; }
+@media (max-width: 900px) { .form-layout { grid-template-columns: 1fr; } }
+.form-group { margin-bottom: 16px; }
+.form-divider { border: none; border-top: 1px solid #f0f0f0; margin: 16px 0; }
+.form-timestamps { padding-top: 12px; border-top: 1px solid #f0f0f0; }
+.form-timestamps span {
+    display: block; font-size: .75rem; color: #9ca3af;
+}
+.form-timestamps span + span { margin-top: 4px; }
+.form-footer {
+    display: flex; align-items: center; gap: 10px;
+    margin-top: 8px;
+}
+
+/* ── Image preview ────────────────────────────────────────── */
+.img-preview {
+    width: 100%; max-height: 160px; object-fit: cover;
+    border-radius: 8px; border: 1px solid #e5e7eb;
+    margin-bottom: 12px;
+}
+
+/* ── Toast (demo) ─────────────────────────────────────────── */
+.toast-demo {
+    position: fixed; bottom: 24px; right: 24px; z-index: 9999;
+    display: flex; flex-direction: column; gap: 10px;
+}
+.mir-toast {
+    display: flex; align-items: center; gap: 10px;
+    padding: 11px 16px; border-radius: 10px;
+    font-size: .83rem; font-weight: 500;
+    box-shadow: 0 4px 20px rgba(0,0,0,.14);
+    min-width: 240px; max-width: 340px;
+}
+.mir-toast-success { background: #d1fae5; color: #065f46; }
+.mir-toast-icon { font-size: 1rem; flex-shrink: 0; }
+
+/* ── Filter Dropdown ──────────────────────────────────────── */
+.filter-dropdown-wrap { position: relative; }
+.filter-dropdown-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 14px; border-radius: 8px;
+    border: 1.5px solid #e5e7eb; background: #fff;
+    font-size: .82rem; font-weight: 600; color: #6d7279;
+    cursor: pointer; transition: all .15s;
+    white-space: nowrap;
+}
+.filter-dropdown-btn:hover { border-color: #d1d5db; background: #f9fafb; }
+.filter-dropdown-btn.open { border-color: #6366f1; color: #4f46e5; background: #f5f3ff; }
+.filter-badge {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-width: 18px; height: 18px; padding: 0 5px;
+    border-radius: 50px; font-size: .65rem; font-weight: 700;
+    background: #6366f1; color: #fff;
+}
+.filter-dropdown-panel {
+    display: none; position: absolute; top: calc(100% + 6px); right: 0;
+    width: 280px; background: #fff;
+    border-radius: 10px; border: 1px solid #e9ecef;
+    box-shadow: 0 8px 32px rgba(0,0,0,.12);
+    z-index: 50; overflow: hidden;
+    animation: mir-modal-in .15s ease;
+}
+.filter-dropdown-panel.open { display: block; }
+.filter-panel-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 16px; border-bottom: 1px solid #f0f0f0;
+}
+.filter-panel-title { font-size: .82rem; font-weight: 700; color: #1a1d23; }
+.filter-panel-clear {
+    font-size: .72rem; font-weight: 600; color: #6366f1;
+    cursor: pointer; background: none; border: none;
+    transition: opacity .15s;
+}
+.filter-panel-clear:hover { opacity: .7; }
+.filter-panel-body { padding: 12px 16px; }
+.filter-group { margin-bottom: 12px; }
+.filter-group:last-child { margin-bottom: 0; }
+.filter-group-label {
+    font-size: .72rem; font-weight: 700; color: #9ca3af;
+    text-transform: uppercase; letter-spacing: .5px;
+    margin-bottom: 6px;
+}
+.filter-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.filter-chip {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 4px 10px; border-radius: 50px;
+    font-size: .72rem; font-weight: 600;
+    border: 1.5px solid #e5e7eb; background: #fff;
+    color: #6d7279; cursor: pointer;
+    transition: all .15s;
+}
+.filter-chip:hover { border-color: #c4b5fd; background: #f5f3ff; color: #5b21b6; }
+.filter-chip.active { border-color: #6366f1; background: #ede9fe; color: #4f46e5; }
+.filter-chip-dot {
+    width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0;
+}
+.filter-panel-footer {
+    padding: 10px 16px; border-top: 1px solid #f0f0f0;
+    display: flex; justify-content: flex-end; gap: 8px;
+    background: #fafafa;
+}
+
+/* ── Loading Indicator ─────────────────────────────────────── */
+.post-loading-bar {
+    height: 3px;
+    background: #f0f0f0;
+    position: relative;
+    overflow: hidden;
+}
+.post-loading-bar::after {
+    content: '';
+    position: absolute;
+    top: 0; left: -40%;
+    width: 40%; height: 100%;
+    background: linear-gradient(90deg, transparent, #6366f1, transparent);
+    border-radius: 2px;
+    animation: mir-loading-slide 1.2s ease-in-out infinite;
+}
+@keyframes mir-loading-slide {
+    0%   { left: -40%; }
+    100% { left: 100%; }
+}
+.post-loading-overlay {
+    position: relative;
+}
+.post-loading-overlay::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(255,255,255,.6);
+    z-index: 10;
+    border-radius: 0 0 10px 10px;
+    pointer-events: none;
+    backdrop-filter: blur(1px);
+}
+
+/* ── Table Header ─────────────────────────────────────────── */
+.post-list-header {
+    display: flex;
+    align-items: center;
+    padding: 10px 20px;
+    gap: 14px;
+    border-bottom: 1px solid #e9ecef;
+    background: #f8fafc;
+}
+.post-list-header span {
+    font-size: .68rem;
+    font-weight: 700;
+    color: #9ca3af;
+    text-transform: uppercase;
+    letter-spacing: .6px;
+    white-space: nowrap;
+}
+.plh-thumb   { width: 48px; flex-shrink: 0; }
+.plh-body    { flex: 1 1 0; min-width: 0; }
+.plh-meta    { width: 160px; flex-shrink: 0; text-align: right; }
+.plh-divider { width: 1px; height: 16px; background: #e5e7eb; margin: 0 10px; flex-shrink: 0; }
+.plh-status  { width: 90px; flex-shrink: 0; text-align: center; }
+.plh-actions { width: 68px; flex-shrink: 0; text-align: center; }
+
+/* ── Trash row opacity ────────────────────────────────────── */
+.post-row-trashed .post-thumb { opacity: .5; }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════
+     NAVEGACAO ENTRE TELAS
+     ═══════════════════════════════════════════════════════════ -->
+<nav class="wf-nav">
+    <span class="wf-nav-title">Wireframe Posts</span>
+    <div class="wf-tab active" onclick="showScreen('listing')">Listagem</div>
+    <div class="wf-tab" onclick="showScreen('create')">Criar Post</div>
+    <div class="wf-tab" onclick="showScreen('trash')">Lixeira</div>
+    <div class="wf-tab" onclick="showScreen('loading')">Loading</div>
+</nav>
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     TELA 1: LISTAGEM DE POSTS
+     ═══════════════════════════════════════════════════════════ -->
+<div class="wf-screen active" id="screen-listing">
+
+    <div class="wf-screen-label"><i class="fa-solid fa-desktop"></i> Listagem de Posts — /admin/posts</div>
+
+    <!-- Page Header Action -->
+    <div class="page-header-action">
+        <div class="page-header-left">
+            <div class="page-header-title">
+                Posts
+                <span class="page-header-title-count">24</span>
+            </div>
+            <div class="page-header-sub">Gerencie todos os posts do sistema</div>
+        </div>
+        <div class="page-header-right">
+            <a href="#" class="mir-btn-neutral" onclick="showScreen('trash'); return false;">
+                <i class="fa-solid fa-trash-can"></i> Lixeira
+            </a>
+            <button class="mir-btn-primary-lg">
+                <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                Novo Post
+            </button>
+        </div>
+    </div>
+
+    <!-- Widgets -->
+    <div class="widgets-grid">
+        <div class="widget-card widget-card-total">
+            <div class="widget-info">
+                <span class="widget-label">Total de Posts</span>
+                <span class="widget-value">24</span>
+                <span class="widget-trend widget-trend-up">
+                    <i class="fa-solid fa-arrow-up" style="font-size:.55rem"></i> 3 esta semana
+                </span>
+            </div>
+            <div class="widget-icon widget-icon-total">
+                <i class="fa-solid fa-file-lines"></i>
+            </div>
+        </div>
+        <div class="widget-card widget-card-published">
+            <div class="widget-info">
+                <span class="widget-label">Publicados</span>
+                <span class="widget-value">18</span>
+                <span class="widget-trend widget-trend-up">
+                    <i class="fa-solid fa-arrow-up" style="font-size:.55rem"></i> 2 esta semana
+                </span>
+            </div>
+            <div class="widget-icon widget-icon-published">
+                <i class="fa-solid fa-circle-check"></i>
+            </div>
+        </div>
+        <div class="widget-card widget-card-draft">
+            <div class="widget-info">
+                <span class="widget-label">Rascunhos</span>
+                <span class="widget-value">4</span>
+                <span class="widget-trend widget-trend-neutral">
+                    <i class="fa-solid fa-minus" style="font-size:.55rem"></i> sem alteracao
+                </span>
+            </div>
+            <div class="widget-icon widget-icon-draft">
+                <i class="fa-solid fa-pen-clip"></i>
+            </div>
+        </div>
+        <div class="widget-card widget-card-private">
+            <div class="widget-info">
+                <span class="widget-label">Privados</span>
+                <span class="widget-value">2</span>
+                <span class="widget-trend widget-trend-up">
+                    <i class="fa-solid fa-arrow-up" style="font-size:.55rem"></i> 1 esta semana
+                </span>
+            </div>
+            <div class="widget-icon widget-icon-private">
+                <i class="fa-solid fa-lock"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- Table Section -->
+    <div class="post-section">
+
+        <!-- Header com busca e filtros -->
+        <div class="post-section-header">
+            <div class="post-section-header-right" style="width:100%;">
+                <div style="position:relative; flex:1; max-width:280px;">
+                    <i class="fa-solid fa-magnifying-glass" style="position:absolute; left:12px; top:50%; transform:translateY(-50%); color:#9ca3af; font-size:.75rem;"></i>
+                    <input type="text" class="mir-input" placeholder="Pesquisar posts..." style="padding-left:32px;">
+                </div>
+                <select class="mir-input" style="width: 160px;">
+                    <option>Todos os status</option>
+                    <option>Publicado</option>
+                    <option>Rascunho</option>
+                    <option>Privado</option>
+                </select>
+                <div style="flex:1;"></div>
+                <div class="filter-dropdown-wrap">
+                    <button class="filter-dropdown-btn" onclick="this.classList.toggle('open'); this.nextElementSibling.classList.toggle('open')">
+                        <i class="fa-solid fa-sliders" style="font-size:.75rem;"></i>
+                        Filtros
+                        <span class="filter-badge">2</span>
+                    </button>
+                    <div class="filter-dropdown-panel">
+                        <div class="filter-panel-header">
+                            <span class="filter-panel-title">Filtros</span>
+                            <button class="filter-panel-clear">Limpar tudo</button>
+                        </div>
+                        <div class="filter-panel-body">
+                            <div class="filter-group">
+                                <div class="filter-group-label">Categoria</div>
+                                <div class="filter-chips">
+                                    <span class="filter-chip active">Tecnologia</span>
+                                    <span class="filter-chip">Design</span>
+                                    <span class="filter-chip">Marketing</span>
+                                    <span class="filter-chip">DevOps</span>
+                                </div>
+                            </div>
+                            <div class="filter-group">
+                                <div class="filter-group-label">Autor</div>
+                                <div class="filter-chips">
+                                    <span class="filter-chip active">Admin</span>
+                                    <span class="filter-chip">Editor</span>
+                                </div>
+                            </div>
+                            <div class="filter-group">
+                                <div class="filter-group-label">Periodo</div>
+                                <div class="filter-chips">
+                                    <span class="filter-chip">Hoje</span>
+                                    <span class="filter-chip">Ultima semana</span>
+                                    <span class="filter-chip">Ultimo mes</span>
+                                    <span class="filter-chip">Ultimo ano</span>
+                                </div>
+                            </div>
+                            <div class="filter-group" style="margin-bottom:0;">
+                                <div class="filter-group-label">Opcoes</div>
+                                <div class="filter-chips">
+                                    <span class="filter-chip">
+                                        <span class="filter-chip-dot" style="background:#f59e0b;"></span>
+                                        Destaques
+                                    </span>
+                                    <span class="filter-chip">
+                                        <span class="filter-chip-dot" style="background:#10b981;"></span>
+                                        Com comentarios
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="filter-panel-footer">
+                            <button class="mir-btn-ghost" style="padding:5px 12px; font-size:.76rem;" onclick="this.closest('.filter-dropdown-wrap').querySelector('.filter-dropdown-btn').click()">Fechar</button>
+                            <button class="mir-btn-primary-lg" style="padding:5px 12px; font-size:.76rem;">Aplicar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Table Header -->
+        <div class="post-list-header">
+            <span class="plh-thumb"></span>
+            <span class="plh-body">Post</span>
+            <span class="plh-meta">Categoria / Tags</span>
+            <span class="plh-divider"></span>
+            <span class="plh-status">Status</span>
+            <span class="plh-divider"></span>
+            <span class="plh-actions">Acoes</span>
+        </div>
+
+        <!-- Rows -->
+        <div class="post-list">
+
+            <!-- Row 1: Publicado + Destaque -->
+            <div class="post-row">
+                <div class="post-thumb">
+                    <img src="https://picsum.photos/seed/post1/96/96" alt="">
+                </div>
+                <div class="post-body">
+                    <div class="post-name">
+                        Como configurar um ambiente Laravel do zero
+                        <span class="post-badge-feat"><i class="fa-solid fa-star" style="font-size:.6rem"></i> Destaque</span>
+                    </div>
+                    <div class="post-info">
+                        <span>por Admin</span>
+                        <span class="post-info-dot"></span>
+                        <span>15/03/2026</span>
+                    </div>
+                </div>
+                <div class="post-meta">
+                    <span class="mir-badge-parent">
+                        <svg width="8" height="8" viewBox="0 0 8 8" fill="none"><path d="M1 1h2.5v2.5M1 7h6V4.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        Tecnologia
+                    </span>
+                    <span class="mir-badge-count" data-tooltip="3 tags">3</span>
+                </div>
+                <div class="mir-divider"></div>
+                <button class="mir-status is-published" data-tooltip="Clique para alterar status">
+                    <span class="mir-status-ring"></span>
+                    Publicado
+                </button>
+                <div class="mir-divider"></div>
+                <div class="mir-actions">
+                    <button class="mir-action-btn mir-action-edit" data-tooltip="Editar post"><i class="fa-solid fa-pen-to-square"></i></button>
+                    <button class="mir-action-btn mir-action-delete" data-tooltip="Mover para lixeira" onclick="toggleModal('modal-delete')"><i class="fa-solid fa-trash-can"></i></button>
+                </div>
+            </div>
+
+            <!-- Row 2: Rascunho -->
+            <div class="post-row">
+                <div class="post-thumb">
+                    <img src="https://picsum.photos/seed/post2/96/96" alt="">
+                </div>
+                <div class="post-body">
+                    <div class="post-name">Guia completo de Tailwind CSS para iniciantes</div>
+                    <div class="post-info">
+                        <span>por Editor</span>
+                        <span class="post-info-dot"></span>
+                        <span>12/03/2026</span>
+                    </div>
+                </div>
+                <div class="post-meta">
+                    <span class="mir-badge-parent">
+                        <svg width="8" height="8" viewBox="0 0 8 8" fill="none"><path d="M1 1h2.5v2.5M1 7h6V4.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        Design
+                    </span>
+                    <span class="mir-badge-count" data-tooltip="5 tags">5</span>
+                </div>
+                <div class="mir-divider"></div>
+                <button class="mir-status is-draft" data-tooltip="Clique para alterar status">
+                    <span class="mir-status-ring"></span>
+                    Rascunho
+                </button>
+                <div class="mir-divider"></div>
+                <div class="mir-actions">
+                    <button class="mir-action-btn mir-action-edit" data-tooltip="Editar post"><i class="fa-solid fa-pen-to-square"></i></button>
+                    <button class="mir-action-btn mir-action-delete" data-tooltip="Mover para lixeira"><i class="fa-solid fa-trash-can"></i></button>
+                </div>
+            </div>
+
+            <!-- Row 3: Privado -->
+            <div class="post-row">
+                <div class="post-thumb">
+                    <img src="https://picsum.photos/seed/post3/96/96" alt="">
+                </div>
+                <div class="post-body">
+                    <div class="post-name">Estrategias de SEO para blogs em 2026</div>
+                    <div class="post-info">
+                        <span>por Admin</span>
+                        <span class="post-info-dot"></span>
+                        <span>10/03/2026</span>
+                    </div>
+                </div>
+                <div class="post-meta">
+                    <span class="mir-badge-parent">
+                        <svg width="8" height="8" viewBox="0 0 8 8" fill="none"><path d="M1 1h2.5v2.5M1 7h6V4.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        Marketing
+                    </span>
+                    <span class="mir-badge-count" data-tooltip="2 tags">2</span>
+                </div>
+                <div class="mir-divider"></div>
+                <button class="mir-status is-private" data-tooltip="Clique para alterar status">
+                    <span class="mir-status-ring"></span>
+                    Privado
+                </button>
+                <div class="mir-divider"></div>
+                <div class="mir-actions">
+                    <button class="mir-action-btn mir-action-edit" data-tooltip="Editar post"><i class="fa-solid fa-pen-to-square"></i></button>
+                    <button class="mir-action-btn mir-action-delete" data-tooltip="Mover para lixeira"><i class="fa-solid fa-trash-can"></i></button>
+                </div>
+            </div>
+
+            <!-- Row 4: Publicado -->
+            <div class="post-row">
+                <div class="post-thumb">
+                    <img src="https://picsum.photos/seed/post4/96/96" alt="">
+                </div>
+                <div class="post-body">
+                    <div class="post-name">Livewire 3: tudo que voce precisa saber</div>
+                    <div class="post-info">
+                        <span>por Admin</span>
+                        <span class="post-info-dot"></span>
+                        <span>08/03/2026</span>
+                    </div>
+                </div>
+                <div class="post-meta">
+                    <span class="mir-badge-parent">
+                        <svg width="8" height="8" viewBox="0 0 8 8" fill="none"><path d="M1 1h2.5v2.5M1 7h6V4.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        Tecnologia
+                    </span>
+                    <span class="mir-badge-count" data-tooltip="4 tags">4</span>
+                </div>
+                <div class="mir-divider"></div>
+                <button class="mir-status is-published" data-tooltip="Clique para alterar status">
+                    <span class="mir-status-ring"></span>
+                    Publicado
+                </button>
+                <div class="mir-divider"></div>
+                <div class="mir-actions">
+                    <button class="mir-action-btn mir-action-edit" data-tooltip="Editar post"><i class="fa-solid fa-pen-to-square"></i></button>
+                    <button class="mir-action-btn mir-action-delete" data-tooltip="Mover para lixeira"><i class="fa-solid fa-trash-can"></i></button>
+                </div>
+            </div>
+
+            <!-- Row 5: Publicado + Destaque -->
+            <div class="post-row">
+                <div class="post-thumb">
+                    <img src="https://picsum.photos/seed/post5/96/96" alt="">
+                </div>
+                <div class="post-body">
+                    <div class="post-name">
+                        PHP 8.4: novidades e recursos que voce deve conhecer
+                        <span class="post-badge-feat"><i class="fa-solid fa-star" style="font-size:.6rem"></i> Destaque</span>
+                    </div>
+                    <div class="post-info">
+                        <span>por Editor</span>
+                        <span class="post-info-dot"></span>
+                        <span>05/03/2026</span>
+                    </div>
+                </div>
+                <div class="post-meta">
+                    <span class="mir-badge-parent">
+                        <svg width="8" height="8" viewBox="0 0 8 8" fill="none"><path d="M1 1h2.5v2.5M1 7h6V4.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        Tecnologia
+                    </span>
+                    <span class="mir-badge-count" data-tooltip="6 tags">6</span>
+                </div>
+                <div class="mir-divider"></div>
+                <button class="mir-status is-published" data-tooltip="Clique para alterar status">
+                    <span class="mir-status-ring"></span>
+                    Publicado
+                </button>
+                <div class="mir-divider"></div>
+                <div class="mir-actions">
+                    <button class="mir-action-btn mir-action-edit" data-tooltip="Editar post"><i class="fa-solid fa-pen-to-square"></i></button>
+                    <button class="mir-action-btn mir-action-delete" data-tooltip="Mover para lixeira"><i class="fa-solid fa-trash-can"></i></button>
+                </div>
+            </div>
+
+            <!-- Row 6: Rascunho -->
+            <div class="post-row">
+                <div class="post-thumb"><i class="fa-solid fa-image"></i></div>
+                <div class="post-body">
+                    <div class="post-name">Deploy com Docker e Laravel Sail</div>
+                    <div class="post-info">
+                        <span>por Admin</span>
+                        <span class="post-info-dot"></span>
+                        <span>01/03/2026</span>
+                    </div>
+                </div>
+                <div class="post-meta">
+                    <span class="mir-badge-parent">
+                        <svg width="8" height="8" viewBox="0 0 8 8" fill="none"><path d="M1 1h2.5v2.5M1 7h6V4.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        DevOps
+                    </span>
+                    <span class="mir-badge-count" data-tooltip="1 tag">1</span>
+                </div>
+                <div class="mir-divider"></div>
+                <button class="mir-status is-draft" data-tooltip="Clique para alterar status">
+                    <span class="mir-status-ring"></span>
+                    Rascunho
+                </button>
+                <div class="mir-divider"></div>
+                <div class="mir-actions">
+                    <button class="mir-action-btn mir-action-edit" data-tooltip="Editar post"><i class="fa-solid fa-pen-to-square"></i></button>
+                    <button class="mir-action-btn mir-action-delete" data-tooltip="Mover para lixeira"><i class="fa-solid fa-trash-can"></i></button>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Paginacao -->
+        <div class="post-pagination">
+            <div class="pagination-left">
+                <span class="pagination-left-label">Por pagina</span>
+                <select class="pagination-per-page">
+                    <option>6</option>
+                    <option>10</option>
+                    <option>25</option>
+                    <option>50</option>
+                </select>
+            </div>
+            <div class="pagination-center">
+                <button class="page-btn disabled"><i class="fa-solid fa-chevron-left" style="font-size:.65rem"></i></button>
+                <button class="page-btn active">1</button>
+                <button class="page-btn">2</button>
+                <button class="page-btn">3</button>
+                <button class="page-btn">4</button>
+                <button class="page-btn"><i class="fa-solid fa-chevron-right" style="font-size:.65rem"></i></button>
+            </div>
+            <div class="pagination-right">Mostrando 1–6 de 24</div>
+        </div>
+    </div>
+
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     TELA 2: CRIAR POST
+     ═══════════════════════════════════════════════════════════ -->
+<div class="wf-screen" id="screen-create">
+
+    <div class="wf-screen-label"><i class="fa-solid fa-desktop"></i> Criar Post — /admin/posts/create</div>
+
+    <!-- Page Header Action -->
+    <div class="page-header-action">
+        <div class="page-header-left">
+            <div class="page-header-title">Criar Post</div>
+            <div class="page-header-sub">Preencha os dados para publicar um novo post</div>
+        </div>
+        <div class="page-header-right">
+            <a href="#" class="mir-btn-neutral" onclick="showScreen('listing'); return false;">
+                <i class="fa-solid fa-arrow-left"></i> Voltar
+            </a>
+            <button class="mir-btn-primary-lg">
+                <i class="fa-solid fa-floppy-disk"></i> Criar Post
+            </button>
+        </div>
+    </div>
+
+    <div class="form-layout">
+
+        <!-- Coluna Principal -->
+        <div>
+            <!-- Conteudo -->
+            <div class="post-section">
+                <div class="post-section-header">
+                    <div class="section-icon-header">
+                        <span class="section-icon section-icon-indigo"><i class="fa-solid fa-pen-nib"></i></span>
+                        <div>
+                            <div class="post-section-title">Conteudo do Post</div>
+                            <div class="post-section-sub">Preencha o titulo e o corpo do post</div>
+                        </div>
+                    </div>
+                </div>
+                <div style="padding: 20px;">
+                    <div class="form-group">
+                        <label class="mir-label">Titulo <span class="mir-required">*</span></label>
+                        <input type="text" class="mir-input" placeholder="Digite o titulo do post">
+                    </div>
+                    <div class="form-group">
+                        <label class="mir-label">Conteudo <span class="mir-required">*</span></label>
+                        <div class="quill-placeholder">
+                            <div class="quill-toolbar">
+                                <button class="quill-toolbar-btn"><b>B</b></button>
+                                <button class="quill-toolbar-btn"><i>I</i></button>
+                                <button class="quill-toolbar-btn"><u>U</u></button>
+                                <button class="quill-toolbar-btn"><s>S</s></button>
+                                <span class="quill-toolbar-sep"></span>
+                                <button class="quill-toolbar-btn"><i class="fa-solid fa-list-ul" style="font-size:.6rem"></i></button>
+                                <button class="quill-toolbar-btn"><i class="fa-solid fa-list-ol" style="font-size:.6rem"></i></button>
+                                <span class="quill-toolbar-sep"></span>
+                                <button class="quill-toolbar-btn"><i class="fa-solid fa-link" style="font-size:.6rem"></i></button>
+                                <button class="quill-toolbar-btn"><i class="fa-solid fa-image" style="font-size:.6rem"></i></button>
+                                <button class="quill-toolbar-btn"><i class="fa-solid fa-video" style="font-size:.6rem"></i></button>
+                                <span class="quill-toolbar-sep"></span>
+                                <button class="quill-toolbar-btn"><i class="fa-solid fa-code" style="font-size:.6rem"></i></button>
+                                <button class="quill-toolbar-btn"><i class="fa-solid fa-quote-left" style="font-size:.6rem"></i></button>
+                            </div>
+                            <div class="quill-body">Comece a escrever o conteudo do seu post aqui...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SEO -->
+            <div class="post-section">
+                <div class="post-section-header">
+                    <div class="section-icon-header">
+                        <span class="section-icon section-icon-green"><i class="fa-solid fa-magnifying-glass-chart"></i></span>
+                        <div>
+                            <div class="post-section-title">SEO</div>
+                            <div class="post-section-sub">Otimizacao para mecanismos de busca</div>
+                        </div>
+                    </div>
+                </div>
+                <div style="padding: 20px;">
+                    <div class="form-group">
+                        <label class="mir-label">Meta Keywords <span style="color:#9ca3af; font-weight:400;">(separadas por virgula)</span></label>
+                        <input type="text" class="mir-input" placeholder="laravel, php, tutorial">
+                    </div>
+                    <div class="form-group" style="margin-bottom:0;">
+                        <label class="mir-label">Meta Description</label>
+                        <textarea class="mir-input" rows="3" placeholder="Descricao para mecanismos de busca..."></textarea>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Sidebar -->
+        <div>
+            <!-- Publicacao -->
+            <div class="post-section">
+                <div class="post-section-header">
+                    <div class="section-icon-header">
+                        <span class="section-icon section-icon-indigo"><i class="fa-solid fa-sliders"></i></span>
+                        <div>
+                            <div class="post-section-title">Publicacao</div>
+                            <div class="post-section-sub">Configuracoes do post</div>
+                        </div>
+                    </div>
+                </div>
+                <div style="padding: 20px;">
+                    <div class="form-group">
+                        <label class="mir-label">Categoria <span class="mir-required">*</span></label>
+                        <select class="mir-input">
+                            <option value="">Selecione uma categoria</option>
+                            <option>Tecnologia</option>
+                            <option>Design</option>
+                            <option>Marketing</option>
+                            <option>DevOps</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="mir-label">Tags <span style="color:#9ca3af; font-weight:400;">(separe por virgula)</span></label>
+                        <input type="text" class="mir-input" placeholder="Ex: LARAVEL, PHP" style="text-transform: uppercase;">
+                    </div>
+
+                    <hr class="form-divider">
+
+                    <div class="form-group">
+                        <label class="mir-label">Status</label>
+                        <div class="status-pills">
+                            <label class="status-pill selected-draft">
+                                <input type="radio" name="status" value="draft" checked>
+                                <span class="status-pill-ring"></span> Rascunho
+                            </label>
+                            <label class="status-pill">
+                                <input type="radio" name="status" value="published">
+                                <span class="status-pill-ring"></span> Publicado
+                            </label>
+                            <label class="status-pill">
+                                <input type="radio" name="status" value="private">
+                                <span class="status-pill-ring"></span> Privado
+                            </label>
+                        </div>
+                    </div>
+
+                    <hr class="form-divider">
+
+                    <div class="form-group" style="margin-bottom:12px;">
+                        <div class="mir-switch-wrap">
+                            <input type="checkbox" class="mir-switch-input" id="sw-feat">
+                            <label class="mir-switch-label" for="sw-feat">
+                                <span class="mir-switch-track"><span class="mir-switch-thumb"></span></span>
+                                <span class="mir-switch-text">Post em destaque</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin-bottom:0;">
+                        <div class="mir-switch-wrap">
+                            <input type="checkbox" class="mir-switch-input" id="sw-comment" checked>
+                            <label class="mir-switch-label" for="sw-comment">
+                                <span class="mir-switch-track"><span class="mir-switch-thumb"></span></span>
+                                <span class="mir-switch-text">Permitir comentarios</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Imagem Destacada -->
+            <div class="post-section">
+                <div class="post-section-header">
+                    <div class="section-icon-header">
+                        <span class="section-icon section-icon-amber"><i class="fa-solid fa-image"></i></span>
+                        <div>
+                            <div class="post-section-title">Imagem Destacada</div>
+                            <div class="post-section-sub">Imagem principal do post</div>
+                        </div>
+                    </div>
+                </div>
+                <div style="padding: 20px;">
+                    <div class="upload-area">
+                        <div class="upload-icon"><i class="fa-solid fa-cloud-arrow-up"></i></div>
+                        <div class="upload-text">Clique para enviar</div>
+                        <div class="upload-hint">ou arraste uma imagem aqui</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Downloads -->
+            <div class="post-section">
+                <div class="post-section-header">
+                    <div class="section-icon-header">
+                        <span class="section-icon section-icon-cyan"><i class="fa-solid fa-download"></i></span>
+                        <div>
+                            <div class="post-section-title">Downloads</div>
+                            <div class="post-section-sub">Botoes de download do post</div>
+                        </div>
+                    </div>
+                    <button class="mir-btn-primary-lg" style="padding: 6px 12px; font-size:.76rem;">
+                        <svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                        Adicionar
+                    </button>
+                </div>
+                <div style="padding: 20px;">
+                    <div style="text-align:center; padding: 16px; color: #9ca3af; font-size: .82rem;">
+                        Nenhum download adicionado
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     TELA 3: LIXEIRA
+     ═══════════════════════════════════════════════════════════ -->
+<div class="wf-screen" id="screen-trash">
+
+    <div class="wf-screen-label"><i class="fa-solid fa-desktop"></i> Lixeira — /admin/posts/trash</div>
+
+    <!-- Page Header Action -->
+    <div class="page-header-action">
+        <div class="page-header-left">
+            <div class="page-header-title">
+                Lixeira
+                <span class="page-header-title-count" style="background:#fee2e2; color:#991b1b;">3</span>
+            </div>
+            <div class="page-header-sub">Posts excluidos do sistema</div>
+        </div>
+        <div class="page-header-right">
+            <a href="#" class="mir-btn-neutral" onclick="showScreen('listing'); return false;">
+                <i class="fa-solid fa-arrow-left"></i> Voltar
+            </a>
+            <button class="mir-btn-success">
+                <i class="fa-solid fa-rotate-left"></i> Restaurar Todos
+            </button>
+            <button class="mir-btn-danger">
+                <i class="fa-solid fa-trash-can"></i> Esvaziar Lixeira
+            </button>
+        </div>
+    </div>
+
+    <div class="post-section">
+
+        <!-- Header com busca -->
+        <div class="post-section-header">
+            <div class="post-section-header-right" style="width:100%;">
+                <div style="position:relative; flex:1; max-width:280px;">
+                    <i class="fa-solid fa-magnifying-glass" style="position:absolute; left:12px; top:50%; transform:translateY(-50%); color:#9ca3af; font-size:.75rem;"></i>
+                    <input type="text" class="mir-input" placeholder="Pesquisar na lixeira..." style="padding-left:32px;">
+                </div>
+            </div>
+        </div>
+
+        <!-- Rows -->
+        <div class="post-list">
+
+            <!-- Trash Row 1 -->
+            <div class="post-row post-row-trashed">
+                <div class="post-thumb">
+                    <img src="https://picsum.photos/seed/trash1/96/96" alt="">
+                </div>
+                <div class="post-body">
+                    <div class="post-name">Introducao ao Vue.js 4 com Laravel</div>
+                    <div class="post-info">
+                        <span>por Admin</span>
+                        <span class="post-info-dot"></span>
+                        <span>Tecnologia</span>
+                    </div>
+                </div>
+                <div class="mir-divider"></div>
+                <button class="mir-status is-published" style="cursor:default;" data-tooltip="Status antes da exclusão">
+                    <span class="mir-status-ring"></span>
+                    Publicado
+                </button>
+                <div class="mir-divider"></div>
+                <div style="text-align:right; flex-shrink:0; width:140px;">
+                    <span class="mir-badge-deleted">
+                        <i class="fa-solid fa-trash-can" style="font-size:.6rem"></i>
+                        18/03/2026 14:30
+                    </span>
+                    <div class="post-trash-ago">ha 2 dias</div>
+                </div>
+                <div class="mir-divider"></div>
+                <div class="mir-actions">
+                    <button class="mir-action-btn mir-action-restore" data-tooltip="Restaurar post"><i class="fa-solid fa-rotate-left"></i></button>
+                    <button class="mir-action-btn mir-action-delete" data-tooltip="Excluir permanentemente" onclick="toggleModal('modal-force-delete')"><i class="fa-solid fa-trash-can"></i></button>
+                </div>
+            </div>
+
+            <!-- Trash Row 2 -->
+            <div class="post-row post-row-trashed">
+                <div class="post-thumb">
+                    <img src="https://picsum.photos/seed/trash2/96/96" alt="">
+                </div>
+                <div class="post-body">
+                    <div class="post-name">Melhores praticas de seguranca em APIs REST</div>
+                    <div class="post-info">
+                        <span>por Editor</span>
+                        <span class="post-info-dot"></span>
+                        <span>Marketing</span>
+                    </div>
+                </div>
+                <div class="mir-divider"></div>
+                <button class="mir-status is-draft" style="cursor:default;" data-tooltip="Status antes da exclusão">
+                    <span class="mir-status-ring"></span>
+                    Rascunho
+                </button>
+                <div class="mir-divider"></div>
+                <div style="text-align:right; flex-shrink:0; width:140px;">
+                    <span class="mir-badge-deleted">
+                        <i class="fa-solid fa-trash-can" style="font-size:.6rem"></i>
+                        15/03/2026 09:12
+                    </span>
+                    <div class="post-trash-ago">ha 5 dias</div>
+                </div>
+                <div class="mir-divider"></div>
+                <div class="mir-actions">
+                    <button class="mir-action-btn mir-action-restore" data-tooltip="Restaurar post"><i class="fa-solid fa-rotate-left"></i></button>
+                    <button class="mir-action-btn mir-action-delete" data-tooltip="Excluir permanentemente"><i class="fa-solid fa-trash-can"></i></button>
+                </div>
+            </div>
+
+            <!-- Trash Row 3 -->
+            <div class="post-row post-row-trashed">
+                <div class="post-thumb"><i class="fa-solid fa-image"></i></div>
+                <div class="post-body">
+                    <div class="post-name">Como criar um blog com WordPress em 30 minutos</div>
+                    <div class="post-info">
+                        <span>por Admin</span>
+                        <span class="post-info-dot"></span>
+                        <span>Design</span>
+                    </div>
+                </div>
+                <div class="mir-divider"></div>
+                <button class="mir-status is-private" style="cursor:default;" data-tooltip="Status antes da exclusão">
+                    <span class="mir-status-ring"></span>
+                    Privado
+                </button>
+                <div class="mir-divider"></div>
+                <div style="text-align:right; flex-shrink:0; width:140px;">
+                    <span class="mir-badge-deleted">
+                        <i class="fa-solid fa-trash-can" style="font-size:.6rem"></i>
+                        10/03/2026 16:45
+                    </span>
+                    <div class="post-trash-ago">ha 10 dias</div>
+                </div>
+                <div class="mir-divider"></div>
+                <div class="mir-actions">
+                    <button class="mir-action-btn mir-action-restore" data-tooltip="Restaurar post"><i class="fa-solid fa-rotate-left"></i></button>
+                    <button class="mir-action-btn mir-action-delete" data-tooltip="Excluir permanentemente"><i class="fa-solid fa-trash-can"></i></button>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Paginacao -->
+        <div class="post-pagination">
+            <div class="pagination-left">
+                <span class="pagination-left-label">Por pagina</span>
+                <select class="pagination-per-page">
+                    <option>6</option>
+                    <option selected>10</option>
+                    <option>25</option>
+                    <option>50</option>
+                </select>
+            </div>
+            <div class="pagination-center">
+                <button class="page-btn disabled"><i class="fa-solid fa-chevron-left" style="font-size:.65rem"></i></button>
+                <button class="page-btn active">1</button>
+                <button class="page-btn"><i class="fa-solid fa-chevron-right" style="font-size:.65rem"></i></button>
+            </div>
+            <div class="pagination-right">Mostrando 1–3 de 3</div>
+        </div>
+    </div>
+
+    <!-- Empty State (exemplo visual) -->
+    <div class="post-section" style="margin-top:16px;">
+        <div class="post-section-header" style="border-bottom:none;">
+            <div class="post-section-sub" style="margin:0; font-style:italic;">Preview: como fica quando a lixeira esta vazia</div>
+        </div>
+        <div class="mir-empty-state">
+            <div class="mir-empty-icon"><i class="fa-solid fa-trash-can"></i></div>
+            <h5 class="mir-empty-title">A lixeira esta vazia</h5>
+            <p class="mir-empty-desc">Posts excluidos aparecerao aqui.</p>
+            <a href="#" class="mir-btn-ghost" onclick="showScreen('listing'); return false;">
+                <i class="fa-solid fa-arrow-left"></i> Voltar para Posts
+            </a>
+        </div>
+    </div>
+
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     TELA 4: ESTADO DE LOADING
+     ═══════════════════════════════════════════════════════════ -->
+<div class="wf-screen" id="screen-loading">
+
+    <div class="wf-screen-label"><i class="fa-solid fa-desktop"></i> Estado de Loading — Carregando dados</div>
+
+    <!-- Page Header Action -->
+    <div class="page-header-action">
+        <div class="page-header-left">
+            <div class="page-header-title">
+                Posts
+                <span class="page-header-title-count">—</span>
+            </div>
+            <div class="page-header-sub">Gerencie todos os posts do sistema</div>
+        </div>
+        <div class="page-header-right">
+            <a href="#" class="mir-btn-neutral" onclick="showScreen('listing'); return false;">
+                <i class="fa-solid fa-trash-can"></i> Lixeira
+            </a>
+            <button class="mir-btn-primary-lg">
+                <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                Novo Post
+            </button>
+        </div>
+    </div>
+
+    <!-- Widgets skeleton -->
+    <div class="widgets-grid">
+        <div class="widget-card widget-card-total" style="opacity:.5;">
+            <div class="widget-info">
+                <span class="widget-label">Total de Posts</span>
+                <span class="widget-value" style="background:#e5e7eb; color:transparent; border-radius:4px; width:40px;">—</span>
+            </div>
+            <div class="widget-icon widget-icon-total" style="opacity:.4;"><i class="fa-solid fa-file-lines"></i></div>
+        </div>
+        <div class="widget-card widget-card-published" style="opacity:.5;">
+            <div class="widget-info">
+                <span class="widget-label">Publicados</span>
+                <span class="widget-value" style="background:#e5e7eb; color:transparent; border-radius:4px; width:30px;">—</span>
+            </div>
+            <div class="widget-icon widget-icon-published" style="opacity:.4;"><i class="fa-solid fa-circle-check"></i></div>
+        </div>
+        <div class="widget-card widget-card-draft" style="opacity:.5;">
+            <div class="widget-info">
+                <span class="widget-label">Rascunhos</span>
+                <span class="widget-value" style="background:#e5e7eb; color:transparent; border-radius:4px; width:24px;">—</span>
+            </div>
+            <div class="widget-icon widget-icon-draft" style="opacity:.4;"><i class="fa-solid fa-pen-clip"></i></div>
+        </div>
+        <div class="widget-card widget-card-private" style="opacity:.5;">
+            <div class="widget-info">
+                <span class="widget-label">Privados</span>
+                <span class="widget-value" style="background:#e5e7eb; color:transparent; border-radius:4px; width:24px;">—</span>
+            </div>
+            <div class="widget-icon widget-icon-private" style="opacity:.4;"><i class="fa-solid fa-lock"></i></div>
+        </div>
+    </div>
+
+    <!-- Tabela com loading -->
+    <div class="post-section">
+        <div class="post-section-header">
+            <div class="post-section-header-right" style="width:100%;">
+                <div style="position:relative; flex:1; max-width:280px;">
+                    <i class="fa-solid fa-magnifying-glass" style="position:absolute; left:12px; top:50%; transform:translateY(-50%); color:#9ca3af; font-size:.75rem;"></i>
+                    <input type="text" class="mir-input" placeholder="Pesquisar posts..." style="padding-left:32px;" disabled>
+                </div>
+                <select class="mir-input" style="width: 160px;" disabled>
+                    <option>Todos os status</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Loading bar -->
+        <div class="post-loading-bar"></div>
+
+        <!-- Table header -->
+        <div class="post-list-header" style="opacity:.5;">
+            <span class="plh-thumb"></span>
+            <span class="plh-body">Post</span>
+            <span class="plh-meta">Categoria / Tags</span>
+            <span class="plh-divider"></span>
+            <span class="plh-status">Status</span>
+            <span class="plh-divider"></span>
+            <span class="plh-actions">Ações</span>
+        </div>
+
+        <!-- Skeleton rows -->
+        <div class="post-list post-loading-overlay">
+            <div class="post-row">
+                <div class="post-thumb" style="background:#e5e7eb;"></div>
+                <div class="post-body">
+                    <div style="height:14px; width:65%; background:#e5e7eb; border-radius:4px;"></div>
+                    <div style="height:10px; width:35%; background:#f3f4f6; border-radius:4px; margin-top:6px;"></div>
+                </div>
+                <div class="post-meta">
+                    <div style="height:22px; width:80px; background:#e5e7eb; border-radius:50px;"></div>
+                    <div style="height:22px; width:24px; background:#f3f4f6; border-radius:50px;"></div>
+                </div>
+                <div class="mir-divider"></div>
+                <div style="height:24px; width:80px; background:#e5e7eb; border-radius:50px;"></div>
+                <div class="mir-divider"></div>
+                <div class="mir-actions">
+                    <div style="width:30px; height:30px; background:#f3f4f6; border-radius:6px;"></div>
+                    <div style="width:30px; height:30px; background:#f3f4f6; border-radius:6px;"></div>
+                </div>
+            </div>
+            <div class="post-row">
+                <div class="post-thumb" style="background:#e5e7eb;"></div>
+                <div class="post-body">
+                    <div style="height:14px; width:50%; background:#e5e7eb; border-radius:4px;"></div>
+                    <div style="height:10px; width:28%; background:#f3f4f6; border-radius:4px; margin-top:6px;"></div>
+                </div>
+                <div class="post-meta">
+                    <div style="height:22px; width:70px; background:#e5e7eb; border-radius:50px;"></div>
+                    <div style="height:22px; width:24px; background:#f3f4f6; border-radius:50px;"></div>
+                </div>
+                <div class="mir-divider"></div>
+                <div style="height:24px; width:80px; background:#e5e7eb; border-radius:50px;"></div>
+                <div class="mir-divider"></div>
+                <div class="mir-actions">
+                    <div style="width:30px; height:30px; background:#f3f4f6; border-radius:6px;"></div>
+                    <div style="width:30px; height:30px; background:#f3f4f6; border-radius:6px;"></div>
+                </div>
+            </div>
+            <div class="post-row">
+                <div class="post-thumb" style="background:#e5e7eb;"></div>
+                <div class="post-body">
+                    <div style="height:14px; width:72%; background:#e5e7eb; border-radius:4px;"></div>
+                    <div style="height:10px; width:40%; background:#f3f4f6; border-radius:4px; margin-top:6px;"></div>
+                </div>
+                <div class="post-meta">
+                    <div style="height:22px; width:90px; background:#e5e7eb; border-radius:50px;"></div>
+                    <div style="height:22px; width:24px; background:#f3f4f6; border-radius:50px;"></div>
+                </div>
+                <div class="mir-divider"></div>
+                <div style="height:24px; width:80px; background:#e5e7eb; border-radius:50px;"></div>
+                <div class="mir-divider"></div>
+                <div class="mir-actions">
+                    <div style="width:30px; height:30px; background:#f3f4f6; border-radius:6px;"></div>
+                    <div style="width:30px; height:30px; background:#f3f4f6; border-radius:6px;"></div>
+                </div>
+            </div>
+            <div class="post-row">
+                <div class="post-thumb" style="background:#e5e7eb;"></div>
+                <div class="post-body">
+                    <div style="height:14px; width:58%; background:#e5e7eb; border-radius:4px;"></div>
+                    <div style="height:10px; width:32%; background:#f3f4f6; border-radius:4px; margin-top:6px;"></div>
+                </div>
+                <div class="post-meta">
+                    <div style="height:22px; width:75px; background:#e5e7eb; border-radius:50px;"></div>
+                    <div style="height:22px; width:24px; background:#f3f4f6; border-radius:50px;"></div>
+                </div>
+                <div class="mir-divider"></div>
+                <div style="height:24px; width:80px; background:#e5e7eb; border-radius:50px;"></div>
+                <div class="mir-divider"></div>
+                <div class="mir-actions">
+                    <div style="width:30px; height:30px; background:#f3f4f6; border-radius:6px;"></div>
+                    <div style="width:30px; height:30px; background:#f3f4f6; border-radius:6px;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Paginação desabilitada -->
+        <div class="post-pagination" style="opacity:.4;">
+            <div class="pagination-left">
+                <span class="pagination-left-label">Por página</span>
+                <select class="pagination-per-page" disabled><option>6</option></select>
+            </div>
+            <div class="pagination-center">
+                <button class="page-btn disabled"><i class="fa-solid fa-chevron-left" style="font-size:.65rem"></i></button>
+                <button class="page-btn disabled">—</button>
+                <button class="page-btn disabled"><i class="fa-solid fa-chevron-right" style="font-size:.65rem"></i></button>
+            </div>
+            <div class="pagination-right">Carregando...</div>
+        </div>
+    </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     MODAL: EXCLUIR POST (soft delete)
+     ═══════════════════════════════════════════════════════════ -->
+<div class="mir-modal-overlay" id="modal-delete">
+    <div class="mir-modal-dialog">
+        <div class="mir-modal-content">
+            <div class="mir-modal-header">
+                <div class="mir-modal-title">
+                    <span class="mir-modal-icon mir-modal-icon-delete"><i class="fa-solid fa-trash-can"></i></span>
+                    <div>
+                        <div class="mir-modal-title-text">Excluir Post</div>
+                        <div class="mir-modal-subtitle">O post sera movido para a lixeira</div>
+                    </div>
+                </div>
+                <button class="mir-modal-close" onclick="toggleModal('modal-delete')"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="mir-modal-body">
+                <p>Tem certeza que deseja excluir o post <strong>"Como configurar um ambiente Laravel do zero"</strong>?</p>
+                <p style="font-size:.8rem; color:#9ca3af; margin-top:8px;">Voce podera restaura-lo a partir da lixeira.</p>
+            </div>
+            <div class="mir-modal-footer">
+                <button class="mir-btn-ghost" onclick="toggleModal('modal-delete')">Cancelar</button>
+                <button class="mir-btn-danger" onclick="toggleModal('modal-delete')">
+                    <i class="fa-solid fa-trash-can"></i> Sim, excluir
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     MODAL: EXCLUIR PERMANENTEMENTE
+     ═══════════════════════════════════════════════════════════ -->
+<div class="mir-modal-overlay" id="modal-force-delete">
+    <div class="mir-modal-dialog">
+        <div class="mir-modal-content">
+            <div class="mir-modal-header">
+                <div class="mir-modal-title">
+                    <span class="mir-modal-icon mir-modal-icon-delete"><i class="fa-solid fa-triangle-exclamation"></i></span>
+                    <div>
+                        <div class="mir-modal-title-text">Excluir Permanentemente</div>
+                        <div class="mir-modal-subtitle">Esta acao e irreversivel</div>
+                    </div>
+                </div>
+                <button class="mir-modal-close" onclick="toggleModal('modal-force-delete')"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="mir-modal-body">
+                <p>Tem certeza que deseja excluir permanentemente o post <strong>"Introducao ao Vue.js 4 com Laravel"</strong>?</p>
+                <div class="warning-box">
+                    <strong><i class="fa-solid fa-triangle-exclamation"></i> Esta acao ira:</strong>
+                    <ul>
+                        <li>Remover o post do banco de dados</li>
+                        <li>Excluir a imagem destacada</li>
+                        <li>Desvincular todas as tags</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="mir-modal-footer">
+                <button class="mir-btn-ghost" onclick="toggleModal('modal-force-delete')">Cancelar</button>
+                <button class="mir-btn-danger" onclick="toggleModal('modal-force-delete')">
+                    <i class="fa-solid fa-trash-can"></i> Excluir para sempre
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     TOAST DEMO
+     ═══════════════════════════════════════════════════════════ -->
+<div class="toast-demo" id="toast-container"></div>
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     SCRIPTS
+     ═══════════════════════════════════════════════════════════ -->
+<script>
+// Tab navigation
+function showScreen(id) {
+    document.querySelectorAll('.wf-screen').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.wf-tab').forEach(t => t.classList.remove('active'));
+    document.getElementById('screen-' + id).classList.add('active');
+    event.target.classList.add('active');
+}
+
+// Modal toggle
+function toggleModal(id) {
+    const modal = document.getElementById(id);
+    modal.classList.toggle('show');
+}
+
+// Close modal on overlay click
+document.querySelectorAll('.mir-modal-overlay').forEach(overlay => {
+    overlay.addEventListener('click', function(e) {
+        if (e.target === this) this.classList.remove('show');
+    });
+});
+
+// Status pill interactivity (form)
+document.querySelectorAll('.status-pill').forEach(pill => {
+    pill.addEventListener('click', function() {
+        document.querySelectorAll('.status-pill').forEach(p => {
+            p.className = 'status-pill';
+        });
+        const val = this.querySelector('input').value;
+        this.classList.add('selected-' + val);
+    });
+});
+
+// ── Tooltip inteligente ────────────────────────────────────
+(function() {
+    var GAP = 8;
+    var tip, arrow, textNode;
+
+    // Cria o elemento do tooltip uma vez
+    tip = document.createElement('div');
+    tip.className = 'mir-tooltip';
+    arrow = document.createElement('div');
+    arrow.className = 'mir-tooltip-arrow top';
+    textNode = document.createTextNode('');
+    tip.appendChild(textNode);
+    tip.appendChild(arrow);
+    document.body.appendChild(tip);
+
+    function show(el) {
+        var text = el.getAttribute('data-tooltip');
+        if (!text) return;
+
+        textNode.textContent = text;
+        tip.style.visibility = 'hidden';
+        tip.classList.add('visible');
+
+        // Forçar layout para medir
+        var tw = tip.offsetWidth;
+        var th = tip.offsetHeight;
+        var rect = el.getBoundingClientRect();
+        var vw = window.innerWidth;
+        var vh = window.innerHeight;
+
+        var top, left, dir;
+
+        // 1. Tentar acima
+        if (rect.top - th - GAP > 4) {
+            top = rect.top - th - GAP;
+            left = rect.left + rect.width / 2 - tw / 2;
+            dir = 'top';
+        }
+        // 2. Tentar abaixo
+        else if (rect.bottom + th + GAP < vh - 4) {
+            top = rect.bottom + GAP;
+            left = rect.left + rect.width / 2 - tw / 2;
+            dir = 'bottom';
+        }
+        // 3. Tentar à esquerda
+        else if (rect.left - tw - GAP > 4) {
+            top = rect.top + rect.height / 2 - th / 2;
+            left = rect.left - tw - GAP;
+            dir = 'left';
+        }
+        // 4. Fallback: à direita
+        else {
+            top = rect.top + rect.height / 2 - th / 2;
+            left = rect.right + GAP;
+            dir = 'right';
+        }
+
+        // Clampar nas bordas
+        if (left < 4) left = 4;
+        if (left + tw > vw - 4) left = vw - tw - 4;
+        if (top < 4) top = 4;
+        if (top + th > vh - 4) top = vh - th - 4;
+
+        tip.style.top = top + 'px';
+        tip.style.left = left + 'px';
+        tip.style.visibility = 'visible';
+
+        // Seta
+        arrow.className = 'mir-tooltip-arrow ' + dir;
+        arrow.removeAttribute('style');
+        if (dir === 'top' || dir === 'bottom') {
+            var ax = rect.left + rect.width / 2 - left;
+            ax = Math.max(10, Math.min(tw - 10, ax));
+            arrow.style.left = ax + 'px';
+        }
+    }
+
+    function hide() {
+        tip.classList.remove('visible');
+        tip.style.visibility = 'hidden';
+    }
+
+    document.addEventListener('mouseover', function(e) {
+        var el = e.target.closest('[data-tooltip]');
+        if (el) show(el);
+    });
+
+    document.addEventListener('mouseout', function(e) {
+        var el = e.target.closest('[data-tooltip]');
+        if (el) hide();
+    });
+})();
+</script>
+
+</body>
+</html>

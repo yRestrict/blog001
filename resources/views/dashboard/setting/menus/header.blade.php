@@ -3,28 +3,14 @@
 @section('pageTitle', isset($pageTitle) ? $pageTitle : 'Page Title Here')
 
 @section('content')
-<div class="page-header">
-    <div class="row align-items-center">
-        <div class="col-md-6 col-sm-12">
-            <div class="title">
-                <h4>Menu </h4>
-            </div>
-        </div>
-        <div class="col-md-6 col-sm-12">
-            <nav aria-label="breadcrumb" role="navigation">
-                <ol class="breadcrumb d-flex justify-content-end mb-0">
-                    <li class="breadcrumb-item">
-                        <a href="{{ route('admin.dashboard') }}">Home</a>
-                    </li>
-                    <li class="breadcrumb-item active" aria-current="page">
-                        Menu
-                    </li>
-                </ol>
-            </nav>
-        </div>
-    </div>
-</div>
 
+<ul class="mir-breadcrumb">
+    <li class="mir-breadcrumb-item"><a href="{{ route('admin.dashboard') }}"><i class="fa-solid fa-house" style="font-size:.65rem"></i></a></li>
+    <li class="mir-breadcrumb-sep"><i class="fa-solid fa-chevron-right"></i></li>
+    <li class="mir-breadcrumb-item"><a href="{{ route('admin.settings') }}">Configurações</a></li>
+    <li class="mir-breadcrumb-sep"><i class="fa-solid fa-chevron-right"></i></li>
+    <li class="mir-breadcrumb-item active">Menu</li>
+</ul>
 
 <livewire:admin.menus type="header" />
 

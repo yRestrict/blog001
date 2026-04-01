@@ -3,27 +3,34 @@
 
 @section('content')
 
-    <div class="page-header">
-        <div class="row">
-            <div class="col-md-6 col-sm-12">
-                <div class="title"><h4>Criar Post</h4></div>
-                <nav aria-label="breadcrumb" role="navigation">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Home</a></li>
-                        <li class="breadcrumb-item"><a href="{{ route('admin.posts.index') }}">Posts</a></li>
-                        <li class="breadcrumb-item active">Criar Post</li>
-                    </ol>
-                </nav>
-            </div>
-            <div class="col-md-6 col-sm-12 text-right">
-                <a href="{{ route('admin.posts.index') }}" class="btn btn-primary">Ver Todos os Posts</a>
-            </div>
+    <ul class="mir-breadcrumb">
+        <li class="mir-breadcrumb-item"><a href="{{ route('admin.dashboard') }}"><i class="fa-solid fa-house" style="font-size:.65rem"></i></a></li>
+        <li class="mir-breadcrumb-sep"><i class="fa-solid fa-chevron-right"></i></li>
+        <li class="mir-breadcrumb-item"><a href="{{ route('admin.posts.index') }}">Posts</a></li>
+        <li class="mir-breadcrumb-sep"><i class="fa-solid fa-chevron-right"></i></li>
+        <li class="mir-breadcrumb-item active">Criar</li>
+    </ul>
+
+    <!-- Page Header Action -->
+    <div class="page-header-action">
+        <div class="page-header-left">
+            <div class="page-header-title">Criar Post</div>
+            <div class="page-header-sub">Preencha os dados para publicar um novo post</div>
+        </div>
+        <div class="page-header-right">
+            <a href="{{ route('admin.posts.index') }}" class="mir-btn-neutral">
+                <i class="fa-solid fa-arrow-left"></i> Voltar
+            </a>
+            <button type="submit" form="post-form" class="mir-btn-primary-lg">
+                <i class="fa-solid fa-floppy-disk"></i> Criar Post
+            </button>
         </div>
     </div>
 
     @if ($errors->any())
-        <div class="alert alert-danger">
-            <ul class="mb-0">
+        <div class="warning-box" style="margin-bottom: 20px;">
+            <strong><i class="fa fa-exclamation-triangle"></i> Corrija os erros abaixo:</strong>
+            <ul>
                 @foreach ($errors->all() as $error)
                     <li>{{ $error }}</li>
                 @endforeach
@@ -35,24 +42,34 @@
           enctype="multipart/form-data" id="post-form">
         @csrf
 
-        <div class="row">
+        <div class="form-layout">
 
             {{-- ── Coluna principal ─────────────────────────────────────────── --}}
-            <div class="col-md-8">
+            <div>
 
-                <div class="card card-box mb-2">
-                    <div class="card-body">
+                {{-- Conteúdo --}}
+                <div class="post-section">
+                    <div class="post-section-header">
+                        <div class="section-icon-header">
+                            <span class="section-icon section-icon-indigo"><i class="fa-solid fa-pen-nib"></i></span>
+                            <div>
+                                <div class="post-section-title">Conteúdo do Post</div>
+                                <div class="post-section-sub">Preencha o título e o corpo do post</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="padding: 20px;">
                         <div class="form-group">
-                            <label><b>Título</b></label>
+                            <label class="mir-label">Título <span class="mir-required">*</span></label>
                             <input type="text"
-                                   class="form-control @error('title') is-invalid @enderror"
+                                   class="mir-input @error('title') is-invalid @enderror"
                                    name="title" value="{{ old('title') }}"
                                    placeholder="Digite o título do post">
-                            @error('title')<span class="invalid-feedback">{{ $message }}</span>@enderror
+                            @error('title')<span class="invalid-feedback" style="display:block;">{{ $message }}</span>@enderror
                         </div>
 
-                        <div class="form-group">
-                            <label><b>Conteúdo</b></label>
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label class="mir-label">Conteúdo <span class="mir-required">*</span></label>
                             <input type="hidden" name="content" id="content-input">
                             <div id="quill-editor">{!! old('content') !!}</div>
                             @error('content')
@@ -63,41 +80,59 @@
                 </div>
 
                 {{-- SEO --}}
-                <div class="card card-box mb-2">
-                    <div class="card-header weight-500">SEO</div>
-                    <div class="card-body">
+                <div class="post-section">
+                    <div class="post-section-header">
+                        <div class="section-icon-header">
+                            <span class="section-icon section-icon-green"><i class="fa-solid fa-magnifying-glass-chart"></i></span>
+                            <div>
+                                <div class="post-section-title">SEO</div>
+                                <div class="post-section-sub">Otimização para mecanismos de busca</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="padding: 20px;">
                         <div class="form-group">
-                            <label><b>Meta Keywords</b> <small>(separadas por vírgula)</small></label>
-                            <input type="text" class="form-control" name="meta_keywords"
+                            <label class="mir-label">Meta Keywords <span style="color:#9ca3af; font-weight:400;">(separadas por vírgula)</span></label>
+                            <input type="text" class="mir-input" name="meta_keywords"
                                 value="{{ old('meta_keywords') }}" placeholder="palavra-chave1, palavra-chave2">
                         </div>
-                        <div class="form-group">
-                            <label><b>Meta Description</b></label>
-                            <textarea name="meta_description" class="form-control" rows="4"
-                                placeholder="Descrição para mecanismos de busca">{{ old('meta_description') }}</textarea>
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label class="mir-label">Meta Description</label>
+                            <textarea name="meta_description" class="mir-input" rows="3"
+                                placeholder="Descrição para mecanismos de busca...">{{ old('meta_description') }}</textarea>
                         </div>
                     </div>
                 </div>
 
             </div>
 
-            {{-- ── Coluna lateral ────────────────────────────────────────────── --}}
-            <div class="col-md-4">
-                <div class="card card-box mb-2">
-                    <div class="card-body">
+            {{-- ── Coluna lateral (sidebar) ────────────────────────────────── --}}
+            <div>
 
+                {{-- Publicação --}}
+                <div class="post-section">
+                    <div class="post-section-header">
+                        <div class="section-icon-header">
+                            <span class="section-icon section-icon-indigo"><i class="fa-solid fa-sliders"></i></span>
+                            <div>
+                                <div class="post-section-title">Publicação</div>
+                                <div class="post-section-sub">Configurações do post</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="padding: 20px;">
                         <div class="form-group">
-                            <label><b>Categoria</b></label>
+                            <label class="mir-label">Categoria <span class="mir-required">*</span></label>
                             <select name="category_id"
-                                class="custom-select form-control @error('category_id') is-invalid @enderror">
+                                class="mir-input @error('category_id') is-invalid @enderror">
                                 {!! $categorieshtml !!}
                             </select>
-                            @error('category_id')<span class="invalid-feedback">{{ $message }}</span>@enderror
+                            @error('category_id')<span class="invalid-feedback" style="display:block;">{{ $message }}</span>@enderror
                         </div>
 
                         <div class="form-group" style="position: relative;">
-                            <label><b>Tags</b> <small class="text-muted">(separe por vírgula)</small></label>
-                            <input type="text" id="tag-input" name="tags" class="form-control"
+                            <label class="mir-label">Tags <span style="color:#9ca3af; font-weight:400;">(separe por vírgula)</span></label>
+                            <input type="text" id="tag-input" name="tags" class="mir-input"
                                 placeholder="Ex: LARAVEL, PHP" value="{{ old('tags') }}"
                                 autocomplete="off" style="text-transform: uppercase;">
                             <ul id="tag-suggestions"
@@ -107,82 +142,105 @@
                                        margin:0;padding:0;border-radius:0 0 4px 4px;
                                        box-shadow:0 4px 12px rgba(0,0,0,.1);">
                             </ul>
-                            <small class="form-text text-muted">Digite e selecione ou crie novas tags.</small>
                         </div>
+
+                        <hr class="form-divider">
 
                         <div class="form-group">
-                            <label><b>Imagem Destacada</b></label>
-                            <input type="file" name="thumbnail"
-                                class="form-control-file form-control @error('thumbnail') is-invalid @enderror"
-                                id="featured-image-input" accept="image/*">
-                            @error('thumbnail')<span class="invalid-feedback">{{ $message }}</span>@enderror
-                        </div>
-
-                        <div id="preview-wrapper" style="display:none; max-width:250px;" class="mb-3">
-                            <img src="" id="featured-image-preview" class="img-thumbnail" style="max-height:180px;">
-                        </div>
-
-                        <hr>
-
-                        {{-- Downloads --}}
-                        <livewire:admin.post-downloads />
-
-                        <hr>
-
-                        <div class="form-group">
-                            <label><b>Destaque</b></label>
-                            <div class="custom-control custom-checkbox mb-2">
-                                <input type="checkbox" name="featured" value="1"
-                                    class="custom-control-input" id="checkFeatured"
-                                    {{ old('featured') ? 'checked' : '' }}>
-                                <label class="custom-control-label" for="checkFeatured">Ativar post em destaque</label>
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label><b>Comentários</b></label>
-                            <div class="custom-control custom-checkbox mb-2">
-                                <input type="checkbox" name="comment" value="1"
-                                    class="custom-control-input" id="checkComment"
-                                    {{ old('comment', true) ? 'checked' : '' }}>
-                                <label class="custom-control-label" for="checkComment">Permitir comentários</label>
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label><b>Status</b></label>
-                            <div class="custom-control custom-radio mb-2">
-                                <input type="radio" id="statusDraft" name="status" value="draft"
-                                    class="custom-control-input"
-                                    {{ old('status', 'draft') === 'draft' ? 'checked' : '' }}>
-                                <label class="custom-control-label" for="statusDraft">Rascunho</label>
-                            </div>
-                            <div class="custom-control custom-radio mb-2">
-                                <input type="radio" id="statusPublished" name="status" value="published"
-                                    class="custom-control-input"
-                                    {{ old('status') === 'published' ? 'checked' : '' }}>
-                                <label class="custom-control-label" for="statusPublished">Publicado</label>
-                            </div>
-                            <div class="custom-control custom-radio mb-2">
-                                <input type="radio" id="statusPrivate" name="status" value="private"
-                                    class="custom-control-input"
-                                    {{ old('status') === 'private' ? 'checked' : '' }}>
-                                <label class="custom-control-label" for="statusPrivate">Privado</label>
+                            <label class="mir-label">Status</label>
+                            <div class="status-pills">
+                                <label class="status-pill {{ old('status', 'draft') === 'draft' ? 'selected-draft' : '' }}">
+                                    <input type="radio" name="status" value="draft"
+                                        {{ old('status', 'draft') === 'draft' ? 'checked' : '' }}>
+                                    <span class="status-pill-ring"></span> Rascunho
+                                </label>
+                                <label class="status-pill {{ old('status') === 'published' ? 'selected-published' : '' }}">
+                                    <input type="radio" name="status" value="published"
+                                        {{ old('status') === 'published' ? 'checked' : '' }}>
+                                    <span class="status-pill-ring"></span> Publicado
+                                </label>
+                                <label class="status-pill {{ old('status') === 'private' ? 'selected-private' : '' }}">
+                                    <input type="radio" name="status" value="private"
+                                        {{ old('status') === 'private' ? 'checked' : '' }}>
+                                    <span class="status-pill-ring"></span> Privado
+                                </label>
                             </div>
                             @error('status')<span class="text-danger small">{{ $message }}</span>@enderror
                         </div>
 
+                        <hr class="form-divider">
+
+                        <div class="form-group" style="margin-bottom: 12px;">
+                            <div class="mir-switch-wrap">
+                                <input type="hidden" name="featured" value="0">
+                                <input type="checkbox" name="featured" value="1" id="featured"
+                                    class="mir-switch-input" {{ old('featured') ? 'checked' : '' }}>
+                                <label for="featured" class="mir-switch-label">
+                                    <span class="mir-switch-track"><span class="mir-switch-thumb"></span></span>
+                                    <span class="mir-switch-text">Post em destaque</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <div class="mir-switch-wrap">
+                                <input type="hidden" name="comment" value="0">
+                                <input type="checkbox" name="comment" value="1" id="comment"
+                                    class="mir-switch-input" {{ old('comment', true) ? 'checked' : '' }}>
+                                <label for="comment" class="mir-switch-label">
+                                    <span class="mir-switch-track"><span class="mir-switch-thumb"></span></span>
+                                    <span class="mir-switch-text">Permitir comentários</span>
+                                </label>
+                            </div>
+                        </div>
                     </div>
                 </div>
+
+                {{-- Imagem Destacada --}}
+                <div class="post-section">
+                    <div class="post-section-header">
+                        <div class="section-icon-header">
+                            <span class="section-icon section-icon-amber"><i class="fa-solid fa-image"></i></span>
+                            <div>
+                                <div class="post-section-title">Imagem Destacada</div>
+                                <div class="post-section-sub">Imagem principal do post</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="padding: 20px;">
+                        <div id="preview-wrapper" style="display:none; margin-bottom: 12px;">
+                            <img src="" id="featured-image-preview" class="img-preview">
+                        </div>
+                        <label class="upload-area" for="featured-image-input" style="margin-bottom: 0;">
+                            <div class="upload-icon"><i class="fa-solid fa-cloud-arrow-up"></i></div>
+                            <div class="upload-text">Clique para enviar</div>
+                            <div class="upload-hint">ou arraste uma imagem aqui</div>
+                            <input type="file" name="thumbnail"
+                                class="@error('thumbnail') is-invalid @enderror"
+                                id="featured-image-input" accept="image/*"
+                                style="display: none;">
+                        </label>
+                        @error('thumbnail')<span class="text-danger small d-block mt-1">{{ $message }}</span>@enderror
+                    </div>
+                </div>
+
+                {{-- Downloads --}}
+                <div class="post-section">
+                    <div class="post-section-header">
+                        <div class="section-icon-header">
+                            <span class="section-icon section-icon-cyan"><i class="fa-solid fa-download"></i></span>
+                            <div>
+                                <div class="post-section-title">Downloads</div>
+                                <div class="post-section-sub">Botões de download do post</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="padding: 20px;">
+                        <livewire:admin.post-downloads />
+                    </div>
+                </div>
+
             </div>
 
-        </div>
-
-        <div class="mb-4">
-            <button type="submit" class="btn btn-primary">
-                <i class="fa fa-save"></i> Criar Post
-            </button>
-            <a href="{{ route('admin.posts.index') }}" class="btn btn-secondary ml-2">Cancelar</a>
         </div>
 
     </form>
@@ -193,3 +251,18 @@
 @endsection
 
 @include('dashboard.post.inc.quill-scripts')
+
+@push('scripts')
+<script>
+    // Status pills toggle
+    document.querySelectorAll('.status-pill').forEach(pill => {
+        pill.addEventListener('click', function() {
+            document.querySelectorAll('.status-pill').forEach(p => {
+                p.classList.remove('selected-published', 'selected-draft', 'selected-private');
+            });
+            const val = this.querySelector('input').value;
+            this.classList.add('selected-' + val);
+        });
+    });
+</script>
+@endpush

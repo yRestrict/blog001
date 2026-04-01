@@ -1,57 +1,261 @@
+{{-- livewire/admin/comments-moderation.blade.php --}}
 <div>
 
-    {{-- ── Cards de contagem ───────────────────────────────────────────────────── --}}
-    <div class="row mb-4">
-        <div class="col-md-3">
-            <div class="card card-box border-left-warning text-center py-2 cursor-pointer"
-                 wire:click="$set('filterStatus', 'pending'); $set('showTrash', false)">
-                <div class="card-body py-2">
-                    <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Pendentes</div>
-                    <div class="h3 mb-0 font-weight-bold">{{ $pendingCount }}</div>
-                </div>
-            </div>
+    {{-- ================================================================ --}}
+    {{-- SCOPED STYLES                                                    --}}
+    {{-- ================================================================ --}}
+    <style>
+        /* ── Section Card (cmt-specific) ──────────────────── */
+        .cmt-section {
+            background: #fff;
+            border-radius: 10px;
+            border: 1px solid #e9ecef;
+            box-shadow: 0 1px 4px rgba(0,0,0,.05);
+            margin-bottom: 24px;
+        }
+        .cmt-section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 20px;
+            border-bottom: 1px solid #f0f0f0;
+            gap: 16px;
+        }
+        .cmt-section-header-left { min-width: 0; }
+        .cmt-section-title { font-size: .95rem; font-weight: 700; color: #1a1d23; margin: 0; }
+        .cmt-section-sub { font-size: .78rem; color: #9ca3af; margin-top: 2px; }
+        .cmt-filter-header {
+            display: flex;
+            align-items: center;
+            padding: 16px 20px;
+            border-bottom: 1px solid #f0f0f0;
+            gap: 16px;
+        }
+
+        /* ── Table Header ──────────────────────────────────── */
+        .cmt-header { width: 48px; flex-shrink: 0; }
+        .cmth-author { width: 160px; flex-shrink: 0; }
+        .cmth-body   { flex: 1 1 0; min-width: 0; }
+        .cmth-post   { width: 140px; flex-shrink: 0; }
+        .cmth-date   { width: 90px; flex-shrink: 0; text-align: right; }
+        .cmth-status { width: 90px; flex-shrink: 0; text-align: center; }
+        .cmth-actions { width: 100px; flex-shrink: 0; text-align: center; }
+        .plh-divider { width: 1px; height: 16px; background: #e5e7eb; margin: 0 10px; flex-shrink: 0; }
+
+        /* ── Data Row Columns ──────────────────────────────── */
+        .cmt-author {
+            width: 160px;
+            flex-shrink: 0;
+            min-width: 0;
+        }
+        .cmt-author-name {
+            font-size: .875rem;
+            font-weight: 600;
+            color: #1a1d23;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .cmt-author-email {
+            font-size: .72rem;
+            color: #9ca3af;
+            font-family: ui-monospace, monospace;
+            margin-top: 1px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .cmt-body {
+            flex: 1 1 0;
+            min-width: 0;
+        }
+        .cmt-reply-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 2px 8px;
+            border-radius: 50px;
+            font-size: .65rem;
+            font-weight: 600;
+            background: #ede9fe;
+            color: #6d28d9;
+            margin-bottom: 3px;
+        }
+        .cmt-text {
+            font-size: .82rem;
+            color: #374151;
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .cmt-post {
+            width: 140px;
+            flex-shrink: 0;
+            min-width: 0;
+        }
+        .cmt-post-link {
+            font-size: .78rem;
+            font-weight: 500;
+            color: #6366f1;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: block;
+            text-decoration: none;
+            transition: color .15s;
+        }
+        .cmt-post-link:hover { color: #4f46e5; text-decoration: underline; }
+
+        .cmt-mute-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 2px 7px;
+            border-radius: 4px;
+            font-size: .65rem;
+            font-weight: 600;
+            color: #9ca3af;
+            background: transparent;
+            border: 1px solid #e5e7eb;
+            cursor: pointer;
+            transition: all .15s;
+            margin-top: 4px;
+        }
+        .cmt-mute-btn:hover {
+            background: #f3f4f6;
+            color: #6b7280;
+            border-color: #d1d5db;
+        }
+
+        .cmt-date {
+            width: 90px;
+            flex-shrink: 0;
+            font-size: .72rem;
+            color: #9ca3af;
+            text-align: right;
+        }
+
+        /* ── Toast container ──────────────────────────────── */
+        #cmt-toast-container {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+    </style>
+
+    {{-- ================================================================ --}}
+    {{-- TOAST                                                            --}}
+    {{-- ================================================================ --}}
+    <div id="cmt-toast-container" aria-live="polite"></div>
+
+    {{-- ================================================================ --}}
+    {{-- PAGE HEADER ACTION                                               --}}
+    {{-- ================================================================ --}}
+    <div class="page-header-action">
+        <div class="page-header-left">
+            <h1 class="page-header-title">
+                Comentários
+                <span class="page-header-title-count">{{ $totalCount }}</span>
+            </h1>
+            <span class="page-header-sub">Modere os comentários do blog</span>
         </div>
-        <div class="col-md-3">
-            <div class="card card-box border-left-success text-center py-2 cursor-pointer"
-                 wire:click="$set('filterStatus', 'approved'); $set('showTrash', false)">
-                <div class="card-body py-2">
-                    <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Aprovados</div>
-                    <div class="h3 mb-0 font-weight-bold">{{ $approvedCount }}</div>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card card-box border-left-danger text-center py-2 cursor-pointer"
-                 wire:click="$set('filterStatus', 'rejected'); $set('showTrash', false)">
-                <div class="card-body py-2">
-                    <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">Rejeitados</div>
-                    <div class="h3 mb-0 font-weight-bold">{{ $rejectedCount }}</div>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card card-box border-left-secondary text-center py-2 cursor-pointer {{ $showTrash ? 'border-dark' : '' }}"
-                 wire:click="$set('showTrash', true)">
-                <div class="card-body py-2">
-                    <div class="text-xs font-weight-bold text-secondary text-uppercase mb-1">🗑 Lixeira</div>
-                    <div class="h3 mb-0 font-weight-bold">{{ $trashCount }}</div>
-                </div>
-            </div>
+        <div class="page-header-right">
+            @if($showTrash)
+                <button wire:click="$set('showTrash', false)" class="mir-btn-neutral">
+                    <i class="fa-solid fa-arrow-left"></i> Voltar
+                </button>
+            @else
+                <button wire:click="$set('showTrash', true)" class="mir-btn-neutral">
+                    <i class="fa-solid fa-trash-can"></i> Lixeira
+                    @if($trashCount > 0)
+                        <span style="display:inline-flex;align-items:center;justify-content:center;min-width:18px;height:18px;padding:0 5px;border-radius:50px;font-size:.65rem;font-weight:700;background:#fee2e2;color:#991b1b;margin-left:2px;">{{ $trashCount }}</span>
+                    @endif
+                </button>
+                @if($pendingCount > 0)
+                    <button wire:click="approveAll()"
+                            wire:confirm="Aprovar todos os comentários pendentes?"
+                            class="mir-btn-success">
+                        <i class="fa-solid fa-check-double"></i> Aprovar Todos ({{ $pendingCount }})
+                    </button>
+                @endif
+            @endif
         </div>
     </div>
 
-    {{-- ── Filtros ──────────────────────────────────────────────────────────────── --}}
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <div class="d-flex gap-2">
-            <input type="text"
-                   wire:model.live.debounce.300ms="search"
-                   class="form-control"
-                   placeholder="Pesquisar por conteúdo ou nome..."
-                   style="width: 300px;">
+    {{-- ================================================================ --}}
+    {{-- STAT WIDGETS                                                     --}}
+    {{-- ================================================================ --}}
+    @unless($showTrash)
+    <div class="widgets-grid">
+        <div class="widget-card widget-card-pending">
+            <div class="widget-info">
+                <span class="widget-label">Pendentes</span>
+                <span class="widget-value">{{ $pendingCount }}</span>
+            </div>
+            <div class="widget-icon widget-icon-pending">
+                <i class="fa-solid fa-clock"></i>
+            </div>
+        </div>
+        <div class="widget-card widget-card-approved">
+            <div class="widget-info">
+                <span class="widget-label">Aprovados</span>
+                <span class="widget-value">{{ $approvedCount }}</span>
+            </div>
+            <div class="widget-icon widget-icon-approved">
+                <i class="fa-solid fa-circle-check"></i>
+            </div>
+        </div>
+        <div class="widget-card widget-card-rejected">
+            <div class="widget-info">
+                <span class="widget-label">Rejeitados</span>
+                <span class="widget-value">{{ $rejectedCount }}</span>
+            </div>
+            <div class="widget-icon widget-icon-rejected">
+                <i class="fa-solid fa-circle-xmark"></i>
+            </div>
+        </div>
+        <div class="widget-card widget-card-comments">
+            <div class="widget-info">
+                <span class="widget-label">Total</span>
+                <span class="widget-value">{{ $totalCount }}</span>
+            </div>
+            <div class="widget-icon widget-icon-comments">
+                <i class="fa-solid fa-comments"></i>
+            </div>
+        </div>
+    </div>
+    @endunless
 
+    {{-- ================================================================ --}}
+    {{-- SECTION CARD                                                     --}}
+    {{-- ================================================================ --}}
+    <div class="cmt-section">
+
+        {{-- Camada 1 — Section Header --}}
+        <div class="cmt-section-header">
+            <div class="cmt-section-header-left">
+                <h3 class="cmt-section-title">{{ $showTrash ? 'Lixeira' : 'Comentários' }}</h3>
+                <p class="cmt-section-sub">{{ $comments->total() }} {{ $showTrash ? 'na lixeira' : 'comentários encontrados' }}</p>
+            </div>
+        </div>
+
+        {{-- Camada 2 — Filter Header --}}
+        <div class="cmt-filter-header">
+            <div style="position:relative; flex:1; max-width:280px;">
+                <i class="fa-solid fa-magnifying-glass" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#9ca3af;font-size:.75rem;"></i>
+                <input type="text" wire:model.live.debounce.300ms="search" class="mir-input" placeholder="Pesquisar comentários..." style="padding-left:32px;">
+            </div>
             @if(! $showTrash)
-                <select wire:model.live="filterStatus" class="form-control" style="width: 160px;">
-                    <option value="">Todos</option>
+                <select wire:model.live="filterStatus" class="mir-input" style="width:160px;">
+                    <option value="">Todos os status</option>
                     <option value="pending">Pendentes</option>
                     <option value="approved">Aprovados</option>
                     <option value="rejected">Rejeitados</option>
@@ -59,194 +263,345 @@
             @endif
         </div>
 
-        <div class="d-flex gap-2">
-            @if ($showTrash)
-                <button wire:click="$set('showTrash', false)" class="btn btn-secondary btn-sm">
-                    <i class="fa fa-arrow-left"></i> Voltar
-                </button>
-            @elseif ($pendingCount > 0)
-                <button wire:click="approveAll()"
-                        wire:confirm="Aprovar todos os comentários pendentes?"
-                        class="btn btn-success btn-sm">
-                    <i class="fa fa-check-double"></i> Aprovar Todos ({{ $pendingCount }})
-                </button>
+        {{-- Loading bar --}}
+        <div class="mir-loading-track" wire:loading.class="mir-loading-active"></div>
+
+        {{-- Table Header --}}
+        <div class="mir-table-header">
+            <span class="cmth-author">Autor</span>
+            <span class="cmth-body">Comentário</span>
+            <span class="cmth-post">Post</span>
+            <span class="plh-divider"></span>
+            @if(! $showTrash)
+                <span class="cmth-status">Status</span>
+                <span class="plh-divider"></span>
             @endif
+            <span class="cmth-date">Data</span>
+            <span class="plh-divider"></span>
+            <span class="cmth-actions">Ações</span>
         </div>
-    </div>
 
-    {{-- ── Tabela ───────────────────────────────────────────────────────────────── --}}
-    <div class="card card-box">
-        <div class="card-body p-0">
-            <table class="table table-hover mb-0">
-                <thead class="thead-light">
-                    <tr>
-                        <th>#</th>
-                        <th>Autor</th>
-                        <th>Post</th>
-                        <th>Comentário</th>
-                        <th>Tipo</th>
-                        @if(! $showTrash)
-                            <th>Status</th>
+        {{-- Data Rows com loading overlay --}}
+        <div class="mir-data-list" wire:loading.class="mir-loading-overlay">
+            @forelse($comments as $comment)
+                <div class="mir-data-row" wire:key="cmt-{{ $comment->id }}">
+
+                    {{-- Autor --}}
+                    <div class="cmt-author">
+                        <div class="cmt-author-name">{{ $comment->author_name }}</div>
+                        @if($comment->guest_email)
+                            <div class="cmt-author-email">{{ $comment->guest_email }}</div>
+                        @elseif($comment->user?->email)
+                            <div class="cmt-author-email">{{ $comment->user->email }}</div>
                         @endif
-                        <th>Data</th>
-                        <th>Ações</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse ($comments as $comment)
-                        <tr>
-                            <td>{{ $comment->id }}</td>
-                            <td>
-                                <strong>{{ $comment->author_name }}</strong>
-                                @if ($comment->guest_email)
-                                    <small class="text-muted d-block">{{ $comment->guest_email }}</small>
-                                @endif
-                                <small class="text-muted d-block">IP: {{ $comment->ip_address }}</small>
-                            </td>
-                            <td>
-                                <a href="{{ route('frontend.post', $comment->post?->slug) }}"
-                                   target="_blank"
-                                   class="text-truncate d-block"
-                                   style="max-width:150px;"
-                                   title="{{ $comment->post?->title }}">
-                                    {{ Str::limit($comment->post?->title, 30) }}
-                                </a>
-                                {{-- Botão de mute por post --}}
-                                @if($comment->post)
-                                    <button wire:click="openMuteModal({{ $comment->post->id }}, '{{ addslashes($comment->post->title) }}')"
-                                            class="btn btn-xs btn-outline-secondary mt-1"
-                                            title="Silenciar notificações deste post"
-                                            style="font-size:11px; padding:1px 6px;">
-                                        🔕 Mute
-                                    </button>
-                                @endif
-                            </td>
-                            <td style="max-width: 250px;">
-                                @if ($comment->parent_id)
-                                    <small class="text-muted">
-                                        <i class="fa fa-reply"></i> Resposta ao #{{ $comment->parent_id }}
-                                    </small><br>
-                                @endif
-                                {{ Str::limit($comment->body, 100) }}
-                            </td>
-                            <td>
-                                @if ($comment->parent_id)
-                                    <span class="badge badge-info">Reply</span>
-                                @else
-                                    <span class="badge badge-secondary">Comentário</span>
-                                @endif
-                            </td>
+                    </div>
 
-                            @if(! $showTrash)
-                                <td>
-                                    <span class="badge
-                                        @if ($comment->status === 'approved') badge-success
-                                        @elseif ($comment->status === 'rejected') badge-danger
-                                        @else badge-warning @endif">
-                                        {{ match($comment->status) {
-                                            'approved' => 'Aprovado',
-                                            'rejected' => 'Rejeitado',
-                                            default    => 'Pendente',
-                                        } }}
-                                    </span>
-                                </td>
+                    {{-- Comentário --}}
+                    <div class="cmt-body">
+                        @if($comment->parent_id)
+                            <span class="cmt-reply-badge">
+                                <i class="fa-solid fa-reply" style="font-size:.55rem"></i> Resposta #{{ $comment->parent_id }}
+                            </span>
+                        @endif
+                        <div class="cmt-text">{{ Str::limit($comment->body, 100) }}</div>
+                    </div>
+
+                    {{-- Post --}}
+                    <div class="cmt-post">
+                        @if($comment->post)
+                            <a href="{{ route('frontend.post', $comment->post->slug) }}"
+                               target="_blank"
+                               class="cmt-post-link"
+                               data-tooltip="{{ $comment->post->title }}">
+                                {{ Str::limit($comment->post->title, 25) }}
+                            </a>
+                            <button wire:click="openMuteModal({{ $comment->post->id }}, '{{ addslashes($comment->post->title) }}')"
+                                    class="cmt-mute-btn"
+                                    data-tooltip="Silenciar notificações deste post">
+                                <i class="fa-solid fa-bell-slash" style="font-size:.6rem"></i> Mute
+                            </button>
+                        @else
+                            <span style="font-size:.78rem;color:#d1d5db;">— removido —</span>
+                        @endif
+                    </div>
+
+                    {{-- Divider --}}
+                    <div class="mir-divider"></div>
+
+                    {{-- Status --}}
+                    @if(! $showTrash)
+                        <div style="width:90px;flex-shrink:0;display:flex;justify-content:center;">
+                            <span class="mir-status is-{{ $comment->status }}" data-tooltip="Status do comentário">
+                                <span class="mir-status-ring"></span>
+                                {{ match($comment->status) {
+                                    'approved' => 'Aprovado',
+                                    'rejected' => 'Rejeitado',
+                                    default    => 'Pendente',
+                                } }}
+                            </span>
+                        </div>
+                        <div class="mir-divider"></div>
+                    @endif
+
+                    {{-- Data --}}
+                    <div class="cmt-date">
+                        {{ $comment->created_at->format('d/m/Y') }}
+                        <div style="font-size:.65rem;margin-top:1px;">{{ $comment->created_at->format('H:i') }}</div>
+                    </div>
+
+                    {{-- Divider --}}
+                    <div class="mir-divider"></div>
+
+                    {{-- Ações --}}
+                    <div class="mir-actions" style="width:100px;justify-content:center;">
+                        @if($showTrash)
+                            {{-- Ações da lixeira --}}
+                            <button wire:click="restore({{ $comment->id }})"
+                                    class="mir-action-btn mir-action-restore"
+                                    data-tooltip="Restaurar comentário">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="1 4 1 10 7 10"></polyline>
+                                    <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+                                </svg>
+                            </button>
+                            <button wire:click="forceDelete({{ $comment->id }})"
+                                    wire:confirm="Excluir permanentemente? Esta ação não pode ser desfeita."
+                                    class="mir-action-btn mir-action-delete"
+                                    data-tooltip="Excluir permanentemente">
+                                <svg width="12" height="13" viewBox="0 0 12 14" fill="none">
+                                    <path d="M1 3.5h10M4 3.5V2.5h4v1M2 3.5l.8 8a1 1 0 001 .9h4.4a1 1 0 001-.9l.8-8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </button>
+                        @else
+                            {{-- Ações normais --}}
+                            @if($comment->status !== 'approved')
+                                <button wire:click="approve({{ $comment->id }})"
+                                        class="mir-action-btn mir-action-restore"
+                                        data-tooltip="Aprovar comentário">
+                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <polyline points="20 6 9 17 4 12"></polyline>
+                                    </svg>
+                                </button>
                             @endif
 
-                            <td>{{ $comment->created_at->format('d/m/Y H:i') }}</td>
+                            @if($comment->status !== 'rejected')
+                                <button wire:click="reject({{ $comment->id }})"
+                                        class="mir-action-btn mir-action-delete"
+                                        data-tooltip="Rejeitar comentário">
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                                    </svg>
+                                </button>
+                            @endif
 
-                            <td>
-                                @if($showTrash)
-                                    {{-- Ações da lixeira --}}
-                                    <button wire:click="restore({{ $comment->id }})"
-                                            class="btn btn-sm btn-success mb-1">
-                                        <i class="fa fa-undo"></i> Restaurar
-                                    </button>
-                                    <button wire:click="forceDelete({{ $comment->id }})"
-                                            wire:confirm="Excluir permanentemente? Esta ação não pode ser desfeita."
-                                            class="btn btn-sm btn-danger mb-1">
-                                        <i class="fa fa-times"></i> Excluir
-                                    </button>
-                                @else
-                                    {{-- Ações normais --}}
-                                    @if ($comment->status !== 'approved')
-                                        <button wire:click="approve({{ $comment->id }})"
-                                                class="btn btn-sm btn-success mb-1">
-                                            <i class="fa fa-check"></i> Aprovar
-                                        </button>
-                                    @endif
-
-                                    @if ($comment->status !== 'rejected')
-                                        <button wire:click="reject({{ $comment->id }})"
-                                                class="btn btn-sm btn-warning mb-1">
-                                            <i class="fa fa-ban"></i> Rejeitar
-                                        </button>
-                                    @endif
-
-                                    <button wire:click="destroy({{ $comment->id }})"
-                                            wire:confirm="Mover para lixeira?"
-                                            class="btn btn-sm btn-danger mb-1">
-                                        <i class="fa fa-trash"></i>
-                                    </button>
-                                @endif
-                            </td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="8" class="text-center text-muted py-4">
-                                {{ $showTrash ? 'Lixeira vazia.' : 'Nenhum comentário encontrado.' }}
-                            </td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
+                            <button wire:click="prepareDelete({{ $comment->id }})"
+                                    class="mir-action-btn mir-action-delete"
+                                    data-tooltip="Mover para lixeira">
+                                <svg width="12" height="13" viewBox="0 0 12 14" fill="none">
+                                    <path d="M1 3.5h10M4 3.5V2.5h4v1M2 3.5l.8 8a1 1 0 001 .9h4.4a1 1 0 001-.9l.8-8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </button>
+                        @endif
+                    </div>
+                </div>
+            @empty
+                <div class="mir-empty-state">
+                    <div class="mir-empty-icon">
+                        <i class="fa-solid fa-comments"></i>
+                    </div>
+                    <h3 class="mir-empty-title">
+                        {{ $showTrash ? 'Lixeira vazia' : 'Nenhum comentário encontrado' }}
+                    </h3>
+                    <p class="mir-empty-desc">
+                        @if($showTrash)
+                            Nenhum comentário na lixeira.
+                        @elseif($search || $filterStatus)
+                            Tente ajustar os filtros ou termos de busca.
+                        @else
+                            Ainda não há comentários para moderar.
+                        @endif
+                    </p>
+                </div>
+            @endforelse
         </div>
+
+        {{-- Pagination --}}
+        @if($comments->hasPages())
+            <div class="mir-pagination">
+                <div class="mir-pagination-left">
+                    <span class="mir-pagination-left-label">Por página:</span>
+                    <select wire:model.live="perPage" class="mir-per-page">
+                        <option value="6">6</option>
+                        <option value="10">10</option>
+                        <option value="25">25</option>
+                        <option value="50">50</option>
+                    </select>
+                </div>
+                <div class="mir-pagination-center">
+                    {{-- Previous --}}
+                    <button wire:click="previousPage" class="mir-page-btn {{ $comments->onFirstPage() ? 'disabled' : '' }}" {{ $comments->onFirstPage() ? 'disabled' : '' }}>
+                        <i class="fa-solid fa-chevron-left" style="font-size:.6rem"></i>
+                    </button>
+                    {{-- Page numbers --}}
+                    @foreach($comments->getUrlRange(1, $comments->lastPage()) as $page => $url)
+                        <button wire:click="gotoPage({{ $page }})" class="mir-page-btn {{ $page == $comments->currentPage() ? 'active' : '' }}">
+                            {{ $page }}
+                        </button>
+                    @endforeach
+                    {{-- Next --}}
+                    <button wire:click="nextPage" class="mir-page-btn {{ !$comments->hasMorePages() ? 'disabled' : '' }}" {{ !$comments->hasMorePages() ? 'disabled' : '' }}>
+                        <i class="fa-solid fa-chevron-right" style="font-size:.6rem"></i>
+                    </button>
+                </div>
+                <div class="mir-pagination-right">
+                    Mostrando {{ $comments->firstItem() }}–{{ $comments->lastItem() }} de {{ $comments->total() }}
+                </div>
+            </div>
+        @endif
     </div>
 
-    <div class="mt-3">
-        {{ $comments->links() }}
-    </div>
+    {{-- ================================================================ --}}
+    {{-- MODAL DE EXCLUSÃO                                                --}}
+    {{-- ================================================================ --}}
+    @if($deletingCommentId)
+        <div class="mir-modal-overlay" style="display:flex" x-data x-on:keydown.escape.window="$wire.cancelDelete()">
+            <div class="mir-modal-dialog" style="max-width:540px">
+                <div class="mir-modal-content">
 
-    {{-- ── Modal de Mute ────────────────────────────────────────────────────────── --}}
-    @if($muteModal)
-        <div class="modal fade show d-block" tabindex="-1" style="background: rgba(0,0,0,0.5);">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">🔕 Silenciar notificações</h5>
-                        <button wire:click="closeMuteModal" class="close"><span>&times;</span></button>
+                    <div class="mir-modal-header">
+                        <div class="mir-modal-title">
+                            <div class="mir-modal-icon mir-modal-icon-delete">
+                                <i class="fa-solid fa-trash-can"></i>
+                            </div>
+                            <div>
+                                <div class="mir-modal-title-text">Mover para lixeira</div>
+                                <div class="mir-modal-subtitle">Esta ação pode ser revertida</div>
+                            </div>
+                        </div>
+                        <button wire:click="cancelDelete" class="mir-modal-close">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
                     </div>
-                    <div class="modal-body">
-                        <p class="text-muted mb-3">
-                            Post: <strong>{{ $mutePostTitle }}</strong>
+
+                    <div class="mir-modal-body">
+                        <p style="color:#6d7279;font-size:.9rem;line-height:1.6;margin:0;">
+                            Tem certeza que deseja mover este comentário para a lixeira?
+                            <br>
+                            <span style="font-size:.82rem;color:#9ca3af;margin-top:6px;display:block;">
+                                "{{ $deletingCommentBody }}"
+                            </span>
                         </p>
-
-                        <div class="custom-control custom-switch mb-3">
-                            <input type="checkbox"
-                                   class="custom-control-input"
-                                   id="muteLikes"
-                                   wire:model="muteLikes">
-                            <label class="custom-control-label" for="muteLikes">
-                                😍 Silenciar likes/dislikes deste post
-                            </label>
-                        </div>
-
-                        <div class="custom-control custom-switch">
-                            <input type="checkbox"
-                                   class="custom-control-input"
-                                   id="muteComments"
-                                   wire:model="muteComments">
-                            <label class="custom-control-label" for="muteComments">
-                                💬 Silenciar comentários deste post
-                            </label>
-                        </div>
                     </div>
-                    <div class="modal-footer">
-                        <button wire:click="closeMuteModal" class="btn btn-secondary">Cancelar</button>
-                        <button wire:click="saveMute" class="btn btn-primary">Salvar</button>
+
+                    <div class="mir-modal-footer">
+                        <button wire:click="cancelDelete" class="mir-btn-ghost">Cancelar</button>
+                        <button wire:click="destroy" class="mir-btn-danger">
+                            <i class="fa fa-trash-alt" style="font-size:.75rem"></i> Mover para lixeira
+                        </button>
                     </div>
+
                 </div>
             </div>
         </div>
     @endif
+
+    {{-- ================================================================ --}}
+    {{-- MODAL DE MUTE                                                    --}}
+    {{-- ================================================================ --}}
+    @if($muteModal)
+        <div class="mir-modal-overlay" style="display:flex" x-data x-on:keydown.escape.window="$wire.closeMuteModal()">
+            <div class="mir-modal-dialog" style="max-width:480px">
+                <div class="mir-modal-content">
+
+                    <div class="mir-modal-header">
+                        <div class="mir-modal-title">
+                            <div class="mir-modal-icon mir-modal-icon-edit">
+                                <i class="fa-solid fa-bell-slash"></i>
+                            </div>
+                            <div>
+                                <div class="mir-modal-title-text">Silenciar notificações</div>
+                                <div class="mir-modal-subtitle">{{ $mutePostTitle }}</div>
+                            </div>
+                        </div>
+                        <button wire:click="closeMuteModal" class="mir-modal-close">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
+
+                    <div class="mir-modal-body">
+                        <div class="mb-3">
+                            <div class="mir-switch-wrap">
+                                <input type="checkbox"
+                                       class="mir-switch-input"
+                                       id="muteLikes"
+                                       wire:model="muteLikes">
+                                <label class="mir-switch-label" for="muteLikes">
+                                    <span class="mir-switch-track">
+                                        <span class="mir-switch-thumb"></span>
+                                    </span>
+                                    <span class="mir-switch-text">Silenciar likes/dislikes deste post</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="mir-switch-wrap">
+                                <input type="checkbox"
+                                       class="mir-switch-input"
+                                       id="muteComments"
+                                       wire:model="muteComments">
+                                <label class="mir-switch-label" for="muteComments">
+                                    <span class="mir-switch-track">
+                                        <span class="mir-switch-thumb"></span>
+                                    </span>
+                                    <span class="mir-switch-text">Silenciar comentários deste post</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mir-modal-footer">
+                        <button wire:click="closeMuteModal" class="mir-btn-ghost">Cancelar</button>
+                        <button wire:click="saveMute" class="mir-btn-primary-lg">
+                            <i class="fa-solid fa-floppy-disk" style="font-size:.75rem"></i> Salvar
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    @endif
+
+    {{-- ================================================================ --}}
+    {{-- SCRIPTS: Toast + Tooltips                                        --}}
+    {{-- ================================================================ --}}
+    @push('scripts')
+    <script>
+    /* ─── Toast ─────────────────────────────────────────────────────── */
+    function cmtShowToast(type, message) {
+        const container = document.getElementById('cmt-toast-container');
+        const icons = { success: 'fa-check-circle', error: 'fa-exclamation-circle', warning: 'fa-exclamation-triangle', info: 'fa-info-circle' };
+        const classes = { success: 'mir-toast-success', error: 'mir-toast-error', warning: 'mir-toast-error', info: 'mir-toast-info' };
+        const toast = document.createElement('div');
+        toast.className = `mir-toast ${classes[type] || classes.info}`;
+        toast.innerHTML = `
+            <i class="fa ${icons[type] || icons.info} mir-toast-icon"></i>
+            <span class="mir-toast-msg">${message}</span>
+        `;
+        container.appendChild(toast);
+        setTimeout(() => {
+            toast.style.animation = 'mir-toast-out 200ms ease forwards';
+            setTimeout(() => toast.remove(), 210);
+        }, 3500);
+    }
+
+    document.addEventListener('livewire:initialized', () => {
+        Livewire.on('notify', ({ type, message }) => cmtShowToast(type, message));
+    });
+
+    /* Tooltips: JS global no master.blade.php */
+    </script>
+    @endpush
 
 </div>

@@ -13,12 +13,6 @@ class Profile extends Component
 {
     protected $listeners = ['UpdateProfileInfo' => '$refresh'];
 
-    public string $tab = 'personal_details';
-
-    protected $queryString = [
-        'tab' => ['keep' => true],
-    ];
-
     // Personal Details
     public string $name;
     public string $email;
@@ -50,17 +44,6 @@ class Profile extends Component
             'newPassword.min' => 'A nova senha deve ter pelo menos 5 caracteres.',
             'newPassword.confirmed' => 'As senhas digitadas não conferem.',
         ];
-    }
-
-    public function selectTab(string $tab)
-    {
-        abort_unless(in_array($tab, [
-            'personal_details',
-            'update_password',
-            'social_link',
-        ]), 404);
-
-        $this->tab = $tab;
     }
 
     public function updatePersonalDetails(): void

@@ -41,15 +41,15 @@
 <script src="https://cdn.jsdelivr.net/gh/hunghg255/quill-resize-module/dist/quill-resize-image.min.js"></script>
 
 <script>
+// ── hljs: configurar linguagens mas NÃO rodar auto-highlight na página toda ──
 window.hljs.configure({
-    languages: ['php', 'javascript', 'html', 'css', 'bash', 'xml', 'json'],
-    cssSelector: '.desativar-vazamento-global' 
+    languages: ['php', 'javascript', 'html', 'css', 'bash', 'xml', 'json', 'python', 'sql', 'typescript'],
 });
 
-// ── Registra o módulo ─────────────────────────────────────────────────────────
+// ── Registra módulos ─────────────────────────────────────────────────────────
 Quill.register('modules/imageResize', window.QuillResizeImage);
 
-// ── Instancia o Quill ─────────────────────────────────────────────────────────
+// ── Instancia o Quill com syntax highlighting via hljs ──────────────────────
 const quill = new Quill('#quill-editor', {
     theme: 'snow',
     modules: {
@@ -68,7 +68,7 @@ const quill = new Quill('#quill-editor', {
             ],
             handlers: { image: imageHandler, video: videoHandler },
         },
-        syntax: true,
+        syntax: { hljs: window.hljs },
         imageResize: {},
     },
 });

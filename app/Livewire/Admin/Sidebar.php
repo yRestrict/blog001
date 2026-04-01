@@ -16,6 +16,11 @@ class Sidebar extends Component
 {
     use WithFileUploads;
 
+    // ─── Busca e Filtros ────────────────────────────────────────────────────────
+    public string $search       = '';
+    public string $filterStatus = '';
+    public string $filterType   = '';
+
     // ─── Estado UI ────────────────────────────────────────────────────────────
     public bool   $showModal       = false;
     public bool   $isEditing       = false;
@@ -373,9 +378,24 @@ class Sidebar extends Component
 
     public function render()
     {
-        $widgets     = SidebarModel::orderBy('order')->get();
+        $query = SidebarModel::orderBy('order');
+
+        if ($this->search) {
+            $query->where('title', 'like', '%' . $this->search . '%');
+        }
+
+        if ($this->filterStatus !== '') {
+            $query->where('status', $this->filterStatus === 'active');
+        }
+
+        if ($this->filterType !== '') {
+            $query->where('type', $this->filterType);
+        }
+
+        $widgets     = $query->get();
+        $allWidgets  = SidebarModel::orderBy('order')->get();
         $widgetTypes = collect(WidgetRegistry::all())
-                        ->keyBy('type')        // ← adicionar isso
+                        ->keyBy('type')
                         ->toArray();
 
         $categoriesList = collect();
@@ -395,6 +415,6 @@ class Sidebar extends Component
                 ->get();
         }
 
-        return view('livewire.admin.sidebar', compact('widgets', 'widgetTypes', 'categoriesList', 'tagsList'));
+        return view('livewire.admin.sidebar', compact('widgets', 'allWidgets', 'widgetTypes', 'categoriesList', 'tagsList'));
     }
 }

@@ -2,328 +2,17 @@
 <div>
 
     {{-- ================================================================ --}}
-    {{-- ESTILOS: Mesmo padrão mir- do menu                               --}}
+    {{-- PAGE HEADER ACTION                                               --}}
     {{-- ================================================================ --}}
-    <style>
-
-        /* ── Seções ─────────────────────────────────────────────────── */
-        .cat-section {
-            background: #fff;
-            border-radius: 10px;
-            border: 1px solid #e9ecef;
-            box-shadow: 0 1px 4px rgba(0,0,0,.05);
-            margin-bottom: 24px;
-            overflow: hidden;
-        }
-        .cat-section-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 16px 20px;
-            border-bottom: 1px solid #f0f0f0;
-        }
-        .cat-section-title {
-            font-size: .95rem;
-            font-weight: 700;
-            color: #1a1d23;
-            margin: 0;
-        }
-        .cat-section-sub {
-            font-size: .78rem;
-            color: #9ca3af;
-            margin-top: 2px;
-        }
-
-        /* ── Rows sortable ──────────────────────────────────────────── */
-        .cat-list { padding: 8px 0; }
-
-        .cat-row {
-            display: flex;
-            align-items: center;
-            padding: 10px 16px;
-            border-bottom: 1px solid #f5f5f5;
-            transition: background .15s;
-        }
-        .cat-row:last-child { border-bottom: none; }
-        .cat-row:hover { background: #f9fafb; }
-
-        .cat-handle {
-            cursor: grab;
-            color: #c9cdd4;
-            padding: 4px 10px 4px 0;
-            flex-shrink: 0;
-            display: flex;
-            align-items: center;
-            transition: color .15s;
-        }
-        .cat-handle:hover { color: #6366f1; }
-        .cat-row.sortable-chosen .cat-handle { cursor: grabbing; }
-
-        .cat-body { flex: 1; min-width: 0; }
-        .cat-name {
-            font-size: .875rem;
-            font-weight: 600;
-            color: #1a1d23;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        .cat-slug {
-            font-size: .72rem;
-            color: #9ca3af;
-            font-family: ui-monospace, monospace;
-            margin-top: 1px;
-        }
-
-        .cat-meta {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            flex-shrink: 0;
-            margin: 0 20px;
-        }
-
-        /* Badges */
-        .mir-badge-count {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            min-width: 24px;
-            height: 24px;
-            padding: 0 7px;
-            border-radius: 50px;
-            font-size: .72rem;
-            font-weight: 700;
-            background: #ede9fe;
-            color: #6d28d9;
-        }
-        .mir-badge-parent {
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            padding: 3px 9px;
-            border-radius: 50px;
-            font-size: .72rem;
-            font-weight: 600;
-            background: #d1fae5;
-            color: #065f46;
-        }
-        .mir-badge-none { font-size: .75rem; color: #c4c8cf; }
-
-        /* Status pill (idêntico ao menu) */
-        .mir-status {
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            padding: 4px 10px;
-            border-radius: 50px;
-            font-size: .72rem;
-            font-weight: 600;
-            border: none;
-            cursor: pointer;
-            transition: background .15s;
-            flex-shrink: 0;
-        }
-        .mir-status.is-active  { background: #d1fae5; color: #065f46; }
-        .mir-status.is-active:hover  { background: #a7f3d0; }
-        .mir-status.is-inactive { background: #fee2e2; color: #991b1b; }
-        .mir-status.is-inactive:hover { background: #fecaca; }
-        .mir-status-ring { width: 7px; height: 7px; border-radius: 50%; }
-        .is-active .mir-status-ring  { background: #10b981; }
-        .is-inactive .mir-status-ring { background: #ef4444; }
-
-        /* Divider */
-        .mir-divider {
-            width: 1px;
-            height: 28px;
-            background: #e9ecef;
-            margin: 0 10px;
-            flex-shrink: 0;
-        }
-
-        /* Botões de ação */
-        .mir-actions { display: flex; align-items: center; gap: 4px; flex-shrink: 0; }
-        .mir-action-btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 30px;
-            height: 30px;
-            border-radius: 6px;
-            border: 1px solid transparent;
-            background: transparent;
-            cursor: pointer;
-            transition: background .15s, border-color .15s, color .15s;
-            color: #6d7279;
-        }
-        .mir-action-edit:hover   { background: #ede9fe; border-color: #c4b5fd; color: #5b21b6; }
-        .mir-action-delete:hover { background: #fee2e2; border-color: #fca5a5; color: #b91c1c; }
-
-        /* Empty state */
-        .mir-empty-state {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 48px 24px;
-            text-align: center;
-        }
-        .mir-empty-icon {
-            width: 56px; height: 56px;
-            border-radius: 14px;
-            background: #f3f4f6;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 1.5rem; color: #9ca3af;
-            margin-bottom: 14px;
-        }
-        .mir-empty-title { font-size: .95rem; font-weight: 700; color: #374151; margin: 0 0 6px; }
-        .mir-empty-desc  { font-size: .82rem; color: #9ca3af; margin: 0 0 16px; }
-
-        /* Botões primários */
-        .mir-btn-primary-lg {
-            display: inline-flex; align-items: center; gap: 6px;
-            padding: 8px 16px;
-            border-radius: 8px;
-            background: linear-gradient(135deg, #6366f1, #4f46e5);
-            color: #fff;
-            font-size: .82rem; font-weight: 600;
-            border: none; cursor: pointer;
-            transition: opacity .15s;
-            box-shadow: 0 2px 8px rgba(99,102,241,.35);
-        }
-        .mir-btn-primary-lg:hover { opacity: .9; }
-
-        .mir-btn-ghost {
-            display: inline-flex; align-items: center; gap: 6px;
-            padding: 8px 16px;
-            border-radius: 8px;
-            background: transparent;
-            color: #6d7279;
-            font-size: .82rem; font-weight: 600;
-            border: 1px solid #e0e0e0;
-            cursor: pointer;
-            transition: background .15s;
-        }
-        .mir-btn-ghost:hover { background: #f5f5f5; }
-
-        /* Modais (idêntico ao menu) */
-        .mir-modal-overlay {
-            position: fixed; inset: 0;
-            background: rgba(17,24,39,.55);
-            backdrop-filter: blur(2px);
-            z-index: 1060;
-            display: flex; align-items: center; justify-content: center;
-            padding: 16px;
-        }
-        .mir-modal-dialog { width: 100%; max-width: 540px; animation: mir-modal-in .2s ease; }
-        @keyframes mir-modal-in {
-            from { opacity: 0; transform: translateY(-12px) scale(.97); }
-            to   { opacity: 1; transform: translateY(0) scale(1); }
-        }
-        .mir-modal-content {
-            background: #fff;
-            border-radius: 14px;
-            box-shadow: 0 20px 60px rgba(0,0,0,.18);
-            overflow: hidden;
-        }
-        .mir-modal-header {
-            display: flex; align-items: center; justify-content: space-between;
-            padding: 18px 22px;
-            border-bottom: 1px solid #f0f0f0;
-        }
-        .mir-modal-title { display: flex; align-items: center; gap: 12px; }
-        .mir-modal-icon {
-            width: 36px; height: 36px;
-            border-radius: 9px;
-            display: flex; align-items: center; justify-content: center;
-            font-size: .95rem; flex-shrink: 0;
-        }
-        .mir-modal-icon-add    { background: rgba(99,102,241,.12);  color: #6366f1; }
-        .mir-modal-icon-edit   { background: rgba(16,185,129,.12);  color: #059669; }
-        .mir-modal-icon-delete { background: rgba(239,68,68,.12);   color: #ef4444; }
-        .mir-modal-title-text  { font-size: .93rem; font-weight: 700; color: #1a1d23; }
-        .mir-modal-subtitle    { font-size: .75rem; color: #9ca3af; margin-top: 1px; }
-        .mir-modal-close {
-            width: 32px; height: 32px; border-radius: 8px;
-            border: none; background: transparent; color: #9ca3af;
-            cursor: pointer; display: flex; align-items: center; justify-content: center;
-            transition: background .15s, color .15s; font-size: .9rem;
-        }
-        .mir-modal-close:hover { background: #f3f4f6; color: #374151; }
-        .mir-modal-body   { padding: 22px; }
-        .mir-modal-footer {
-            display: flex; justify-content: flex-end; gap: 10px;
-            padding: 16px 22px;
-            border-top: 1px solid #f0f0f0;
-            background: #fafafa;
-        }
-
-        /* Inputs */
-        .mir-label { display: block; font-size: .8rem; font-weight: 600; color: #374151; margin-bottom: 6px; }
-        .mir-required { color: #ef4444; }
-        .mir-input {
-            width: 100%; padding: 8px 12px;
-            border: 1.5px solid #e5e7eb;
-            border-radius: 8px;
-            font-size: .85rem; color: #1a1d23;
-            background: #fff; outline: none;
-            transition: border-color .15s, box-shadow .15s;
-            appearance: none;
-        }
-        .mir-input:focus { border-color: #6366f1; box-shadow: 0 0 0 3px rgba(99,102,241,.12); }
-        .mir-input.is-invalid { border-color: #ef4444; }
-        .mir-input.is-invalid:focus { box-shadow: 0 0 0 3px rgba(239,68,68,.12); }
-        .mir-field-error { font-size: .78rem; color: #ef4444; margin-top: 4px; }
-
-        /* Switch */
-        .mir-switch-wrap { display: flex; align-items: center; }
-        .mir-switch-input { display: none; }
-        .mir-switch-label { display: inline-flex; align-items: center; gap: 10px; cursor: pointer; }
-        .mir-switch-track {
-            position: relative; width: 38px; height: 22px;
-            border-radius: 50px; background: #d1d5db;
-            transition: background .2s; flex-shrink: 0;
-        }
-        .mir-switch-input:checked + .mir-switch-label .mir-switch-track { background: #6366f1; }
-        .mir-switch-thumb {
-            position: absolute; top: 3px; left: 3px;
-            width: 16px; height: 16px; border-radius: 50%;
-            background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,.2);
-            transition: left .2s;
-        }
-        .mir-switch-text { font-size: .82rem; font-weight: 600; color: #374151; }
-
-        /* Toast */
-        #cat-toast-container {
-            position: fixed; bottom: 24px; right: 24px;
-            z-index: 9999;
-            display: flex; flex-direction: column; gap: 10px;
-        }
-        .mir-toast {
-            display: flex; align-items: center; gap: 10px;
-            padding: 11px 16px; border-radius: 10px;
-            font-size: .83rem; font-weight: 500;
-            box-shadow: 0 4px 20px rgba(0,0,0,.14);
-            animation: mir-toast-in .25s ease;
-            min-width: 240px; max-width: 340px;
-        }
-        @keyframes mir-toast-in  { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
-        @keyframes mir-toast-out { to { opacity:0; transform:translateY(12px); } }
-        .mir-toast-success { background: #d1fae5; color: #065f46; }
-        .mir-toast-error   { background: #fee2e2; color: #991b1b; }
-        .mir-toast-info    { background: #ede9fe; color: #4c1d95; }
-        .mir-toast-icon    { font-size: 1rem; flex-shrink: 0; }
-
-        /* Sortable */
-        .sortable-ghost  { opacity: .4; background: #ede9fe !important; border-radius: 8px; }
-        .sortable-chosen { box-shadow: 0 4px 18px rgba(99,102,241,.18); border-radius: 8px; }
-
-    </style>
-
-    {{-- ================================================================ --}}
-    {{-- TOAST                                                             --}}
-    {{-- ================================================================ --}}
-    <div id="cat-toast-container" aria-live="polite"></div>
+    <div class="page-header-action">
+        <div class="page-header-left">
+            <h1 class="page-header-title">
+                Categorias
+                <span class="page-header-title-count">{{ $allCategories }}</span>
+            </h1>
+            <span class="page-header-sub">Gerencie categorias pai e categorias do sistema</span>
+        </div>
+    </div>
 
 
     {{-- ================================================================ --}}
@@ -331,9 +20,9 @@
     {{-- ================================================================ --}}
     <div class="cat-section">
         <div class="cat-section-header">
-            <div>
-                <div class="cat-section-title">Categorias Pai</div>
-                <div class="cat-section-sub">Agrupe suas categorias em grupos maiores</div>
+            <div class="cat-section-header-left">
+                <h2 class="cat-section-title">Categorias Pai</h2>
+                <span class="cat-section-sub">Agrupe suas categorias em grupos maiores</span>
             </div>
             <button class="mir-btn-primary-lg" wire:click="openAddParentCategory">
                 <svg width="11" height="11" viewBox="0 0 12 12" fill="none">
@@ -343,23 +32,45 @@
             </button>
         </div>
 
+        {{-- Section Header: busca --}}
+        <div class="cat-filter-header">
+            <div style="position:relative; flex:1; max-width:280px;">
+                <i class="fa-solid fa-magnifying-glass" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#9ca3af;font-size:.75rem;"></i>
+                <input type="text" wire:model.live.debounce.300ms="searchParent" class="mir-input" placeholder="Pesquisar categorias pai..." style="padding-left:32px;">
+            </div>
+        </div>
+
+        {{-- Loading bar --}}
+        <div wire:loading class="mir-loading-bar"></div>
+
+        {{-- Table Header --}}
+        <div class="mir-table-header">
+            <span class="cat-plh-handle"></span>
+            <span class="cat-plh-body">Nome</span>
+            <span class="cat-plh-meta" style="text-align:right;">Filhas</span>
+            <span class="plh-divider"></span>
+            <span class="cat-plh-actions" style="text-align:center;">Ações</span>
+        </div>
+
         @if ($parentCategories->isEmpty())
             <div class="mir-empty-state">
-                <div class="mir-empty-icon"><i class="fa fa-folder-open"></i></div>
-                <h5 class="mir-empty-title">Nenhuma categoria pai</h5>
-                <p class="mir-empty-desc">Crie a primeira para começar a organizar.</p>
-                <button class="mir-btn-primary-lg" wire:click="openAddParentCategory">
-                    <i class="fa fa-plus"></i> Criar agora
-                </button>
+                <div class="mir-empty-icon"><i class="fa-solid fa-folder-open"></i></div>
+                @if ($searchParent)
+                    <h5 class="mir-empty-title">Nenhuma categoria pai encontrada</h5>
+                    <p class="mir-empty-desc">Tente ajustar o termo de busca.</p>
+                @else
+                    <h5 class="mir-empty-title">Nenhuma categoria pai</h5>
+                    <p class="mir-empty-desc">Crie a primeira para começar a organizar.</p>
+                @endif
             </div>
         @else
-            <div class="cat-list" id="sortable-parent-categories">
+            <div class="mir-data-list" id="sortable-parent-categories" wire:loading.class="mir-loading-overlay">
                 @foreach ($parentCategories as $item)
-                    <div class="cat-row"
+                    <div class="mir-data-row"
                          wire:key="parent-cat-{{ $item->id }}"
                          data-id="{{ $item->id }}">
 
-                        <div class="cat-handle" title="Arrastar para reordenar">
+                        <div class="cat-handle">
                             <svg width="8" height="14" viewBox="0 0 8 14" fill="none">
                                 <circle cx="2" cy="2"  r="1.5" fill="currentColor"/>
                                 <circle cx="6" cy="2"  r="1.5" fill="currentColor"/>
@@ -376,7 +87,7 @@
                         </div>
 
                         <div class="cat-meta">
-                            <span class="mir-badge-count" title="Nº de categorias filhas">
+                            <span class="mir-badge-count" data-tooltip="{{ $item->categories_count }} categorias filhas">
                                 {{ $item->categories_count }}
                             </span>
                         </div>
@@ -386,14 +97,14 @@
                         <div class="mir-actions">
                             <button class="mir-action-btn mir-action-edit"
                                     wire:click="openEditParentCategory({{ $item->id }})"
-                                    title="Editar">
+                                    data-tooltip="Editar">
                                 <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
                                     <path d="M9 2l2 2-7.5 7.5H1.5v-2L9 2z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>
                                 </svg>
                             </button>
                             <button class="mir-action-btn mir-action-delete"
                                     wire:click="$dispatch('confirm-delete-parent', { id: {{ $item->id }}, name: '{{ addslashes($item->name) }}' })"
-                                    title="Excluir">
+                                    data-tooltip="Excluir">
                                 <svg width="12" height="13" viewBox="0 0 12 14" fill="none">
                                     <path d="M1 3.5h10M4 3.5V2.5h4v1M2 3.5l.8 8a1 1 0 001 .9h4.4a1 1 0 001-.9l.8-8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
                                 </svg>
@@ -411,9 +122,9 @@
     {{-- ================================================================ --}}
     <div class="cat-section">
         <div class="cat-section-header">
-            <div>
-                <div class="cat-section-title">Categorias</div>
-                <div class="cat-section-sub">Gerencie todas as categorias do sistema</div>
+            <div class="cat-section-header-left">
+                <h2 class="cat-section-title">Categorias</h2>
+                <span class="cat-section-sub">Gerencie todas as categorias do sistema</span>
             </div>
             <button class="mir-btn-primary-lg" wire:click="openAddCategory">
                 <svg width="11" height="11" viewBox="0 0 12 12" fill="none">
@@ -423,23 +134,58 @@
             </button>
         </div>
 
+        {{-- Section Header: busca + filtros --}}
+        <div class="cat-filter-header">
+            <div style="position:relative; flex:1; max-width:280px;">
+                <i class="fa-solid fa-magnifying-glass" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#9ca3af;font-size:.75rem;"></i>
+                <input type="text" wire:model.live.debounce.300ms="searchCategory" class="mir-input" placeholder="Pesquisar categorias..." style="padding-left:32px;">
+            </div>
+            <select wire:model.live="filterStatus" class="mir-input" style="width:160px;">
+                <option value="">Todos os status</option>
+                <option value="active">Ativo</option>
+                <option value="inactive">Inativo</option>
+            </select>
+            <select wire:model.live="filterParent" class="mir-input" style="width:180px;">
+                <option value="">Todas as categorias pai</option>
+                @foreach($allParentCategories as $parent)
+                    <option value="{{ $parent->id }}">{{ $parent->name }}</option>
+                @endforeach
+            </select>
+        </div>
+
+        {{-- Loading bar --}}
+        <div wire:loading class="mir-loading-bar"></div>
+
+        {{-- Table Header --}}
+        <div class="mir-table-header">
+            <span class="cat-plh-handle"></span>
+            <span class="cat-plh-body">Categoria</span>
+            <span class="cat-plh-catmeta" style="text-align:right;">Pai / Posts</span>
+            <span class="plh-divider"></span>
+            <span class="cat-plh-status" style="text-align:center;">Status</span>
+            <span class="plh-divider"></span>
+            <span class="cat-plh-actions" style="text-align:center;">Ações</span>
+        </div>
+
         @if ($categories->isEmpty())
             <div class="mir-empty-state">
-                <div class="mir-empty-icon"><i class="fa fa-tags"></i></div>
-                <h5 class="mir-empty-title">Nenhuma categoria</h5>
-                <p class="mir-empty-desc">Adicione categorias para organizar o seu conteúdo.</p>
-                <button class="mir-btn-primary-lg" wire:click="openAddCategory">
-                    <i class="fa fa-plus"></i> Criar agora
-                </button>
+                <div class="mir-empty-icon"><i class="fa-solid fa-tags"></i></div>
+                @if ($searchCategory || $filterStatus || $filterParent)
+                    <h5 class="mir-empty-title">Nenhuma categoria encontrada</h5>
+                    <p class="mir-empty-desc">Tente ajustar os filtros ou termos de busca.</p>
+                @else
+                    <h5 class="mir-empty-title">Nenhuma categoria</h5>
+                    <p class="mir-empty-desc">Adicione categorias para organizar o seu conteúdo.</p>
+                @endif
             </div>
         @else
-            <div class="cat-list" id="sortable-categories">
+            <div class="mir-data-list" id="sortable-categories" wire:loading.class="mir-loading-overlay">
                 @foreach ($categories as $category)
-                    <div class="cat-row"
+                    <div class="mir-data-row"
                          wire:key="cat-{{ $category->id }}"
                          data-id="{{ $category->id }}">
 
-                        <div class="cat-handle" title="Arrastar para reordenar">
+                        <div class="cat-handle">
                             <svg width="8" height="14" viewBox="0 0 8 14" fill="none">
                                 <circle cx="2" cy="2"  r="1.5" fill="currentColor"/>
                                 <circle cx="6" cy="2"  r="1.5" fill="currentColor"/>
@@ -455,7 +201,7 @@
                             <div class="cat-slug">{{ $category->slug }}</div>
                         </div>
 
-                        <div class="cat-meta">
+                        <div class="cat-catmeta">
                             @if ($category->parentCategory)
                                 <span class="mir-badge-parent">
                                     <svg width="8" height="8" viewBox="0 0 8 8" fill="none">
@@ -463,37 +209,38 @@
                                     </svg>
                                     {{ $category->parentCategory->name }}
                                 </span>
-                                <div class="mir-divider"></div>
-                                <span class="mir-badge-count" title="Nº Posts">
-                                    {{ $category->posts_count }}
-                                </span>
                             @else
-                                <span class="mir-badge-none">— sem pai —</span>
+                                <span class="cat-no-parent">— sem pai —</span>
                             @endif
+                            <span class="mir-badge-count" data-tooltip="{{ $category->posts_count }} posts">
+                                {{ $category->posts_count }}
+                            </span>
                         </div>
 
                         <div class="mir-divider"></div>
 
-                        <button class="mir-status {{ $category->status ? 'is-active' : 'is-inactive' }}"
-                                wire:click="toggleCategoryStatus({{ $category->id }})"
-                                title="{{ $category->status ? 'Clique para desativar' : 'Clique para ativar' }}">
-                            <span class="mir-status-ring"></span>
-                            <span>{{ $category->status ? 'Ativo' : 'Inativo' }}</span>
-                        </button>
+                        <div style="width:90px;flex-shrink:0;display:flex;justify-content:center;">
+                            <button class="mir-status {{ $category->status ? 'is-active' : 'is-inactive' }}"
+                                    wire:click="toggleCategoryStatus({{ $category->id }})"
+                                    data-tooltip="{{ $category->status ? 'Clique para desativar' : 'Clique para ativar' }}">
+                                <span class="mir-status-ring"></span>
+                                {{ $category->status ? 'Ativo' : 'Inativo' }}
+                            </button>
+                        </div>
 
                         <div class="mir-divider"></div>
 
                         <div class="mir-actions">
                             <button class="mir-action-btn mir-action-edit"
                                     wire:click="openEditCategory({{ $category->id }})"
-                                    title="Editar">
+                                    data-tooltip="Editar categoria">
                                 <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
                                     <path d="M9 2l2 2-7.5 7.5H1.5v-2L9 2z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>
                                 </svg>
                             </button>
                             <button class="mir-action-btn mir-action-delete"
                                     wire:click="$dispatch('confirm-delete-category', { id: {{ $category->id }}, name: '{{ addslashes($category->name) }}' })"
-                                    title="Excluir">
+                                    data-tooltip="Excluir categoria">
                                 <svg width="12" height="13" viewBox="0 0 12 14" fill="none">
                                     <path d="M1 3.5h10M4 3.5V2.5h4v1M2 3.5l.8 8a1 1 0 001 .9h4.4a1 1 0 001-.9l.8-8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
                                 </svg>
@@ -511,14 +258,14 @@
     {{-- ================================================================ --}}
     @if ($showParentCategoryModal)
     <div class="mir-modal-overlay">
-        <div class="mir-modal-dialog">
+        <div class="mir-modal-dialog" style="max-width:540px;">
             <div class="mir-modal-content">
 
                 <div class="mir-modal-header">
                     <div class="mir-modal-title">
-                        <span class="mir-modal-icon {{ $isEditingParent ? 'mir-modal-icon-edit' : 'mir-modal-icon-add' }}">
-                            <i class="fa fa-{{ $isEditingParent ? 'edit' : 'plus' }}"></i>
-                        </span>
+                        <div class="mir-modal-icon {{ $isEditingParent ? 'mir-modal-icon-edit' : 'mir-modal-icon-add' }}">
+                            <i class="fa-solid fa-{{ $isEditingParent ? 'pen-to-square' : 'plus' }}"></i>
+                        </div>
                         <div>
                             <div class="mir-modal-title-text">
                                 {{ $isEditingParent ? 'Editar Categoria Pai' : 'Nova Categoria Pai' }}
@@ -529,7 +276,7 @@
                         </div>
                     </div>
                     <button type="button" class="mir-modal-close" wire:click="closeParentCategoryModal">
-                        <i class="fa fa-times"></i>
+                        <i class="fa-solid fa-xmark"></i>
                     </button>
                 </div>
 
@@ -548,9 +295,7 @@
                 </div>
 
                 <div class="mir-modal-footer">
-                    <button class="mir-btn-ghost" wire:click="closeParentCategoryModal">
-                        Cancelar
-                    </button>
+                    <button class="mir-btn-ghost" wire:click="closeParentCategoryModal">Cancelar</button>
                     <button class="mir-btn-primary-lg"
                             wire:click="saveParentCategory"
                             wire:loading.attr="disabled"
@@ -558,7 +303,7 @@
                         <span wire:loading wire:target="saveParentCategory">
                             <span class="spinner-border spinner-border-sm mr-1"></span>
                         </span>
-                        <i class="fa fa-save" wire:loading.remove wire:target="saveParentCategory"></i>
+                        <i class="fa-solid fa-floppy-disk" wire:loading.remove wire:target="saveParentCategory"></i>
                         {{ $isEditingParent ? 'Salvar alterações' : 'Criar categoria pai' }}
                     </button>
                 </div>
@@ -574,14 +319,14 @@
     {{-- ================================================================ --}}
     @if ($showCategoryModal)
     <div class="mir-modal-overlay">
-        <div class="mir-modal-dialog">
+        <div class="mir-modal-dialog" style="max-width:540px;">
             <div class="mir-modal-content">
 
                 <div class="mir-modal-header">
                     <div class="mir-modal-title">
-                        <span class="mir-modal-icon {{ $isEditingCategory ? 'mir-modal-icon-edit' : 'mir-modal-icon-add' }}">
-                            <i class="fa fa-{{ $isEditingCategory ? 'edit' : 'plus' }}"></i>
-                        </span>
+                        <div class="mir-modal-icon {{ $isEditingCategory ? 'mir-modal-icon-edit' : 'mir-modal-icon-add' }}">
+                            <i class="fa-solid fa-{{ $isEditingCategory ? 'pen-to-square' : 'plus' }}"></i>
+                        </div>
                         <div>
                             <div class="mir-modal-title-text">
                                 {{ $isEditingCategory ? 'Editar Categoria' : 'Nova Categoria' }}
@@ -592,14 +337,13 @@
                         </div>
                     </div>
                     <button type="button" class="mir-modal-close" wire:click="closeCategoryModal">
-                        <i class="fa fa-times"></i>
+                        <i class="fa-solid fa-xmark"></i>
                     </button>
                 </div>
 
                 <div class="mir-modal-body">
-                    <div class="row">
-
-                        <div class="col-12 mb-3">
+                    <div class="cat-modal-grid">
+                        <div class="cat-modal-full">
                             <label class="mir-label">Nome <span class="mir-required">*</span></label>
                             <input type="text"
                                    class="mir-input @error('categoryName') is-invalid @enderror"
@@ -610,7 +354,7 @@
                             @enderror
                         </div>
 
-                        <div class="col-md-7 mb-3">
+                        <div>
                             <label class="mir-label">Categoria Pai</label>
                             <select class="mir-input @error('categoryParentId') is-invalid @enderror"
                                     wire:model="categoryParentId">
@@ -624,8 +368,8 @@
                             @enderror
                         </div>
 
-                        <div class="col-md-5 mb-3 d-flex align-items-end" style="padding-bottom: 10px;">
-                            <div class="mir-switch-wrap">
+                        <div style="display:flex;align-items:flex-end;padding-bottom:4px;">
+                            <div>
                                 <input type="checkbox"
                                        class="mir-switch-input"
                                        id="cat_status"
@@ -639,7 +383,7 @@
                             </div>
                         </div>
 
-                        <div class="col-12 mb-1">
+                        <div class="cat-modal-full">
                             <label class="mir-label">
                                 Descrição
                                 <span style="color:#9ca3af; font-weight:400;">(opcional)</span>
@@ -650,14 +394,11 @@
                                       style="resize:vertical;"
                                       placeholder="Descrição breve da categoria..."></textarea>
                         </div>
-
                     </div>
                 </div>
 
                 <div class="mir-modal-footer">
-                    <button class="mir-btn-ghost" wire:click="closeCategoryModal">
-                        Cancelar
-                    </button>
+                    <button class="mir-btn-ghost" wire:click="closeCategoryModal">Cancelar</button>
                     <button class="mir-btn-primary-lg"
                             wire:click="saveCategory"
                             wire:loading.attr="disabled"
@@ -665,7 +406,7 @@
                         <span wire:loading wire:target="saveCategory">
                             <span class="spinner-border spinner-border-sm mr-1"></span>
                         </span>
-                        <i class="fa fa-save" wire:loading.remove wire:target="saveCategory"></i>
+                        <i class="fa-solid fa-floppy-disk" wire:loading.remove wire:target="saveCategory"></i>
                         {{ $isEditingCategory ? 'Salvar alterações' : 'Criar categoria' }}
                     </button>
                 </div>
@@ -686,28 +427,28 @@
          class="mir-modal-overlay"
          tabindex="-1">
 
-        <div class="mir-modal-dialog">
+        <div class="mir-modal-dialog" style="max-width:440px;">
             <div class="mir-modal-content">
 
                 <div class="mir-modal-header">
                     <div class="mir-modal-title">
-                        <span class="mir-modal-icon mir-modal-icon-delete">
-                            <i class="fa fa-trash"></i>
-                        </span>
+                        <div class="mir-modal-icon mir-modal-icon-delete">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </div>
                         <div>
                             <div class="mir-modal-title-text">Excluir Categoria Pai</div>
                             <div class="mir-modal-subtitle">Esta ação não pode ser desfeita</div>
                         </div>
                     </div>
                     <button type="button" class="mir-modal-close" x-on:click="show = false">
-                        <i class="fa fa-times"></i>
+                        <i class="fa-solid fa-xmark"></i>
                     </button>
                 </div>
 
                 <div class="mir-modal-body">
                     <p style="color:#6d7279; font-size:.9rem; line-height:1.6; margin:0;">
                         Tem certeza que deseja excluir a categoria pai
-                        <strong style="color:#ee0b0b;" x-text="itemName"></strong>?
+                        <strong style="color:#1a1d23;" x-text="itemName"></strong>?
                         <br>
                         <span style="font-size:.8rem; color:#9ca3af; margin-top:6px; display:block;">
                             As categorias filhas serão desvinculadas, mas não excluídas.
@@ -717,10 +458,9 @@
 
                 <div class="mir-modal-footer">
                     <button class="mir-btn-ghost" x-on:click="show = false">Cancelar</button>
-                    <button class="mir-btn-primary-lg"
-                            style="background:linear-gradient(135deg,#ef4444,#dc2626); box-shadow:0 2px 8px rgba(239,68,68,.35);"
+                    <button class="mir-btn-danger"
                             x-on:click="$wire.deleteParentCategory(itemId); show = false">
-                        <i class="fa fa-trash"></i> Sim, excluir
+                        <i class="fa-solid fa-trash-can"></i> Sim, excluir
                     </button>
                 </div>
 
@@ -739,37 +479,36 @@
          class="mir-modal-overlay"
          tabindex="-1">
 
-        <div class="mir-modal-dialog">
+        <div class="mir-modal-dialog" style="max-width:440px;">
             <div class="mir-modal-content">
 
                 <div class="mir-modal-header">
                     <div class="mir-modal-title">
-                        <span class="mir-modal-icon mir-modal-icon-delete">
-                            <i class="fa fa-trash"></i>
-                        </span>
+                        <div class="mir-modal-icon mir-modal-icon-delete">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </div>
                         <div>
                             <div class="mir-modal-title-text">Excluir Categoria</div>
                             <div class="mir-modal-subtitle">Esta ação não pode ser desfeita</div>
                         </div>
                     </div>
                     <button type="button" class="mir-modal-close" x-on:click="show = false">
-                        <i class="fa fa-times"></i>
+                        <i class="fa-solid fa-xmark"></i>
                     </button>
                 </div>
 
                 <div class="mir-modal-body">
                     <p style="color:#6d7279; font-size:.9rem; line-height:1.6; margin:0;">
                         Tem certeza que deseja excluir a categoria
-                        <strong style="color:#ee0b0b;" x-text="itemName"></strong>?
+                        <strong style="color:#1a1d23;" x-text="itemName"></strong>?
                     </p>
                 </div>
 
                 <div class="mir-modal-footer">
                     <button class="mir-btn-ghost" x-on:click="show = false">Cancelar</button>
-                    <button class="mir-btn-primary-lg"
-                            style="background:linear-gradient(135deg,#ef4444,#dc2626); box-shadow:0 2px 8px rgba(239,68,68,.35);"
+                    <button class="mir-btn-danger"
                             x-on:click="$wire.deleteCategory(itemId); show = false">
-                        <i class="fa fa-trash"></i> Sim, excluir
+                        <i class="fa-solid fa-trash-can"></i> Sim, excluir
                     </button>
                 </div>
 
@@ -779,18 +518,115 @@
 
 
     {{-- ================================================================ --}}
-    {{-- SCRIPTS: Toast + Sortable (idêntico ao padrão do menu)           --}}
+    {{-- TOAST                                                             --}}
+    {{-- ================================================================ --}}
+    <div id="cat-toast-container" aria-live="polite"></div>
+
+
+    {{-- ================================================================ --}}
+    {{-- SCOPED STYLES (apenas cat- específicos)                          --}}
+    {{-- ================================================================ --}}
+    <style>
+        /* ── Section Card ──────────────────────────────────── */
+        .cat-section {
+            background: #fff;
+            border-radius: 10px;
+            border: 1px solid #e9ecef;
+            box-shadow: 0 1px 4px rgba(0,0,0,.05);
+            margin-bottom: 24px;
+        }
+        .cat-section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 20px;
+            border-bottom: 1px solid #f0f0f0;
+            gap: 16px;
+        }
+        .cat-section-header-left { min-width: 0; }
+        .cat-filter-header {
+            display: flex;
+            align-items: center;
+            padding: 16px 20px;
+            border-bottom: 1px solid #f0f0f0;
+            gap: 16px;
+        }
+        .cat-section-title { font-size: .95rem; font-weight: 700; color: #1a1d23; margin: 0; }
+        .cat-section-sub { font-size: .78rem; color: #9ca3af; margin-top: 2px; }
+
+        /* ── Table Header: larguras ────────────────────────── */
+        .cat-plh-handle  { width: 22px; flex-shrink: 0; }
+        .cat-plh-body    { flex: 1 1 0; min-width: 0; }
+        .cat-plh-meta    { width: 60px; flex-shrink: 0; text-align: right; }
+        .cat-plh-catmeta { width: 180px; flex-shrink: 0; text-align: right; }
+        .cat-plh-status  { width: 90px; flex-shrink: 0; }
+        .cat-plh-actions { width: 68px; flex-shrink: 0; }
+
+        /* ── Drag Handle ───────────────────────────────────── */
+        .cat-handle {
+            cursor: grab;
+            color: #c9cdd4;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            transition: color .15s;
+            padding: 4px 6px 4px 0;
+            width: 22px;
+        }
+        .cat-handle:hover { color: #6366f1; }
+        .mir-data-row.sortable-chosen .cat-handle { cursor: grabbing; }
+
+        /* ── Body ──────────────────────────────────────────── */
+        .cat-body { flex: 1 1 0; min-width: 0; }
+        .cat-name {
+            font-size: .875rem; font-weight: 600; color: #1a1d23;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+        .cat-slug {
+            font-size: .72rem; color: #9ca3af;
+            font-family: ui-monospace, monospace; margin-top: 1px;
+        }
+
+        /* ── Meta (parent categories) ──────────────────────── */
+        .cat-meta {
+            display: flex; align-items: center; gap: 8px;
+            flex-shrink: 0; width: 60px; justify-content: flex-end;
+        }
+
+        /* ── Meta (categories — pai + posts) ───────────────── */
+        .cat-catmeta {
+            display: flex; align-items: center; gap: 8px;
+            flex-shrink: 0; width: 180px; justify-content: flex-end;
+        }
+        .cat-no-parent { font-size: .75rem; color: #c4c8cf; }
+
+        /* ── Modal form grid ───────────────────────────────── */
+        .cat-modal-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+        .cat-modal-full { grid-column: 1 / -1; }
+
+        /* ── Sortable ──────────────────────────────────────── */
+        .sortable-ghost  { opacity: .4; background: #ede9fe !important; border-radius: 8px; }
+        .sortable-chosen { box-shadow: 0 4px 18px rgba(99,102,241,.18); border-radius: 8px; }
+    </style>
+
+
+    {{-- ================================================================ --}}
+    {{-- SCRIPTS: Toast + Sortable                                        --}}
     {{-- ================================================================ --}}
     @push('scripts')
     <script>
     /* ─── Toast ─────────────────────────────────────────────────────── */
     function catShowToast(type, message) {
         const container = document.getElementById('cat-toast-container');
-        const icons = { success: 'fa-check-circle', error: 'fa-exclamation-circle', info: 'fa-info-circle' };
+        const icons = { success: 'fa-circle-check', error: 'fa-circle-exclamation', info: 'fa-circle-info' };
         const toast = document.createElement('div');
         toast.className = `mir-toast mir-toast-${type}`;
         toast.innerHTML = `
-            <i class="fa ${icons[type] || icons.info} mir-toast-icon"></i>
+            <i class="fa-solid ${icons[type] || icons.info} mir-toast-icon"></i>
             <span class="mir-toast-msg">${message}</span>
         `;
         container.appendChild(toast);
@@ -809,7 +645,6 @@
     });
 
     function initCatSortable() {
-        // Categorias Pai
         const parentList = document.getElementById('sortable-parent-categories');
         if (parentList) {
             if (parentList._sortable) parentList._sortable.destroy();
@@ -828,7 +663,6 @@
             });
         }
 
-        // Categorias
         const catList = document.getElementById('sortable-categories');
         if (catList) {
             if (catList._sortable) catList._sortable.destroy();

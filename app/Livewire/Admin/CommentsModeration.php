@@ -16,6 +16,11 @@ class CommentsModeration extends Component
     public string $filterStatus = 'pending';
     public string $search       = '';
     public bool   $showTrash    = false;
+    public int    $perPage       = 10;
+
+    // Para o modal de exclusão
+    public ?int   $deletingCommentId    = null;
+    public string $deletingCommentBody  = '';
 
     // Para o modal de mute
     public bool   $muteModal    = false;
@@ -24,9 +29,10 @@ class CommentsModeration extends Component
     public bool   $muteLikes    = false;
     public bool   $muteComments = false;
 
-    public function updatingSearch(): void      { $this->resetPage(); }
+    public function updatingSearch(): void       { $this->resetPage(); }
     public function updatingFilterStatus(): void { $this->resetPage(); }
     public function updatingShowTrash(): void    { $this->resetPage(); }
+    public function updatingPerPage(): void      { $this->resetPage(); }
 
     // ─── Moderação ────────────────────────────────────────────────────────────
 
@@ -51,12 +57,27 @@ class CommentsModeration extends Component
         $this->dispatch('notify', type: 'warning', message: 'Comentário rejeitado.');
     }
 
-    public function destroy(int $id): void
+    public function prepareDelete(int $id): void
     {
         $comment = Comment::findOrFail($id);
+        $this->deletingCommentId   = $comment->id;
+        $this->deletingCommentBody = \Illuminate\Support\Str::limit($comment->body, 80);
+    }
+
+    public function cancelDelete(): void
+    {
+        $this->deletingCommentId   = null;
+        $this->deletingCommentBody = '';
+    }
+
+    public function destroy(): void
+    {
+        $comment = Comment::findOrFail($this->deletingCommentId);
         $this->authorizeComment($comment);
 
         $comment->delete();
+        $this->deletingCommentId   = null;
+        $this->deletingCommentBody = '';
         $this->dispatch('notify', type: 'success', message: 'Comentário removido.');
     }
 
@@ -149,7 +170,7 @@ class CommentsModeration extends Component
               ->orWhere('guest_name', 'like', '%' . $this->search . '%')
         )->latest();
 
-        $comments = $query->paginate(15);
+        $comments = $query->paginate($this->perPage);
 
         // Contadores — author só conta dos próprios posts
         $countQuery = fn($status) => Comment::where('status', $status)
@@ -157,17 +178,24 @@ class CommentsModeration extends Component
                 $q->whereHas('post', fn($q2) => $q2->where('author_id', $user->id))
             )->count();
 
+        $pendingCount  = $countQuery('pending');
+        $approvedCount = $countQuery('approved');
+        $rejectedCount = $countQuery('rejected');
+
         $trashCount = Comment::onlyTrashed()
             ->when(! $isOwner, fn($q) =>
                 $q->whereHas('post', fn($q2) => $q2->where('author_id', $user->id))
             )->count();
 
+        $totalCount = $pendingCount + $approvedCount + $rejectedCount;
+
         return view('livewire.admin.comments-moderation', [
             'comments'      => $comments,
-            'pendingCount'  => $countQuery('pending'),
-            'approvedCount' => $countQuery('approved'),
-            'rejectedCount' => $countQuery('rejected'),
+            'pendingCount'  => $pendingCount,
+            'approvedCount' => $approvedCount,
+            'rejectedCount' => $rejectedCount,
             'trashCount'    => $trashCount,
+            'totalCount'    => $totalCount,
             'isOwner'       => $isOwner,
         ]);
     }

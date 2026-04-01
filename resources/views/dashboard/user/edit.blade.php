@@ -1,129 +1,201 @@
 @extends('dashboard.master')
 @section('pageTitle', isset($pageTitle) ? $pageTitle : 'Editar Usuário')
 @section('content')
-<div class="main-container">
-    <div class="pd-ltr-20 xs-pd-20-10">
-        <div class="min-height-200px">
 
-            <div class="page-header">
-                <div class="row">
-                    <div class="col-md-6 col-sm-12">
-                        <div class="title"><h4>Editar Usuário</h4></div>
-                        <nav aria-label="breadcrumb">
-                            <ol class="breadcrumb">
-                                <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Home</a></li>
-                                <li class="breadcrumb-item"><a href="{{ route('admin.users.index') }}">Usuários</a></li>
-                                <li class="breadcrumb-item active">Editar</li>
-                            </ol>
-                        </nav>
+    <ul class="mir-breadcrumb">
+        <li class="mir-breadcrumb-item"><a href="{{ route('admin.dashboard') }}"><i class="fa-solid fa-house" style="font-size:.65rem"></i></a></li>
+        <li class="mir-breadcrumb-sep"><i class="fa-solid fa-chevron-right"></i></li>
+        <li class="mir-breadcrumb-item"><a href="{{ route('admin.users.index') }}">Usuários</a></li>
+        <li class="mir-breadcrumb-sep"><i class="fa-solid fa-chevron-right"></i></li>
+        <li class="mir-breadcrumb-item active">Editar</li>
+    </ul>
+
+    <!-- Page Header Action -->
+    <div class="page-header-action">
+        <div class="page-header-left">
+            <div class="page-header-title">Editar Usuário</div>
+            <div class="page-header-sub">Atualize os dados de {{ $user->name }}</div>
+        </div>
+        <div class="page-header-right">
+            <a href="{{ route('admin.users.index') }}" class="mir-btn-neutral">
+                <i class="fa-solid fa-arrow-left"></i> Voltar
+            </a>
+            <button type="button" class="mir-btn-primary-lg" onclick="document.getElementById('edit-user-form').submit()">
+                <i class="fa-solid fa-floppy-disk"></i> Salvar Alterações
+            </button>
+        </div>
+    </div>
+
+    @if ($errors->any())
+        <div class="warning-box" style="margin-bottom: 20px;">
+            <strong><i class="fa fa-exclamation-triangle"></i> Corrija os erros abaixo:</strong>
+            <ul>
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
+    <form action="{{ route('admin.users.update', $user) }}" method="POST" id="edit-user-form">
+        @csrf
+        @method('PUT')
+
+        {{-- Dados do Usuário --}}
+        <div class="post-section">
+            <div class="post-section-header">
+                <div class="section-icon-header">
+                    <span class="section-icon section-icon-indigo"><i class="fa-solid fa-user-pen"></i></span>
+                    <div>
+                        <div class="post-section-title">Dados do Usuário</div>
+                        <div class="post-section-sub">Informações básicas da conta</div>
                     </div>
                 </div>
             </div>
+            <div style="padding: 20px;">
+                <div class="row">
 
-            <div class="card-box mb-30">
-                <div class="pd-20">
-                    <h4 class="text-blue h4">Editando: {{ $user->name }}</h4>
+                    {{-- Nome --}}
+                    <div class="col-md-6 col-sm-12">
+                        <div class="form-group">
+                            <label class="mir-label">Nome <span class="mir-required">*</span></label>
+                            <input type="text" name="name"
+                                class="mir-input @error('name') is-invalid @enderror"
+                                value="{{ old('name', $user->name) }}">
+                            @error('name')
+                                <span class="invalid-feedback" style="display:block;">{{ $message }}</span>
+                            @enderror
+                        </div>
+                    </div>
+
+                    {{-- Username --}}
+                    <div class="col-md-6 col-sm-12">
+                        <div class="form-group">
+                            <label class="mir-label">Username <span class="mir-required">*</span></label>
+                            <input type="text" name="username"
+                                class="mir-input @error('username') is-invalid @enderror"
+                                value="{{ old('username', $user->username) }}">
+                            @error('username')
+                                <span class="invalid-feedback" style="display:block;">{{ $message }}</span>
+                            @enderror
+                        </div>
+                    </div>
+
+                    {{-- Email --}}
+                    <div class="col-md-6 col-sm-12">
+                        <div class="form-group">
+                            <label class="mir-label">Email <span class="mir-required">*</span></label>
+                            <input type="email" name="email"
+                                class="mir-input @error('email') is-invalid @enderror"
+                                value="{{ old('email', $user->email) }}">
+                            @error('email')
+                                <span class="invalid-feedback" style="display:block;">{{ $message }}</span>
+                            @enderror
+                        </div>
+                    </div>
+
+                    {{-- Role --}}
+                    @if(auth()->user()->isOwner())
+                    <div class="col-md-6 col-sm-12">
+                        <div class="form-group">
+                            <label class="mir-label">Role</label>
+                            <select name="role" class="mir-input @error('role') is-invalid @enderror">
+                                <option value="visitor" {{ $user->role->value == 'visitor' ? 'selected' : '' }}>Visitor</option>
+                                <option value="author"  {{ $user->role->value == 'author'  ? 'selected' : '' }}>Author</option>
+                                <option value="owner"   {{ $user->role->value == 'owner'   ? 'selected' : '' }}>Owner</option>
+                            </select>
+                            @error('role')
+                                <span class="invalid-feedback" style="display:block;">{{ $message }}</span>
+                            @enderror
+                        </div>
+                    </div>
+                    @endif
+
+                    {{-- Bio --}}
+                    <div class="col-12">
+                        <div class="form-group">
+                            <label class="mir-label">Bio</label>
+                            <textarea name="bio" rows="4"
+                                class="mir-input @error('bio') is-invalid @enderror"
+                                placeholder="Breve descrição...">{{ old('bio', $user->bio) }}</textarea>
+                            @error('bio')
+                                <span class="invalid-feedback" style="display:block;">{{ $message }}</span>
+                            @enderror
+                        </div>
+                    </div>
+
+                    {{-- Auto-aprovação de posts (somente para authors) --}}
+                    @if(auth()->user()->isOwner() && $user->isAuthor())
+                    <div class="col-12">
+                        <hr class="form-divider">
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <div class="mir-switch-wrap">
+                                <input type="hidden" name="auto_approve_posts" value="0">
+                                <input type="checkbox" name="auto_approve_posts" value="1" id="auto_approve_posts"
+                                    class="mir-switch-input"
+                                    {{ old('auto_approve_posts', $user->settings?->auto_approve_posts) ? 'checked' : '' }}>
+                                <label for="auto_approve_posts" class="mir-switch-label">
+                                    <span class="mir-switch-track"><span class="mir-switch-thumb"></span></span>
+                                    <span class="mir-switch-text">Aprovar posts automaticamente</span>
+                                </label>
+                            </div>
+                            <div style="margin-top: 6px; font-size: .75rem; color: #9ca3af;">
+                                Quando ativado, os posts deste author são publicados diretamente sem precisar de aprovação do admin.
+                            </div>
+                        </div>
+                    </div>
+                    @endif
+
                 </div>
-                <div class="pd-20">
-                    <form action="{{ route('admin.users.update', $user) }}" method="POST">
-                        @csrf
-                        @method('PUT')
 
-                        <div class="row">
-
-                            <div class="col-md-6 col-sm-12">
-                                <div class="form-group">
-                                    <label>Nome <span class="text-danger">*</span></label>
-                                    <input type="text" name="name"
-                                        class="form-control @error('name') is-invalid @enderror"
-                                        value="{{ old('name', $user->name) }}">
-                                    @error('name')<div class="invalid-feedback">{{ $message }}</div>@enderror
-                                </div>
-                            </div>
-
-                            <div class="col-md-6 col-sm-12">
-                                <div class="form-group">
-                                    <label>Username <span class="text-danger">*</span></label>
-                                    <input type="text" name="username"
-                                        class="form-control @error('username') is-invalid @enderror"
-                                        value="{{ old('username', $user->username) }}">
-                                    @error('username')<div class="invalid-feedback">{{ $message }}</div>@enderror
-                                </div>
-                            </div>
-
-                            <div class="col-md-6 col-sm-12">
-                                <div class="form-group">
-                                    <label>Email <span class="text-danger">*</span></label>
-                                    <input type="email" name="email"
-                                        class="form-control @error('email') is-invalid @enderror"
-                                        value="{{ old('email', $user->email) }}">
-                                    @error('email')<div class="invalid-feedback">{{ $message }}</div>@enderror
-                                </div>
-                            </div>
-
-                            @if(auth()->user()->isOwner())
-                            <div class="col-md-6 col-sm-12">
-                                <div class="form-group">
-                                    <label>Role</label>
-                                    <select name="role" class="form-control @error('role') is-invalid @enderror">
-                                        <option value="visitor" {{ $user->role->value == 'visitor' ? 'selected' : '' }}>Visitor</option>
-                                        <option value="author"  {{ $user->role->value == 'author'  ? 'selected' : '' }}>Author</option>
-                                        <option value="owner"   {{ $user->role->value == 'owner'   ? 'selected' : '' }}>Owner</option>
-                                    </select>
-                                    @error('role')<div class="invalid-feedback">{{ $message }}</div>@enderror
-                                </div>
-                            </div>
-                            @endif
-
-                            <div class="col-12">
-                                <div class="form-group">
-                                    <label>Bio</label>
-                                    <textarea name="bio" rows="4"
-                                        class="form-control @error('bio') is-invalid @enderror"
-                                        placeholder="Breve descrição...">{{ old('bio', $user->bio) }}</textarea>
-                                    @error('bio')<div class="invalid-feedback">{{ $message }}</div>@enderror
-                                </div>
-                            </div>
-
-                            {{-- Auto-aprovação de posts (somente para authors) --}}
-                            @if(auth()->user()->isOwner() && $user->isAuthor())
-                            <div class="col-12">
-                                <div class="card card-box mb-3" style="border-left: 4px solid #007bff;">
-                                    <div class="card-body py-3">
-                                        <h6 class="font-weight-bold mb-1">
-                                            ✅ Auto-aprovação de Posts
-                                        </h6>
-                                        <p class="text-muted small mb-2">
-                                            Quando ativado, os posts deste author são publicados diretamente sem precisar de aprovação do admin.
-                                        </p>
-                                        <div class="custom-control custom-switch">
-                                            <input type="checkbox"
-                                                   class="custom-control-input"
-                                                   id="autoApprovePosts"
-                                                   name="auto_approve_posts"
-                                                   value="1"
-                                                   {{ old('auto_approve_posts', $user->settings?->auto_approve_posts) ? 'checked' : '' }}>
-                                            <label class="custom-control-label" for="autoApprovePosts">
-                                                Publicar posts automaticamente (sem aprovação)
-                                            </label>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            @endif
-
-                        </div>
-
-                        <div class="form-group text-right">
-                            <a href="{{ route('admin.users.index') }}" class="btn btn-secondary mr-2">Cancelar</a>
-                            <button type="submit" class="btn btn-primary">Salvar Alterações</button>
-                        </div>
-
-                    </form>
+                {{-- Timestamps --}}
+                <div class="form-timestamps" style="margin-top: 16px;">
+                    <span>
+                        <i class="fa fa-calendar" style="width: 14px; color: #c4c9d4;"></i>
+                        Cadastrado em: {{ $user->created_at->format('d/m/Y \à\s H:i') }}
+                    </span>
+                    @if ($user->updated_at->ne($user->created_at))
+                        <span>
+                            <i class="fa fa-edit" style="width: 14px; color: #c4c9d4;"></i>
+                            Atualizado em: {{ $user->updated_at->format('d/m/Y \à\s H:i') }}
+                        </span>
+                    @endif
                 </div>
             </div>
-
         </div>
-    </div>
-</div>
+
+    </form>
+
 @endsection
+
+@push('stylesheets')
+<style>
+    .post-section {
+        background: #fff;
+        border-radius: 10px;
+        border: 1px solid #e9ecef;
+        box-shadow: 0 1px 4px rgba(0,0,0,.05);
+        margin-bottom: 24px;
+        overflow: hidden;
+    }
+    .post-section-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 16px 20px;
+        border-bottom: 1px solid #f0f0f0;
+        gap: 16px;
+    }
+    .post-section-title {
+        font-size: .95rem;
+        font-weight: 700;
+        color: #1a1d23;
+        margin: 0;
+    }
+    .post-section-sub {
+        font-size: .78rem;
+        color: #9ca3af;
+        margin: 2px 0 0;
+    }
+</style>
+@endpush
