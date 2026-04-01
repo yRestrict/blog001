@@ -15,7 +15,7 @@ Arruma sino da navbar
 dashboard->posts com titutlo grande corta ....
 hover do download popular 
 
-conteudo p modo dark nao esta funcionando 
+conteudo <p> modo dark nao esta funcionando 
 contreudo indo pra direta 
 
 
