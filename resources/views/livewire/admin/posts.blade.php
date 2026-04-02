@@ -182,7 +182,7 @@
                     {{-- Body --}}
                     <div class="post-body">
                         <div class="post-name">
-                            {{ $post->title }}
+                            <span class="post-name-text">{{ $post->title }}</span>
                             @if($post->featured)
                                 <span class="mir-badge-feat">
                                     <i class="fa-solid fa-star" style="font-size:.55rem"></i> Destaque
@@ -395,7 +395,14 @@
         .post-name {
             font-size: .875rem; font-weight: 600; color: #1a1d23;
             white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-            display: flex; align-items: center; gap: 6px;
+            display: flex; align-items: center; gap: 6px; min-width: 0;
+        }
+
+        .post-name-text {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            min-width: 0;
         }
         .post-info {
             font-size: .72rem; color: #9ca3af; margin-top: 2px;
