@@ -123,25 +123,40 @@
                     <div style="padding: 20px;">
                         <div class="form-group">
                             <label class="mir-label">Categoria <span class="mir-required">*</span></label>
-                            <select name="category_id"
-                                class="mir-input @error('category_id') is-invalid @enderror">
+
+                            {{-- Select original oculto (fonte dos dados) --}}
+                            <select id="cs-category-source" style="display:none">
                                 {!! $categorieshtml !!}
                             </select>
+                            {{-- Hidden que envia o valor junto com o form --}}
+                            <input type="hidden" name="category_id" id="cs-category-hidden"
+                                value="{{ old('category_id') }}">
+
+                            {{-- Custom Select UI --}}
+                            <div class="cs-wrap @error('category_id') cs-error @enderror" id="cs-category-wrap">
+                                <div class="cs-trigger" id="cs-category-trigger">
+                                    <span class="cs-trigger-text placeholder" id="cs-category-text">-- Selecione uma Categoria --</span>
+                                    <svg class="cs-arrow" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 6l4 4 4-4"/></svg>
+                                </div>
+                                <div class="cs-dropdown" id="cs-category-dropdown">
+                                    <div class="cs-search-wrap">
+                                        <svg class="cs-search-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5l2.5 2.5"/></svg>
+                                        <input class="cs-search" id="cs-category-search" placeholder="Buscar categoria..." autocomplete="off">
+                                    </div>
+                                    <div class="cs-list" id="cs-category-list"></div>
+                                </div>
+                            </div>
                             @error('category_id')<span class="invalid-feedback" style="display:block;">{{ $message }}</span>@enderror
                         </div>
 
                         <div class="form-group" style="position: relative;">
                             <label class="mir-label">Tags <span style="color:#9ca3af; font-weight:400;">(separe por vírgula)</span></label>
-                            <input type="text" id="tag-input" name="tags" class="mir-input"
-                                placeholder="Ex: LARAVEL, PHP" value="{{ old('tags') }}"
-                                autocomplete="off" style="text-transform: uppercase;">
-                            <ul id="tag-suggestions"
-                                style="display:none;position:absolute;z-index:1000;background:#fff;
-                                       border:1px solid #ced4da;border-top:none;width:100%;
-                                       max-height:200px;overflow-y:auto;list-style:none;
-                                       margin:0;padding:0;border-radius:0 0 4px 4px;
-                                       box-shadow:0 4px 12px rgba(0,0,0,.1);">
-                            </ul>
+                            {{-- Hidden que envia as tags --}}
+                            <input type="hidden" name="tags" id="tag-hidden" value="{{ old('tags') }}">
+                            <div class="ti-wrap" id="ti-wrap">
+                                <input class="ti-input" id="ti-real" placeholder="Ex: LARAVEL, PHP" autocomplete="off">
+                            </div>
+                            <div class="ti-suggestions" id="ti-suggestions"></div>
                         </div>
 
                         <hr class="form-divider">
@@ -248,9 +263,9 @@
     {{-- Modais do editor --}}
     @include('dashboard.post.inc.quill-modals')
 
+    @include('dashboard.post.inc.quill-scripts')
 @endsection
 
-@include('dashboard.post.inc.quill-scripts')
 
 @push('scripts')
 <script>

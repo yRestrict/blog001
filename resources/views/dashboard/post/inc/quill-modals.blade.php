@@ -1,9 +1,3 @@
-{{--
-    PARTIAL: quill-modals.blade.php
-    Inclua com @include('dashboard.partials.quill-modals') antes do @endsection('content')
-    O modal de imagem foi removido — agora o resize é feito direto no editor
-    via quill-image-resize-module (arrastar bordas + toolbar de alinhamento).
---}}
 
 {{-- ── Modal: Inserir Vídeo YouTube ──────────────────────────────────────────── --}}
 <div class="modal fade" id="quill-video-modal" tabindex="-1" role="dialog">

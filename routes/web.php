@@ -27,11 +27,6 @@ use App\Http\Controllers\Frontend\CommentController as FrontendCommentController
 use App\Http\Controllers\Dashboard\SearchController as DashboardSearchController;
 
 
-// ─── Páginas de teste ─────────────────────────────────────────────────────────
-Route::view('/exemple-page',   'exemple-page');
-Route::view('/exemple-auth',   'exemple-auth');
-Route::view('/exemple-menu',   'exemple-menu');
-Route::view('/exemple-master', 'exemple-master');
 
 // ─── Download público de mídia (sem auth, qualquer um pode baixar) ────────────
 Route::get('/media/download/{media}', [MediaController::class, 'download'])

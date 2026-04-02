@@ -12,7 +12,7 @@
             title="Notifications">
                 <i class="icon-copy dw dw-notification"></i>
                 @if($unreadCount > 0)
-                    <span class="badge notification-active">{{ $unreadCount > 99 ? '99+' : $unreadCount }}</span>
+                    <span class="badge notification-active"></span>
                 @endif
             </a>
 

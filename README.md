@@ -1,39 +1,31 @@
+Dashboard com titulo grande dar um jeito de corta (exem....)
+
+Comentarios muda o alerta de comentarios enviados para melhor identificação do usuario que estive comentando 
+Comentarios muda os icones do posts caso esteja ou nao mutado
 
 
-
-
-
-coloca sistema de log para quem esta logado entra mais facil no dashboard 
+FrontEnd coloca botao no dashboard ao lado do search para quem estiver conectado
 ....
 
-Custom Paginacao
-testa arquivo media para authoir
+Dashboard na parte de nav-bar quando voce dar logout ele e mostra uma mensagem, e pra deslogar direto
 
 
-Style Front
-Arruma sino da navbar 
-dashboard->posts com titutlo grande corta ....
-hover do download popular 
-
-conteudo <p> modo dark nao esta funcionando 
-contreudo indo pra direta 
+Perfil (Talvez) o livewire nao funcionar
 
 
+Header nesse novo parece que nao tenho controler dele, sempre escapa o antigo posso deixa pra testa 
 
 
+FrontEnd na sidebar "Downloads Populares" quando voce passa o mouse em cima o hove no modo dark, ele fica escuro 
 
 
-
-Dashboard -> Menu = arruma adicionar menu e padraonizar 
+Dashboard . FrontEnd caso eu exluia um pots que ja esteja ativo a muito tempo e foi exluido exibir um pagina (erro) 
 
 
 Seguranca
-Algo pra quando ficar 10 min fora do PC -> discoonecter
-Se eu digitar uma algo que tem existe na rotas no front ele retorna para inicio
 
 
 
+Dasubaord caso eu fiquei desconetado por mais 10,, apenas dar desconecaet direto 
 
-Sistema Prontos Front
-Pagina de menu = ok
-Pagina Categoria = ok
+Rotas sempre voltar um erro 

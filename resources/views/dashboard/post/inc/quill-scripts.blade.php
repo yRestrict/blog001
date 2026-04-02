@@ -2,6 +2,97 @@
     <link href="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.snow.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
     <style>
+        /* ── Custom Category Select ─────────────────────────────────────── */
+        .cs-wrap { position: relative; user-select: none; }
+        .cs-trigger {
+            display: flex; align-items: center; justify-content: space-between; gap: 8px;
+            padding: 0 12px; height: 42px; background: #fff;
+            border: 1px solid #d1d5db; border-radius: 6px;
+            cursor: pointer; transition: border-color .15s, box-shadow .15s;
+            font-size: 14px; color: #111827;
+        }
+        .cs-trigger:hover { border-color: #9ca3af; }
+        .cs-trigger.open { border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59,130,246,.15); }
+        .cs-trigger-text { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .cs-trigger-text.placeholder { color: #9ca3af; }
+        .cs-arrow { width: 16px; height: 16px; flex-shrink: 0; transition: transform .2s; color: #6b7280; }
+        .cs-trigger.open .cs-arrow { transform: rotate(180deg); }
+        .cs-dropdown {
+            position: absolute; top: calc(100% + 4px); left: 0; right: 0;
+            background: #fff; border: 1px solid #e5e7eb; border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0,0,0,.12); z-index: 9999;
+            overflow: hidden; display: none; animation: cs-fade .12s ease;
+        }
+        .cs-dropdown.open { display: block; }
+        @keyframes cs-fade { from { opacity:0; transform:translateY(-4px); } to { opacity:1; transform:translateY(0); } }
+        .cs-search-wrap { padding: 8px; border-bottom: 1px solid #f3f4f6; position: relative; }
+        .cs-search-icon { position: absolute; left: 20px; top: 50%; transform: translateY(-50%); width: 14px; height: 14px; color: #9ca3af; pointer-events: none; }
+        .cs-search {
+            width: 100%; height: 34px; padding: 0 10px 0 32px;
+            border: 1px solid #e5e7eb; border-radius: 6px;
+            font-size: 13px; background: #f9fafb; color: #111827; outline: none;
+            transition: border-color .15s;
+        }
+        .cs-search:focus { border-color: #3b82f6; background: #fff; }
+        .cs-list { max-height: 220px; overflow-y: auto; padding: 4px; }
+        .cs-list::-webkit-scrollbar { width: 4px; }
+        .cs-list::-webkit-scrollbar-thumb { background: #e5e7eb; border-radius: 4px; }
+        .cs-group-label {
+            padding: 8px 10px 4px; font-size: 11px; font-weight: 600;
+            letter-spacing: .07em; text-transform: uppercase; color: #9ca3af;
+        }
+        .cs-option {
+            display: flex; align-items: center; gap: 8px;
+            padding: 8px 10px; border-radius: 6px; font-size: 14px;
+            cursor: pointer; color: #374151; transition: background .1s;
+        }
+        .cs-option:hover { background: #f3f4f6; }
+        .cs-option.selected { background: #eff6ff; color: #1d4ed8; font-weight: 500; }
+        .cs-check { width: 14px; height: 14px; opacity: 0; color: #3b82f6; flex-shrink: 0; }
+        .cs-option.selected .cs-check { opacity: 1; }
+        .cs-empty { padding: 20px; text-align: center; font-size: 13px; color: #9ca3af; }
+        .cs-error .cs-trigger { border-color: #ef4444 !important; }
+        .invalid-feedback { display: block; font-size: .875em; color: #dc3545; margin-top: 4px; }
+
+        /* ── Tag Input ──────────────────────────────────────────────────── */
+        .ti-wrap {
+            min-height: 42px; display: flex; flex-wrap: wrap; align-items: center;
+            gap: 6px; padding: 6px 10px; background: #fff;
+            border: 1px solid #d1d5db; border-radius: 6px;
+            cursor: text; transition: border-color .15s, box-shadow .15s;
+        }
+        .ti-wrap:focus-within { border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59,130,246,.15); }
+        .ti-tag {
+            display: inline-flex; align-items: center; gap: 5px;
+            padding: 3px 8px 3px 10px; background: #eff6ff; color: #1d4ed8;
+            border-radius: 20px; font-size: 12px; font-weight: 500;
+            letter-spacing: .02em; animation: tag-pop .15s ease;
+        }
+        @keyframes tag-pop { from { opacity:0; transform:scale(.85); } to { opacity:1; transform:scale(1); } }
+        .ti-tag-remove {
+            display: flex; align-items: center; justify-content: center;
+            width: 14px; height: 14px; border-radius: 50%;
+            background: rgba(29,78,216,.15); cursor: pointer;
+            transition: background .1s; color: #1d4ed8; font-size: 10px; line-height: 1;
+        }
+        .ti-tag-remove:hover { background: rgba(29,78,216,.35); }
+        .ti-input {
+            flex: 1; min-width: 80px; border: none; outline: none;
+            background: transparent; font-size: 14px; color: #111827;
+            font-family: inherit; text-transform: uppercase;
+        }
+        .ti-input::placeholder { color: #9ca3af; text-transform: none; }
+        .ti-suggestions {
+            position: absolute; top: calc(100% + 4px); left: 0; right: 0;
+            background: #fff; border: 1px solid #e5e7eb; border-radius: 8px;
+            box-shadow: 0 8px 24px rgba(0,0,0,.1); z-index: 9999;
+            overflow: hidden; display: none;
+        }
+        .ti-suggestion {
+            padding: 9px 12px; font-size: 14px; cursor: pointer;
+            color: #374151; transition: background .1s;
+        }
+        .ti-suggestion:hover, .ti-suggestion.active { background: #f3f4f6; }
         #quill-editor         { font-size: 15px; background: #fff; }
         #quill-editor .ql-editor { min-height: 420px; }
         .ql-toolbar.ql-snow   { border-radius: 4px 4px 0 0; }
@@ -49,6 +140,8 @@ window.hljs.configure({
 // ── Registra módulos ─────────────────────────────────────────────────────────
 Quill.register('modules/imageResize', window.QuillResizeImage);
 
+
+
 // ── Instancia o Quill com syntax highlighting via hljs ──────────────────────
 const quill = new Quill('#quill-editor', {
     theme: 'snow',
@@ -66,12 +159,29 @@ const quill = new Quill('#quill-editor', {
                 ['link','image','video'],
                 ['clean'],
             ],
-            handlers: { image: imageHandler, video: videoHandler },
+            handlers: { image: imageHandler, video: videoHandler, 'code-block': codeBlockHandler,},
         },
-        syntax: { hljs: window.hljs },
+        syntax: true,
         imageResize: {},
     },
 });
+
+function codeBlockHandler() {
+    const wasActive = !!quill.getFormat()['code-block'];
+    quill.format('code-block', !wasActive);
+
+    if (!wasActive) {
+        setTimeout(() => {
+            quill.root.querySelectorAll('.ql-code-block-container').forEach(container => {
+                const select = container.querySelector('select.ql-ui');
+                if (select && !select.value) {
+                    select.value = 'php';
+                    select.dispatchEvent(new Event('change'));
+                }
+            });
+        }, 50);
+    }
+}
 
 // ── Upload de imagem para o servidor ──────────────────────────────────────────
 function imageHandler() {
@@ -108,7 +218,8 @@ function videoHandler() {
     $('#quill-video-modal').modal('show');
 }
 
-document.getElementById('yt-apply-btn').addEventListener('click', function () {
+const ytApplyBtn = document.getElementById('yt-apply-btn');
+if (ytApplyBtn) ytApplyBtn.addEventListener('click', function () {
     const url    = document.getElementById('yt-url-input').value.trim();
     const width  = document.getElementById('yt-width-input').value.trim()  || '100%';
     const height = document.getElementById('yt-height-input').value.trim() || '400px';
@@ -142,12 +253,19 @@ function toYoutubeEmbed(url) {
 }
 
 // ── Sincroniza Quill → hidden input antes de submeter ─────────────────────────
-document.getElementById('post-form').addEventListener('submit', function () {
-    document.getElementById('content-input').value = quill.root.innerHTML;
-});
+const postForm = document.getElementById('post-form');
+if (postForm) {
+    postForm.addEventListener('submit', function (e) {
+        // Conteúdo do Quill — envia vazio se só tiver <p><br></p>
+        const html = quill.root.innerHTML;
+        const isEmpty = html === '<p><br></p>' || html.trim() === '';
+        document.getElementById('content-input').value = isEmpty ? '' : html;
+    });
+}
 
 // ── Preview imagem destacada ──────────────────────────────────────────────────
-document.getElementById('featured-image-input').addEventListener('change', function (e) {
+const featuredImageInput = document.getElementById('featured-image-input');
+if (featuredImageInput) featuredImageInput.addEventListener('change', function (e) {
     const file = e.target.files[0];
     if (!file) return;
     const reader = new FileReader();
@@ -158,72 +276,186 @@ document.getElementById('featured-image-input').addEventListener('change', funct
     reader.readAsDataURL(file);
 });
 
-// ── Autocomplete tags ─────────────────────────────────────────────────────────
+// ── Custom Category Select ────────────────────────────────────────────────────
 (function () {
-    const input       = document.getElementById('tag-input');
-    const suggestions = document.getElementById('tag-suggestions');
-    const searchUrl   = "{{ route('admin.tags.tags.search') }}";
+    const wrap     = document.getElementById('cs-category-wrap');
+    if (!wrap) return;
+    const trigger  = document.getElementById('cs-category-trigger');
+    const dropdown = document.getElementById('cs-category-dropdown');
+    const search   = document.getElementById('cs-category-search');
+    const list     = document.getElementById('cs-category-list');
+    const txt      = document.getElementById('cs-category-text');
+    const hidden   = document.getElementById('cs-category-hidden');
+
+    // Parse options from the original <select> rendered by Blade
+    const origSelect = document.getElementById('cs-category-source');
+    if (!origSelect) return;
+
+    // Lê o valor do hidden (preenchido pelo Blade com old() ou $post->category_id)
+    const initValue = hidden.value || '';
+    if (initValue) origSelect.value = initValue;
+    const initOption = Array.from(origSelect.options).find(o => o.value == initValue);
+    let selected = { value: initValue, label: initOption?.text || '' };
+
+    // Build grouped structure from <optgroup> / <option>
+    function getGroups() {
+        const groups = [];
+        Array.from(origSelect.children).forEach(el => {
+            if (el.tagName === 'OPTGROUP') {
+                groups.push({ group: el.label, items: Array.from(el.children).map(o => ({ value: o.value, label: o.text })) });
+            } else if (el.tagName === 'OPTION' && el.value) {
+                groups.push({ group: null, items: [{ value: el.value, label: el.text }] });
+            }
+        });
+        return groups;
+    }
+
+    function renderList(filter) {
+        list.innerHTML = '';
+        filter = (filter || '').toLowerCase();
+        let any = false;
+        getGroups().forEach(g => {
+            const items = g.items.filter(i => i.label.toLowerCase().includes(filter));
+            if (!items.length) return;
+            any = true;
+            if (g.group) {
+                const gl = document.createElement('div');
+                gl.className = 'cs-group-label';
+                gl.textContent = g.group;
+                list.appendChild(gl);
+            }
+            items.forEach(item => {
+                const opt = document.createElement('div');
+                opt.className = 'cs-option' + (selected.value === item.value ? ' selected' : '');
+                opt.innerHTML = `<svg class="cs-check" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 7l3.5 3.5L12 3"/></svg><span>${item.label}</span>`;
+                opt.addEventListener('click', () => {
+                    selected = item;
+                    txt.textContent = item.label;
+                    txt.classList.remove('placeholder');
+                    hidden.value = item.value;
+                    origSelect.value = item.value;
+                    trigger.classList.remove('open');
+                    dropdown.classList.remove('open');
+                    renderList();
+                });
+                list.appendChild(opt);
+            });
+        });
+        if (!any) list.innerHTML = '<div class="cs-empty">Nenhuma categoria encontrada</div>';
+    }
+
+    // Init label
+    if (selected.value && selected.label && selected.label.trim() !== '-- Selecione uma Categoria --') {
+        txt.textContent = selected.label;
+        txt.classList.remove('placeholder');
+        hidden.value = selected.value;
+    }
+    renderList();
+
+    trigger.addEventListener('click', e => {
+        e.stopPropagation();
+        const open = dropdown.classList.toggle('open');
+        trigger.classList.toggle('open', open);
+        if (open) { search.value = ''; renderList(); setTimeout(() => search.focus(), 50); }
+    });
+    search.addEventListener('input', () => renderList(search.value));
+    document.addEventListener('click', e => {
+        if (!wrap.contains(e.target)) { dropdown.classList.remove('open'); trigger.classList.remove('open'); }
+    });
+})();
+
+// ── Tag Input com chips ───────────────────────────────────────────────────────
+(function () {
+    const tiWrap   = document.getElementById('ti-wrap');
+    const tiInput  = document.getElementById('ti-real');
+    const tiSug    = document.getElementById('ti-suggestions');
+    const tiHidden = document.getElementById('tag-hidden');
+    const searchUrl = "{{ route('admin.tags.tags.search') }}";
+    if (!tiWrap) return;
+
+    // Parse initial tags from hidden input
+    let tags = (tiHidden.value || '').split(',').map(t => t.trim().toUpperCase()).filter(Boolean);
+    let activeIdx = -1;
     let timer = null;
 
-    input.addEventListener('input', function () {
-        const pos = this.selectionStart;
-        this.value = this.value.toUpperCase();
-        this.setSelectionRange(pos, pos);
-        clearTimeout(timer);
-        timer = setTimeout(fetchSuggestions, 250);
-    });
-
-    function fetchSuggestions() {
-        const parts = input.value.split(',');
-        const last  = parts[parts.length - 1].trim();
-        if (!last) { hide(); return; }
-        fetch(searchUrl + '?q=' + encodeURIComponent(last))
-            .then(r => r.json()).then(tags => render(tags, parts)).catch(hide);
+    function syncHidden() {
+        tiHidden.value = tags.join(', ');
     }
 
-    function render(tags, parts) {
-        suggestions.innerHTML = '';
-        const used     = parts.slice(0, -1).map(t => t.trim().toUpperCase());
-        const filtered = tags.filter(t => !used.includes(t.toUpperCase()));
-        if (!filtered.length) { hide(); return; }
-        filtered.forEach(tag => {
-            const li = document.createElement('li');
-            li.textContent   = tag;
-            li.style.cssText = 'padding:8px 12px;cursor:pointer;font-size:.875rem;';
-            li.addEventListener('mouseenter', () => li.style.background = '#f3f4f6');
-            li.addEventListener('mouseleave', () => li.style.background = '');
-            li.addEventListener('mousedown',  e  => { e.preventDefault(); pick(tag, parts); });
-            suggestions.appendChild(li);
+    function addTag(val) {
+        val = val.trim().toUpperCase();
+        if (val && !tags.includes(val)) { tags.push(val); renderTags(); syncHidden(); }
+        tiInput.value = '';
+        hideSug();
+    }
+
+    function renderTags() {
+        tiWrap.querySelectorAll('.ti-tag').forEach(e => e.remove());
+        tags.forEach(t => {
+            const tag = document.createElement('span');
+            tag.className = 'ti-tag';
+            tag.innerHTML = `${t}<span class="ti-tag-remove" data-tag="${t}">✕</span>`;
+            tiWrap.insertBefore(tag, tiInput);
         });
-        suggestions.style.display = 'block';
+        tiWrap.querySelectorAll('.ti-tag-remove').forEach(btn => {
+            btn.addEventListener('click', e => {
+                e.stopPropagation();
+                tags = tags.filter(t => t !== btn.dataset.tag);
+                renderTags(); syncHidden();
+            });
+        });
     }
 
-    function pick(tag, parts) {
-        parts[parts.length - 1] = ' ' + tag;
-        input.value = parts.join(',').replace(/^,\s*/, '') + ', ';
-        hide(); input.focus();
+    function showSug(q) {
+        clearTimeout(timer);
+        timer = setTimeout(() => {
+            if (!q) { hideSug(); return; }
+            fetch(searchUrl + '?q=' + encodeURIComponent(q))
+                .then(r => r.json())
+                .then(results => {
+                    const filtered = results.filter(t => !tags.includes(t.toUpperCase())).slice(0, 6);
+                    if (!filtered.length) { hideSug(); return; }
+                    tiSug.innerHTML = '';
+                    filtered.forEach((t, i) => {
+                        const d = document.createElement('div');
+                        d.className = 'ti-suggestion';
+                        d.textContent = t;
+                        d.addEventListener('mousedown', e => { e.preventDefault(); addTag(t); tiInput.focus(); });
+                        tiSug.appendChild(d);
+                    });
+                    tiSug.style.display = 'block';
+                    activeIdx = -1;
+                })
+                .catch(hideSug);
+        }, 200);
     }
 
-    document.addEventListener('click', e => {
-        if (!input.contains(e.target) && !suggestions.contains(e.target)) hide();
+    function hideSug() { tiSug.style.display = 'none'; tiSug.innerHTML = ''; activeIdx = -1; }
+
+    tiInput.addEventListener('input', function () {
+        const v = this.value.toUpperCase();
+        this.value = v;
+        if (v.endsWith(',')) { addTag(v.slice(0, -1)); return; }
+        showSug(v.trim());
     });
 
-    input.addEventListener('keydown', function (e) {
-        const items  = suggestions.querySelectorAll('li');
-        const active = suggestions.querySelector('li.active');
-        const idx    = Array.from(items).indexOf(active);
-        if (e.key === 'ArrowDown') { e.preventDefault(); setActive(items[idx+1] || items[0]); }
-        if (e.key === 'ArrowUp')   { e.preventDefault(); setActive(items[idx-1] || items[items.length-1]); }
-        if (e.key === 'Enter' && active) { e.preventDefault(); pick(active.textContent, input.value.split(',')); }
-        if (e.key === 'Escape') hide();
+    tiInput.addEventListener('keydown', function (e) {
+        const items = tiSug.querySelectorAll('.ti-suggestion');
+        if (e.key === 'Enter' || e.key === ',') {
+            e.preventDefault();
+            if (activeIdx >= 0 && items[activeIdx]) addTag(items[activeIdx].textContent);
+            else if (this.value.trim()) addTag(this.value);
+        }
+        if (e.key === 'ArrowDown') { e.preventDefault(); activeIdx = Math.min(activeIdx + 1, items.length - 1); items.forEach((el, i) => el.classList.toggle('active', i === activeIdx)); }
+        if (e.key === 'ArrowUp')   { e.preventDefault(); activeIdx = Math.max(activeIdx - 1, 0); items.forEach((el, i) => el.classList.toggle('active', i === activeIdx)); }
+        if (e.key === 'Backspace' && !this.value && tags.length) { tags.pop(); renderTags(); syncHidden(); }
+        if (e.key === 'Escape') hideSug();
     });
 
-    function setActive(el) {
-        suggestions.querySelectorAll('li').forEach(l => { l.classList.remove('active'); l.style.background=''; });
-        if (el) { el.classList.add('active'); el.style.background='#ede9fe'; }
-    }
+    tiWrap.addEventListener('click', () => tiInput.focus());
+    document.addEventListener('click', e => { if (!tiWrap.contains(e.target) && !tiSug.contains(e.target)) hideSug(); });
 
-    function hide() { suggestions.style.display='none'; suggestions.innerHTML=''; }
+    renderTags();
 })();
 </script>
 @endpush

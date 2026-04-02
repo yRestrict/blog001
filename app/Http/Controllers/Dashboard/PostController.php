@@ -22,6 +22,7 @@ class PostController extends Controller
             'pageTitle'    => 'Posts',
             'pendingCount' => Post::where('status', 'pending_review')->count(),
         ]);
+        
     }
 
     public function postCreate()
@@ -86,6 +87,8 @@ class PostController extends Controller
             'categorieshtml' => $this->buildCategoriesHtml($post->category_id),
             'currentTags'    => $post->tags->pluck('name')->implode(', '),
         ]);
+
+        
     }
 
     public function postUpdate(Request $request, Post $post)
