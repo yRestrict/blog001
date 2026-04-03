@@ -36,6 +36,7 @@
     }
     </style>
 
-<div class="mir-footer">DeskApp - Bootstrap 4 Admin Template By 
-    <a href="https://github.com/dropways" target="_blank">Laara</a>
+<div class="mir-footer">
+    DeskApp - Refeito por 
+    <a href="https://github.com/PatrickGrilanda" target="_blank" rel="noopener noreferrer">Patrick Grilanda</a>
 </div>
