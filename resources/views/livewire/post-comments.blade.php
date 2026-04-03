@@ -5,12 +5,6 @@
                 <i class="las la-comment-slash"></i> Os comentários estão desativados neste post.
             </div>
         @else
-            @if ($submitted)
-                <div class="alert alert-success contact_msg rounded-0 mb-4">
-                    <i class="las la-check-circle"></i>
-                    Seu comentário foi enviado e aguarda aprovação. Obrigado!
-                </div>
-            @endif
             @if ($comments->count() > 0)
                 <h4><i class="fa fa-comments"></i> {{ $comments->count() }} {{ $comments->count() === 1 ? 'Comentário' : 'Comentários' }}</h4>
     
@@ -58,15 +52,13 @@
                             </p>
 
                             @if ($replyingTo !== $comment->id)
-                                <a href="#"
-                                wire:click.prevent="startReply({{ $comment->id }}, '{{ addslashes($comment->author_name) }}')"
-                                class="btn btn-sm btn-outline-secondary">
+                                <a href="#" wire:click.prevent="startReply({{ $comment->id }}, '{{ addslashes($comment->author_name) }}')" class="btn-reply">
                                     <i class="fa fa-reply"></i> Responder
                                 </a>
                             @endif
 
                             @if ($replyingTo === $comment->id)
-                                @include('livewire.frontend.reply-form')
+                                @include('livewire.frontend.reply-form', ['replyAuthorName' => $replyAuthorName])
                             @endif
 
                         </div>
@@ -125,7 +117,7 @@
                                                 @if ($replyingTo !== $reply->id)
                                                     <a href="#"
                                                        wire:click.prevent="startReply({{ $reply->id }}, '{{ addslashes($reply->author_name) }}')"
-                                                       class="btn btn-sm btn-outline-secondary">
+                                                       class="btn-reply">
                                                         <i class="fa fa-reply"></i> Responder
                                                     </a>
                                                 @endif
@@ -211,6 +203,16 @@
                                     <span class="invalid-feedback">{{ $message }}</span>
                                 @enderror
                             </div>
+                            @if ($submitted)
+                                <div class="alert alert-success contact_msg rounded-0 mb-4">
+                                    <i class="las la-check-circle"></i>
+                                    @if (auth()->check() && (auth()->user()->isOwner() || auth()->user()->isAuthor() && $post->author_id === auth()->id()))
+                                        Comentário publicado com sucesso!
+                                    @else
+                                        Seu comentário foi enviado e aguarda aprovação. Obrigado!
+                                    @endif
+                                </div>
+                            @endif
 
                         </div>
 

@@ -1,6 +1,7 @@
 <div class="comment-reply-form mt-3">
-    <h6><i class="las la-reply"></i> Respondendo a <strong>{{ $replyingToName }}</strong></h6>
+    <h6><i class="las la-reply"></i> Respondendo a <strong>{{ $replyAuthorName }}</strong></h6>
     <div class="row">
+
         @guest
             <div class="col-md-12">
                 <div class="form-group">
@@ -27,13 +28,27 @@
             </div>
         </div>
 
+        @if ($replySubmitted)
+            <div class="col-md-12">
+                <div class="alert alert-success rounded-0 mt-2 mb-3">
+                    <i class="las la-check-circle"></i>
+                    @if (auth()->check() && (auth()->user()->isOwner() || (auth()->user()->isAuthor() && $post->author_id === auth()->id())))
+                        Resposta publicada com sucesso!
+                    @else
+                        Sua resposta foi enviada e aguarda aprovação. Obrigado!
+                    @endif
+                </div>
+            </div>
+        @endif
+
         <div class="col-lg-12">
-            <button wire:click="submitReply()" class="btn-custom mr-2">
+            <button wire:click="submitReply()" class="btn btn-sm btn-primary mr-2">
                 <i class="las la-paper-plane"></i> Enviar
             </button>
-            <a href="#" wire:click.prevent="cancelReply()" class="btn-reply">
+            <a href="#" wire:click.prevent="cancelReply()" class="btn btn-sm btn-outline-secondary">
                 Cancelar
             </a>
         </div>
+
     </div>
 </div>

@@ -12,14 +12,18 @@ class PostComments extends Component
 {
     public Post $post;
 
-    public string $name  = '';
-    public string $email = '';
-    public string $body  = '';
+    // ─── Comentário principal ─────────────────────────────────────────────────
+    public string $name      = '';
+    public string $email     = '';
+    public string $body      = '';
     public bool   $submitted = false;
 
+    // ─── Reply ───────────────────────────────────────────────────────────────
     public ?int   $replyingTo      = null;
     public string $replyAuthorName = '';
     public string $replyBody       = '';
+    public string $replyGuestName  = '';
+    public bool   $replySubmitted  = false;
 
     public function mount(Post $post): void
     {
@@ -69,23 +73,28 @@ class PostComments extends Component
         $this->replyingTo      = $commentId;
         $this->replyAuthorName = $authorName;
         $this->replyBody       = '';
+        $this->replyGuestName  = '';
+        $this->replySubmitted  = false;
     }
 
     public function cancelReply(): void
     {
-        $this->replyingTo = null;
-        $this->replyBody  = '';
+        $this->replyingTo     = null;
+        $this->replyBody      = '';
+        $this->replyGuestName = '';
+        $this->replySubmitted = false;
     }
 
     public function submitReply(): void
     {
         if (Auth::check()) {
-            $this->validate(['replyBody' => 'required|string|min:3|max:2000']);
-            $this->name = Auth::user()->name;
+            $this->validate([
+                'replyBody' => 'required|string|min:3|max:2000',
+            ]);
         } else {
             $this->validate([
-                'name'      => 'required|string|max:100',
-                'replyBody' => 'required|string|min:3|max:2000',
+                'replyGuestName' => 'required|string|max:100',
+                'replyBody'      => 'required|string|min:3|max:2000',
             ]);
         }
 
@@ -96,7 +105,7 @@ class PostComments extends Component
         $reply = $this->post->comments()->create([
             'user_id'     => Auth::id(),
             'parent_id'   => $parentId,
-            'guest_name'  => Auth::check() ? null : $this->name,
+            'guest_name'  => Auth::check() ? null : $this->replyGuestName,
             'guest_email' => Auth::check() ? null : $this->email,
             'body'        => $this->replyBody,
             'status'      => $status,
@@ -107,9 +116,10 @@ class PostComments extends Component
             NewCommentNotification::dispatch($reply);
         }
 
-        $this->replyingTo = null;
-        $this->replyBody  = '';
-        $this->submitted  = true;
+        $this->replyBody      = '';
+        $this->replyGuestName = '';
+        $this->replySubmitted = true;
+        $this->submitted      = false;
     }
 
     public function render()

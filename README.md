@@ -1,11 +1,3 @@
-
-FrontEND Comentarios muda o alerta de comentarios enviados para melhor identificação do usuario que estive comentando
-FrontEnd coloca botao no dashboard ao lado do search para quem estiver conectado
-FrontEnd na sidebar "Downloads Populares" quando voce passa o mouse em cima o hove no modo dark, ele fica escuro 
-
-
-
-
 ....
 
 Dashboard Comentarios muda os icones do posts caso esteja ou nao mutado
@@ -26,3 +18,7 @@ Rotas sempre voltar um erro
 
 
 Teste_> Rotas
+
+
+Route 
+Criar regras para os authores que foi completamento esquecido 

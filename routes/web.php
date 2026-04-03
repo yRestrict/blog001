@@ -73,6 +73,21 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('/update-personal-picture',[ProfileController::class,        'UpdateProfilePicture'])->name('update_profile_picture');
         Route::get('/search',                  [DashboardSearchController::class, 'index'])->name('search');
 
+        Route::prefix('tags')->name('tags.')->group(function () {
+            Route::get('/search', [PostController::class, 'searchTags'])->name('tags.search');
+            Route::get('/',       [TagController::class,  'index'])->name('index');
+        });
+
+        Route::prefix('categories')->name('categories.')->group(function () {
+            Route::get('/',       [CategoryController::class, 'categoriesPage'])->name('index');
+            Route::get('/trash',  [CategoryController::class, 'categoriesTrash'])->name('trash');
+        });
+
+        // Comentários
+        Route::prefix('comments')->name('comments.')->group(function () {
+            Route::get('/', [CommentController::class, 'index'])->name('index');
+        });
+
 
         // ── Owner ─────────────────────────────────────────────────────────────
         Route::middleware(['role:owner'])->group(function () {
@@ -81,12 +96,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
             // Mídia
             Route::get('/media', [DashboardMediaController::class, 'index'])->name('media');
-
-            // Categorias
-            Route::prefix('categories')->name('categories.')->group(function () {
-                Route::get('/',       [CategoryController::class, 'categoriesPage'])->name('index');
-                Route::get('/trash',  [CategoryController::class, 'categoriesTrash'])->name('trash');
-            });
+            
 
             // Sidebar
             Route::prefix('sidebar')->name('sidebar.')->group(function () {
@@ -109,17 +119,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
                 Route::patch('/{post}/approve', [PostController::class, 'approvePost'])->name('approve');
                 Route::patch('/{post}/reject',  [PostController::class, 'rejectPost'])->name('reject');
             });
+            
 
-            // Tags
-            Route::prefix('tags')->name('tags.')->group(function () {
-                Route::get('/search', [PostController::class, 'searchTags'])->name('tags.search');
-                Route::get('/',       [TagController::class,  'index'])->name('index');
-            });
-
-            // Comentários
-            Route::prefix('comments')->name('comments.')->group(function () {
-                Route::get('/', [CommentController::class, 'index'])->name('index');
-            });
+            
 
             // Configurações
             Route::get('/settings', [SettingController::class, 'generalSettings'])->name('settings');
