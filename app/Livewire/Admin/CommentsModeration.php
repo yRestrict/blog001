@@ -16,7 +16,7 @@ class CommentsModeration extends Component
 {
     use WithPagination;
 
-    public string $filterStatus  = '';
+    public string $filterStatus  = 'pending';
     public string $search        = '';
     public bool   $showTrash     = false;
     public int    $perPage       = 10;
