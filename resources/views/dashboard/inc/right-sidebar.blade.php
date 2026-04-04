@@ -47,16 +47,14 @@
                     </ul>
                 </li>
 
-                <li class="dropdown {{ Route::is('admin.comments.*') ? 'active' : '' }}">
-                    <a href="javascript:;" class="dropdown-toggle">
-                        <span class="micon fa fa-comments"></span>
-                        <span class="mtext">Comentários</span>
+
+
+                <li>
+                    <a href="{{ route('admin.comments.index') }}"
+                    class="dropdown-toggle no-arrow {{ Route::is('admin.comments.index') ? 'active' : '' }}">
+                        <span class="micon fa fa-tags"></span>
+                        <span class="mtext">Comentarios</span>
                     </a>
-                    <ul class="submenu">
-                        <li><a href="{{ route('admin.comments.index') }}" class="{{ Route::is('admin.comments.index') ? 'active' : '' }}"><i class="fa fa-comment sub-icon"></i> Comentários</a></li>
-                        {{-- Rota ainda não implementada --}}
-                        {{-- <li><a href=""><i class="fa fa-ban sub-icon"></i> Reprovados</a></li> --}}
-                    </ul>
                 </li>
 
                 <li class="dropdown {{ Route::is('admin.categories.*') ? 'active' : '' }}">
