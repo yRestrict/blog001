@@ -26,7 +26,6 @@ class MediaLibrary extends Component
     // ── Confirmação de delete ─────────────────────────────────────────────────
     public ?int $confirmDeleteId = null;
 
-    // ── Extensões aceitas ─────────────────────────────────────────────────────
     const ALLOWED_EXTENSIONS = [
         'jpg','jpeg','png','gif','webp','svg',
         'pdf','doc','docx','txt',
@@ -38,20 +37,39 @@ class MediaLibrary extends Component
 
     protected $queryString = ['search', 'filterExt'];
 
-    public function updatingSearch(): void  { $this->resetPage(); }
+    public function updatingSearch(): void    { $this->resetPage(); }
     public function updatingFilterExt(): void { $this->resetPage(); }
 
+    // ── Helpers de permissão ──────────────────────────────────────────────────
+
+    private function canUploadOrDelete(): bool
+    {
+        $user = Auth::user();
+        return $user->isOwner() || $user->autoApprovePosts();
+    }
+
     // ── Upload ────────────────────────────────────────────────────────────────
+
     public function openUpload(): void
     {
-        $this->uploadedFiles = [];
+        if (! $this->canUploadOrDelete()) {
+            $this->dispatch('notify', type: 'error', message: 'Você não tem permissão para enviar arquivos.');
+            return;
+        }
+
+        $this->uploadedFiles   = [];
         $this->showUploadModal = true;
     }
 
     public function saveUpload(): void
     {
+        if (! $this->canUploadOrDelete()) {
+            $this->dispatch('notify', type: 'error', message: 'Você não tem permissão para enviar arquivos.');
+            return;
+        }
+
         $this->validate([
-            'uploadedFiles.*' => 'file|max:204800', // 200MB por arquivo
+            'uploadedFiles.*' => 'file|max:204800',
         ], [
             'uploadedFiles.*.file' => 'Arquivo inválido.',
             'uploadedFiles.*.max'  => 'Tamanho máximo: 200MB.',
@@ -80,8 +98,14 @@ class MediaLibrary extends Component
     }
 
     // ── Delete ────────────────────────────────────────────────────────────────
+
     public function confirmDelete(int $id): void
     {
+        if (! $this->canUploadOrDelete()) {
+            $this->dispatch('notify', type: 'error', message: 'Você não tem permissão para remover arquivos.');
+            return;
+        }
+
         $this->confirmDeleteId = $id;
     }
 
@@ -92,6 +116,11 @@ class MediaLibrary extends Component
 
     public function delete(int $id): void
     {
+        if (! $this->canUploadOrDelete()) {
+            $this->dispatch('notify', type: 'error', message: 'Você não tem permissão para remover arquivos.');
+            return;
+        }
+
         $media = Media::findOrFail($id);
         Storage::disk('public')->delete($media->path);
         $media->delete();
@@ -101,6 +130,7 @@ class MediaLibrary extends Component
     }
 
     // ── Render ────────────────────────────────────────────────────────────────
+
     public function render()
     {
         $query = Media::with('uploader')
@@ -114,15 +144,15 @@ class MediaLibrary extends Component
 
         $files = $query->paginate(15);
 
-        // Extensões únicas para o filtro
         $extensions = Media::select('extension')
             ->distinct()
             ->orderBy('extension')
             ->pluck('extension');
 
         return view('livewire.admin.media-library', [
-            'files'      => $files,
-            'extensions' => $extensions,
+            'files'              => $files,
+            'extensions'         => $extensions,
+            'canUploadOrDelete'  => $this->canUploadOrDelete(),
         ]);
     }
 }

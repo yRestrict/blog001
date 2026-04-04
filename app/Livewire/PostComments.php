@@ -4,6 +4,7 @@ namespace App\Livewire;
 
 use App\Models\Comment;
 use App\Models\Post;
+use App\Notifications\CommentRepliedNotification;
 use App\Notifications\NewCommentNotification;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
@@ -19,7 +20,7 @@ class PostComments extends Component
     public bool   $submitted = false;
 
     // ─── Reply ───────────────────────────────────────────────────────────────
-    public ?int   $replyingTo      = null;
+    public ?int   $replyingTo      = null; // ID do comentário clicado (pode ser reply)
     public string $replyAuthorName = '';
     public string $replyBody       = '';
     public string $replyGuestName  = '';
@@ -38,9 +39,7 @@ class PostComments extends Component
     public function submit(): void
     {
         if (Auth::check()) {
-            $this->validate([
-                'body' => 'required|string|min:3|max:2000',
-            ]);
+            $this->validate(['body' => 'required|string|min:3|max:2000']);
             $this->name = Auth::user()->name;
         } else {
             $this->validate([
@@ -60,9 +59,7 @@ class PostComments extends Component
             'ip_address'  => request()->ip(),
         ]);
 
-        if ($status === 'pending') {
-            NewCommentNotification::dispatch($comment);
-        }
+        NewCommentNotification::dispatch($comment);
 
         $this->reset('body');
         $this->submitted = true;
@@ -70,7 +67,7 @@ class PostComments extends Component
 
     public function startReply(int $commentId, string $authorName): void
     {
-        $this->replyingTo      = $commentId;
+        $this->replyingTo      = $commentId; // ID do comentário específico clicado
         $this->replyAuthorName = $authorName;
         $this->replyBody       = '';
         $this->replyGuestName  = '';
@@ -88,9 +85,7 @@ class PostComments extends Component
     public function submitReply(): void
     {
         if (Auth::check()) {
-            $this->validate([
-                'replyBody' => 'required|string|min:3|max:2000',
-            ]);
+            $this->validate(['replyBody' => 'required|string|min:3|max:2000']);
         } else {
             $this->validate([
                 'replyGuestName' => 'required|string|max:100',
@@ -98,13 +93,21 @@ class PostComments extends Component
             ]);
         }
 
-        $parent   = Comment::findOrFail($this->replyingTo);
-        $parentId = $parent->parent_id ?? $parent->id;
-        $status   = $this->resolveStatus();
+        // Comentário clicado — pode ser raiz ou um reply
+        $clicked = Comment::findOrFail($this->replyingTo);
+
+        // parent_id → sempre a raiz da thread (para agrupar)
+        $parentId = $clicked->parent_id ?? $clicked->id;
+
+        // reply_to_id → o comentário exato que foi respondido (para notificação e "@Nome")
+        $replyToId = $clicked->id;
+
+        $status = $this->resolveStatus();
 
         $reply = $this->post->comments()->create([
             'user_id'     => Auth::id(),
             'parent_id'   => $parentId,
+            'reply_to_id' => $replyToId,
             'guest_name'  => Auth::check() ? null : $this->replyGuestName,
             'guest_email' => Auth::check() ? null : $this->email,
             'body'        => $this->replyBody,
@@ -112,9 +115,11 @@ class PostComments extends Component
             'ip_address'  => request()->ip(),
         ]);
 
-        if ($status === 'pending') {
-            NewCommentNotification::dispatch($reply);
-        }
+        // 1. Notifica owners + author do post sobre o novo reply
+        NewCommentNotification::dispatch($reply);
+
+        // 2. Notifica quem foi respondido especificamente (se for diferente do author do post)
+        CommentRepliedNotification::dispatch($reply);
 
         $this->replyBody      = '';
         $this->replyGuestName = '';
@@ -125,7 +130,7 @@ class PostComments extends Component
     public function render()
     {
         $comments = $this->post->comments()
-            ->with(['user', 'replies.user'])
+            ->with(['user', 'replies.user', 'replies.replyTo.user'])
             ->whereNull('parent_id')
             ->where('status', 'approved')
             ->latest()
@@ -140,7 +145,6 @@ class PostComments extends Component
 
         $user = Auth::user();
 
-        // Owner e Author vão direto como aprovado em qualquer post
         if ($user->isOwner() || $user->isAuthor()) return 'approved';
 
         return 'pending';

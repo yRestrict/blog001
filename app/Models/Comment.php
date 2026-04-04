@@ -14,6 +14,7 @@ class Comment extends Model
         'post_id',
         'user_id',
         'parent_id',
+        'reply_to_id',  // comentário específico respondido (dentro da thread)
         'guest_name',
         'guest_email',
         'body',
@@ -34,7 +35,7 @@ class Comment extends Model
     }
 
     /**
-     * Comentário pai (quando é um reply).
+     * Comentário raiz da thread (quando é um reply).
      */
     public function parent()
     {
@@ -42,15 +43,26 @@ class Comment extends Model
     }
 
     /**
-     * Respostas deste comentário.
+     * Comentário específico que foi respondido (pode ser um reply de reply).
+     * Usado para notificações e para exibir "@Nome" na UI.
      */
-    public function replies()
+    public function replyTo()
     {
-        return $this->hasMany(Comment::class, 'parent_id')->where('status', 'approved')->oldest();
+        return $this->belongsTo(Comment::class, 'reply_to_id');
     }
 
     /**
-     * Todas as respostas (inclusive pendentes — para moderação).
+     * Respostas aprovadas deste comentário (para exibição no frontend).
+     */
+    public function replies()
+    {
+        return $this->hasMany(Comment::class, 'parent_id')
+                    ->where('status', 'approved')
+                    ->oldest();
+    }
+
+    /**
+     * Todas as respostas inclusive pendentes (para moderação).
      */
     public function allReplies()
     {
@@ -59,21 +71,23 @@ class Comment extends Model
 
     // ─── Helpers ─────────────────────────────────────────────────────────────
 
-    /**
-     * Retorna o nome do autor (usuário logado ou visitante).
-     */
     public function getAuthorNameAttribute(): string
     {
         return $this->user?->name ?? $this->guest_name ?? 'Anônimo';
     }
 
-    public function isApproved(): bool
+    /**
+     * Nome de quem este comentário está respondendo (para exibir "@Nome" na UI).
+     */
+    public function getReplyToNameAttribute(): ?string
     {
-        return $this->status === 'approved';
+        if (! $this->reply_to_id) return null;
+
+        return $this->replyTo?->user?->name
+            ?? $this->replyTo?->guest_name
+            ?? null;
     }
 
-    public function isPending(): bool
-    {
-        return $this->status === 'pending';
-    }
+    public function isApproved(): bool { return $this->status === 'approved'; }
+    public function isPending(): bool  { return $this->status === 'pending'; }
 }

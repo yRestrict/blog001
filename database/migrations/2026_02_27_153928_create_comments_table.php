@@ -11,8 +11,12 @@ return new class extends Migration
         Schema::create('comments', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('post_id');
-            $table->unsignedBigInteger('user_id')->nullable(); // null = visitante
-            $table->unsignedBigInteger('parent_id')->nullable(); // null = comentário raiz, preenchido = reply
+            $table->unsignedBigInteger('user_id')->nullable();    // null = visitante
+
+            // parent_id   → raiz da thread (agrupa os replies visualmente)
+            // reply_to_id → comentário exato respondido (notificação e "@Nome" na UI)
+            $table->unsignedBigInteger('parent_id')->nullable();
+            $table->unsignedBigInteger('reply_to_id')->nullable();
 
             // Dados do visitante (quando não logado)
             $table->string('guest_name')->nullable();
@@ -38,6 +42,12 @@ return new class extends Migration
                   ->references('id')
                   ->on('comments')
                   ->cascadeOnDelete();
+
+            // Se o comentário respondido for deletado, apenas limpa o ponteiro
+            $table->foreign('reply_to_id')
+                  ->references('id')
+                  ->on('comments')
+                  ->nullOnDelete();
         });
     }
 

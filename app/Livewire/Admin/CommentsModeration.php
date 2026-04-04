@@ -8,6 +8,7 @@ use App\Notifications\CommentApprovedNotification;
 use App\Notifications\CommentModeratedByAuthorNotification;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -15,21 +16,21 @@ class CommentsModeration extends Component
 {
     use WithPagination;
 
-    public string $filterStatus = 'pending';
-    public string $search       = '';
-    public bool   $showTrash    = false;
-    public int    $perPage      = 10;
+    public string $filterStatus  = 'pending';
+    public string $search        = '';
+    public bool   $showTrash     = false;
+    public int    $perPage       = 10;
 
-    // Para o modal de exclusão
-    public ?int   $deletingCommentId    = null;
-    public string $deletingCommentBody  = '';
+    // Modal de exclusão
+    public ?int   $deletingCommentId   = null;
+    public string $deletingCommentBody = '';
 
-    // Para o modal de mute
-    public bool   $muteModal    = false;
-    public ?int   $mutePostId   = null;
+    // Modal de mute
+    public bool   $muteModal     = false;
+    public ?int   $mutePostId    = null;
     public string $mutePostTitle = '';
-    public bool   $muteLikes    = false;
-    public bool   $muteComments = false;
+    public bool   $muteLikes     = false;
+    public bool   $muteComments  = false;
 
     public function updatingSearch(): void       { $this->resetPage(); }
     public function updatingFilterStatus(): void { $this->resetPage(); }
@@ -46,9 +47,7 @@ class CommentsModeration extends Component
         $comment->update(['status' => 'approved']);
         CommentApprovedNotification::dispatch($comment);
 
-        // Se quem aprovou é author, notifica os owners
-        $user = Auth::user();
-        if ($user->isAuthor()) {
+        if (Auth::user()->isAuthor()) {
             $this->notifyOwners($comment, 'approved');
         }
 
@@ -62,9 +61,7 @@ class CommentsModeration extends Component
 
         $comment->update(['status' => 'rejected']);
 
-        // Se quem rejeitou é author, notifica os owners
-        $user = Auth::user();
-        if ($user->isAuthor()) {
+        if (Auth::user()->isAuthor()) {
             $this->notifyOwners($comment, 'rejected');
         }
 
@@ -73,7 +70,6 @@ class CommentsModeration extends Component
 
     public function prepareDelete(int $id): void
     {
-        // Somente owner pode excluir
         if (! Auth::user()->isOwner()) {
             $this->dispatch('notify', type: 'error', message: 'Você não tem permissão para excluir comentários.');
             return;
@@ -81,7 +77,7 @@ class CommentsModeration extends Component
 
         $comment = Comment::findOrFail($id);
         $this->deletingCommentId   = $comment->id;
-        $this->deletingCommentBody = \Illuminate\Support\Str::limit($comment->body, 80);
+        $this->deletingCommentBody = Str::limit($comment->body, 80);
     }
 
     public function cancelDelete(): void
@@ -92,7 +88,6 @@ class CommentsModeration extends Component
 
     public function destroy(): void
     {
-        // Somente owner pode excluir
         if (! Auth::user()->isOwner()) {
             $this->dispatch('notify', type: 'error', message: 'Você não tem permissão para excluir comentários.');
             return;
@@ -137,12 +132,11 @@ class CommentsModeration extends Component
 
         $query = Comment::where('status', 'pending');
 
-        // Author só aprova dos próprios posts
         if (! $isOwner) {
             $query->whereHas('post', fn($q) => $q->where('author_id', Auth::id()));
         }
 
-        $query->get()->each(function ($comment) use ($user, $isOwner) {
+        $query->get()->each(function ($comment) use ($isOwner) {
             $comment->update(['status' => 'approved']);
             CommentApprovedNotification::dispatch($comment);
 
@@ -154,7 +148,7 @@ class CommentsModeration extends Component
         $this->dispatch('notify', type: 'success', message: 'Todos os pendentes foram aprovados!');
     }
 
-    // ─── Mute de notificações por post ───────────────────────────────────────
+    // ─── Mute ────────────────────────────────────────────────────────────────
 
     public function openMuteModal(int $postId, string $postTitle): void
     {
@@ -193,12 +187,13 @@ class CommentsModeration extends Component
         $user    = Auth::user();
         $isOwner = $user->isOwner();
 
-        // Carrega mute settings do usuário logado para os posts visíveis
+        // IDs de posts que o usuário silenciou (para indicadores na view)
         $mutedPostIds = PostNotificationSetting::where('user_id', $user->id)
             ->where(fn($q) => $q->where('mute_likes', true)->orWhere('mute_comments', true))
             ->pluck('post_id')
             ->toArray();
 
+        // ── Query base ──────────────────────────────────────────────────────
         $query = $this->showTrash
             ? Comment::onlyTrashed()->with(['post', 'user', 'parent'])
             : Comment::with(['post', 'user', 'parent'])
@@ -209,29 +204,31 @@ class CommentsModeration extends Component
             $query->whereHas('post', fn($q) => $q->where('author_id', $user->id));
         }
 
+        // Busca agrupada — sem esse agrupamento o orWhere vaza o filtro de author
         $query->when($this->search, fn($q) =>
-            $q->where('body', 'like', '%' . $this->search . '%')
-              ->orWhere('guest_name', 'like', '%' . $this->search . '%')
-        )->latest();
+            $q->where(fn($sub) =>
+                $sub->where('body', 'like', '%' . $this->search . '%')
+                    ->orWhere('guest_name', 'like', '%' . $this->search . '%')
+                    ->orWhere('guest_email', 'like', '%' . $this->search . '%')
+            )
+        );
 
-        $comments = $query->paginate($this->perPage);
+        $comments = $query->latest()->paginate($this->perPage);
 
-        // Contadores — author só conta dos próprios posts
-        $countQuery = fn($status) => Comment::where('status', $status)
-            ->when(! $isOwner, fn($q) =>
-                $q->whereHas('post', fn($q2) => $q2->where('author_id', $user->id))
-            )->count();
+        // ── Contadores ──────────────────────────────────────────────────────
+        $countBase = fn() => Comment::when(! $isOwner, fn($q) =>
+            $q->whereHas('post', fn($q2) => $q2->where('author_id', $user->id))
+        );
 
-        $pendingCount  = $countQuery('pending');
-        $approvedCount = $countQuery('approved');
-        $rejectedCount = $countQuery('rejected');
+        $pendingCount  = (clone $countBase())->where('status', 'pending')->count();
+        $approvedCount = (clone $countBase())->where('status', 'approved')->count();
+        $rejectedCount = (clone $countBase())->where('status', 'rejected')->count();
+        $totalCount    = $pendingCount + $approvedCount + $rejectedCount;
 
         $trashCount = Comment::onlyTrashed()
             ->when(! $isOwner, fn($q) =>
                 $q->whereHas('post', fn($q2) => $q2->where('author_id', $user->id))
             )->count();
-
-        $totalCount = $pendingCount + $approvedCount + $rejectedCount;
 
         return view('livewire.admin.comments-moderation', [
             'comments'      => $comments,
@@ -253,7 +250,6 @@ class CommentsModeration extends Component
 
         if ($user->isOwner()) return;
 
-        // Author só pode moderar comentários dos próprios posts
         if ($comment->post->author_id !== $user->id) {
             abort(403);
         }
@@ -261,9 +257,9 @@ class CommentsModeration extends Component
 
     private function notifyOwners(Comment $comment, string $action): void
     {
-        $owners = User::where('role', 'owner')->get();
-        foreach ($owners as $owner) {
-            $owner->notify(new CommentModeratedByAuthorNotification($comment, $action));
-        }
+        User::where('role', 'owner')->get()
+            ->each(fn($owner) => $owner->notify(
+                new CommentModeratedByAuthorNotification($comment, $action)
+            ));
     }
 }

@@ -14,6 +14,7 @@
                 <a class="dropdown-item" href="{{ route('admin.settings') }}">
                     <i class="dw dw-settings2"></i> Configuração
                 </a>
+                
                 <a class="dropdown-item" href="{{ route('admin.logout') }}"
                     onclick="event.preventDefault();document.getElementById('logout-form').submit();">
                     <i class="dw dw-logout"></i> Log Out

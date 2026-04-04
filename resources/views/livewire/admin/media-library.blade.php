@@ -12,9 +12,11 @@
             <span class="page-header-sub">Gerencie arquivos e copie links para usar nos posts</span>
         </div>
         <div class="page-header-right">
-            <button class="mir-btn-primary-lg" wire:click="openUpload">
-                <i class="fa-solid fa-cloud-arrow-up"></i> Enviar Arquivo
-            </button>
+            @if($canUploadOrDelete)
+                <button class="mir-btn-primary-lg" wire:click="openUpload">
+                    <i class="fa-solid fa-cloud-arrow-up"></i> Enviar Arquivo
+                </button>
+            @endif
         </div>
     </div>
 
@@ -23,15 +25,21 @@
     {{-- ================================================================ --}}
     <div class="mda-section">
 
-        {{-- Camada 1 — Section Header --}}
+        {{-- Section Header --}}
         <div class="mda-section-header">
             <div class="mda-section-header-left">
                 <h3 class="mda-section-title">Biblioteca de Mídia</h3>
-                <p class="mda-section-sub">Gerencie arquivos e copie links para usar nos posts</p>
+                <p class="mda-section-sub">
+                    @if($canUploadOrDelete)
+                        Gerencie arquivos e copie links para usar nos posts
+                    @else
+                        Copie links dos arquivos disponíveis para usar nos posts
+                    @endif
+                </p>
             </div>
         </div>
 
-        {{-- Camada 2 — Filter Header --}}
+        {{-- Filter Header --}}
         <div class="mda-filter-header">
             <div style="position:relative; flex:1; max-width:280px;">
                 <i class="fa-solid fa-magnifying-glass" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#9ca3af;font-size:.75rem;"></i>
@@ -74,10 +82,12 @@
                     <p class="mir-empty-desc">Tente ajustar os filtros ou termos de busca.</p>
                 @else
                     <h5 class="mir-empty-title">Nenhum arquivo enviado</h5>
-                    <p class="mir-empty-desc">Envie o primeiro arquivo para começar.</p>
-                    <button class="mir-btn-primary-lg" wire:click="openUpload">
-                        <i class="fa-solid fa-cloud-arrow-up"></i> Enviar agora
-                    </button>
+                    <p class="mir-empty-desc">Ainda não há arquivos na biblioteca.</p>
+                    @if($canUploadOrDelete)
+                        <button class="mir-btn-primary-lg" wire:click="openUpload">
+                            <i class="fa-solid fa-cloud-arrow-up"></i> Enviar agora
+                        </button>
+                    @endif
                 @endif
             </div>
         @else
@@ -85,7 +95,7 @@
                 @foreach($files as $file)
                     <div class="mir-data-row" wire:key="media-{{ $file->id }}">
 
-                        {{-- Arquivo (ícone + nome + extensão) --}}
+                        {{-- Arquivo --}}
                         <div class="mda-file">
                             <span class="mda-file-icon" style="background:{{ $file->icon_color }}1a;color:{{ $file->icon_color }};">
                                 <i class="fa {{ $file->icon }}"></i>
@@ -121,24 +131,31 @@
 
                         {{-- Ações --}}
                         <div class="mir-actions">
+                            {{-- Copiar link — todos podem --}}
                             <button type="button"
                                     class="mir-action-btn mda-action-copy"
                                     onclick="copyMediaLink('{{ $file->download_url }}', this)"
                                     data-tooltip="Copiar link">
                                 <i class="fa-solid fa-copy" style="font-size:.7rem;"></i>
                             </button>
+
+                            {{-- Download — todos podem --}}
                             <a href="{{ $file->download_url }}"
                                target="_blank"
                                class="mir-action-btn mda-action-download"
                                data-tooltip="Download">
                                 <i class="fa-solid fa-download" style="font-size:.7rem;"></i>
                             </a>
-                            <button type="button"
-                                    class="mir-action-btn mir-action-delete"
-                                    wire:click="confirmDelete({{ $file->id }})"
-                                    data-tooltip="Remover arquivo">
-                                <i class="fa-solid fa-trash-can" style="font-size:.7rem;"></i>
-                            </button>
+
+                            {{-- Excluir — só owner ou author com auto_approve --}}
+                            @if($canUploadOrDelete)
+                                <button type="button"
+                                        class="mir-action-btn mir-action-delete"
+                                        wire:click="confirmDelete({{ $file->id }})"
+                                        data-tooltip="Remover arquivo">
+                                    <i class="fa-solid fa-trash-can" style="font-size:.7rem;"></i>
+                                </button>
+                            @endif
                         </div>
                     </div>
                 @endforeach
@@ -159,11 +176,10 @@
         @endif
     </div>
 
-
     {{-- ================================================================ --}}
-    {{-- MODAL: UPLOAD                                                     --}}
+    {{-- MODAL: UPLOAD — só para quem pode                                --}}
     {{-- ================================================================ --}}
-    @if($showUploadModal)
+    @if($showUploadModal && $canUploadOrDelete)
         <div class="mir-modal-overlay" wire:key="modal-upload">
             <div class="mir-modal-dialog" style="max-width:540px;">
                 <div class="mir-modal-content">
@@ -240,11 +256,10 @@
         </div>
     @endif
 
-
     {{-- ================================================================ --}}
-    {{-- MODAL: CONFIRMAR EXCLUSÃO                                         --}}
+    {{-- MODAL: CONFIRMAR EXCLUSÃO — só para quem pode                   --}}
     {{-- ================================================================ --}}
-    @if($confirmDeleteId !== null)
+    @if($confirmDeleteId !== null && $canUploadOrDelete)
         <div class="mir-modal-overlay" wire:key="modal-delete-media">
             <div class="mir-modal-dialog" style="max-width:440px;">
                 <div class="mir-modal-content">
@@ -295,72 +310,50 @@
         </div>
     @endif
 
-
     {{-- ================================================================ --}}
     {{-- TOAST                                                             --}}
     {{-- ================================================================ --}}
     <div id="media-toast-container" aria-live="polite"></div>
 
-
     {{-- ================================================================ --}}
-    {{-- SCOPED STYLES (apenas mda- específicos)                          --}}
+    {{-- SCOPED STYLES                                                    --}}
     {{-- ================================================================ --}}
     <style>
-        /* ── Section Card ──────────────────────────────────── */
         .mda-section {
-            background: #fff;
-            border-radius: 10px;
+            background: #fff; border-radius: 10px;
             border: 1px solid #e9ecef;
             box-shadow: 0 1px 4px rgba(0,0,0,.05);
             margin-bottom: 24px;
         }
-
-        /* ── Section header ────────────────────────────────── */
         .mda-section-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 16px 20px;
-            border-bottom: 1px solid #f0f0f0;
-            gap: 16px;
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 16px 20px; border-bottom: 1px solid #f0f0f0; gap: 16px;
         }
         .mda-section-header-left { min-width: 0; }
         .mda-section-title { font-size: .95rem; font-weight: 700; color: #1a1d23; margin: 0; }
         .mda-section-sub { font-size: .78rem; color: #9ca3af; margin-top: 2px; }
-
-        /* ── Filter header ─────────────────────────────────── */
         .mda-filter-header {
-            display: flex;
-            align-items: center;
-            padding: 16px 20px;
-            border-bottom: 1px solid #f0f0f0;
-            gap: 16px;
+            display: flex; align-items: center;
+            padding: 16px 20px; border-bottom: 1px solid #f0f0f0; gap: 16px;
         }
-
-        /* ── Table Header: larguras ────────────────────────── */
         .mda-plh-file      { flex: 1 1 0; min-width: 0; }
-        .mda-plh-uploader   { width: 140px; flex-shrink: 0; }
-        .mda-plh-size       { width: 80px; flex-shrink: 0; }
-        .mda-plh-downloads  { width: 90px; flex-shrink: 0; }
-        .mda-plh-date       { width: 90px; flex-shrink: 0; }
-        .mda-plh-actions    { width: 100px; flex-shrink: 0; }
-
-        /* ── Data row: arquivo ─────────────────────────────── */
+        .mda-plh-uploader  { width: 140px; flex-shrink: 0; }
+        .mda-plh-size      { width: 80px; flex-shrink: 0; }
+        .mda-plh-downloads { width: 90px; flex-shrink: 0; }
+        .mda-plh-date      { width: 90px; flex-shrink: 0; }
+        .mda-plh-actions   { width: 100px; flex-shrink: 0; }
         .mda-file {
             flex: 1 1 0; min-width: 0;
             display: flex; align-items: center; gap: 10px;
         }
         .mda-file-icon {
-            width: 36px; height: 36px; border-radius: 9px;
-            flex-shrink: 0;
-            display: flex; align-items: center; justify-content: center;
-            font-size: .9rem;
+            width: 36px; height: 36px; border-radius: 9px; flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center; font-size: .9rem;
         }
         .mda-file-info { min-width: 0; }
         .mda-file-name {
             font-size: .83rem; font-weight: 600; color: #1a1d23;
-            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-            max-width: 280px;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 280px;
         }
         .mda-file-ext {
             display: inline-flex; align-items: center;
@@ -368,58 +361,31 @@
             background: #f3f4f6; font-size: .68rem; font-weight: 600;
             color: #6d7279; margin-top: 2px;
         }
-
-        /* ── Data row: uploader ────────────────────────────── */
         .mda-uploader {
             width: 140px; flex-shrink: 0;
             display: flex; align-items: center; gap: 7px;
         }
-        .mda-uploader-avatar {
-            width: 24px; height: 24px; border-radius: 50%;
-            object-fit: cover; flex-shrink: 0;
-        }
+        .mda-uploader-avatar { width: 24px; height: 24px; border-radius: 50%; object-fit: cover; flex-shrink: 0; }
         .mda-uploader-name {
             font-size: .8rem; color: #374151; font-weight: 500;
             white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
         }
-
-        /* ── Data row: tamanho ─────────────────────────────── */
-        .mda-size {
-            width: 80px; flex-shrink: 0; text-align: center;
-            font-size: .8rem; color: #6d7279; font-weight: 500;
-        }
-
-        /* ── Data row: downloads ───────────────────────────── */
+        .mda-size { width: 80px; flex-shrink: 0; text-align: center; font-size: .8rem; color: #6d7279; font-weight: 500; }
         .mda-downloads {
             width: 90px; flex-shrink: 0; text-align: center;
             display: flex; align-items: center; justify-content: center; gap: 4px;
             font-size: .8rem; font-weight: 600; color: #374151;
         }
-
-        /* ── Data row: data ────────────────────────────────── */
-        .mda-date {
-            width: 90px; flex-shrink: 0; text-align: center;
-            font-size: .78rem; color: #9ca3af;
-        }
-        .mda-date-time {
-            display: block; font-size: .7rem; color: #c4c9d4;
-        }
-
-        /* ── Action buttons ────────────────────────────────── */
+        .mda-date { width: 90px; flex-shrink: 0; text-align: center; font-size: .78rem; color: #9ca3af; }
+        .mda-date-time { display: block; font-size: .7rem; color: #c4c9d4; }
         .mda-action-copy:hover { background: #ede9fe; border-color: #c4b5fd; color: #5b21b6; }
         .mda-action-download:hover { background: #d1fae5; border-color: #6ee7b7; color: #059669; }
-
-        /* ── Dropzone (modal upload) ───────────────────────── */
         .mda-dropzone {
             display: block; border: 2px dashed #e5e7eb; border-radius: 10px;
-            padding: 32px 20px; text-align: center;
-            cursor: pointer; background: #fafafa;
-            transition: border-color .15s, background .15s;
+            padding: 32px 20px; text-align: center; cursor: pointer;
+            background: #fafafa; transition: border-color .15s, background .15s;
         }
-        .mda-dropzone:hover {
-            border-color: #6366f1;
-            background: rgba(99,102,241,.03);
-        }
+        .mda-dropzone:hover { border-color: #6366f1; background: rgba(99,102,241,.03); }
         .mda-dropzone-icon {
             width: 48px; height: 48px; border-radius: 12px;
             background: rgba(99,102,241,.1); color: #6366f1;
@@ -428,23 +394,21 @@
         }
         .mda-dropzone-title { font-size: .85rem; font-weight: 600; color: #374151; margin: 0 0 4px; }
         .mda-dropzone-desc { font-size: .75rem; color: #9ca3af; margin: 0; }
-
-        /* ── File preview (modal upload) ───────────────────── */
         .mda-file-preview {
             display: flex; align-items: center; gap: 8px;
             padding: 8px 10px; border-radius: 7px;
-            background: #f9fafb; border: 1px solid #e9ecef;
-            margin-bottom: 5px;
+            background: #f9fafb; border: 1px solid #e9ecef; margin-bottom: 5px;
         }
         .mda-file-preview-name {
             flex: 1; font-size: .8rem; color: #374151;
             overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
         }
-        .mda-file-preview-size {
-            font-size: .72rem; color: #9ca3af; flex-shrink: 0;
+        .mda-file-preview-size { font-size: .72rem; color: #9ca3af; flex-shrink: 0; }
+        #media-toast-container {
+            position: fixed; bottom: 24px; right: 24px;
+            z-index: 9999; display: flex; flex-direction: column; gap: 10px;
         }
     </style>
-
 
     {{-- ================================================================ --}}
     {{-- SCRIPTS                                                           --}}

@@ -32,11 +32,23 @@
             <div class="col-md-12">
                 <div class="alert alert-success rounded-0 mt-2 mb-3">
                     <i class="las la-check-circle"></i>
-                    @if (auth()->check() && (auth()->user()->isOwner() || (auth()->user()->isAuthor() && $post->author_id === auth()->id())))
-                        Resposta publicada com sucesso!
+                    {{--
+                        Auto-aprovado se:
+                        - Owner (sempre)
+                        - Author (sempre — comentários de equipe são auto-aprovados em qualquer post)
+                        Aguarda aprovação se:
+                        - Guest
+                        - Usuário logado sem role de owner/author
+                    --}}
+                    @auth
+                        @if (auth()->user()->isOwner() || auth()->user()->isAuthor())
+                            Resposta publicada com sucesso!
+                        @else
+                            Sua resposta foi enviada e aguarda aprovação. Obrigado!
+                        @endif
                     @else
                         Sua resposta foi enviada e aguarda aprovação. Obrigado!
-                    @endif
+                    @endauth
                 </div>
             </div>
         @endif

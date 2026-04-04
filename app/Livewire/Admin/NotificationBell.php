@@ -11,7 +11,6 @@ class NotificationBell extends Component
     public $notifications;
     public bool $open = false;
 
-    // Polling a cada 30 segundos para verificar novas notificações
     protected $listeners = ['refreshNotifications' => '$refresh'];
 
     public function mount(): void
@@ -45,6 +44,18 @@ class NotificationBell extends Component
     {
         $notification = Auth::user()->notifications()->find($id);
         $notification?->markAsRead();
+        $this->loadNotifications();
+    }
+
+    public function deleteOne(string $id): void
+    {
+        Auth::user()->notifications()->where('id', $id)->delete();
+        $this->loadNotifications();
+    }
+
+    public function deleteRead(): void
+    {
+        Auth::user()->readNotifications()->delete();
         $this->loadNotifications();
     }
 
