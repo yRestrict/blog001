@@ -5,4 +5,4 @@ Dashboard "Header nesse novo parece que nao tenho controler dele, sempre escapa 
 Termina testa as notificacoes amanha 
 regras para categorias 
 
-remover notificacao por dispach e coloca notify
+remover notificacao por dispach e coloca notify......
