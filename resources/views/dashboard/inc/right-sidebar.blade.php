@@ -40,7 +40,10 @@
                     <ul class="submenu">
                         <li><a href="{{ route('admin.posts.create') }}" class="{{ Route::is('admin.posts.create') ? 'active' : '' }}"><i class="fa fa-plus sub-icon"></i> Novo Post</a></li>
                         <li><a href="{{ route('admin.posts.index') }}" class="{{ Route::is('admin.posts.index') ? 'active' : '' }}"><i class="fa fa-list sub-icon"></i> Todos os Posts</a></li>
-                        <li><a href="{{ route('admin.posts.trash') }}" class="{{ Route::is('admin.posts.trash') ? 'active' : '' }}"><i class="fa fa-trash sub-icon"></i> Lixeira</a></li>
+                        @if(auth()->user()->isOwner())
+                            <li><a href="{{ route('admin.posts.trash') }}" class="{{ Route::is('admin.posts.trash') ? 'active' : '' }}"><i class="fa fa-trash sub-icon"></i> Lixeira</a></li>
+                            <li><a href="{{ route('admin.posts.pending') }}" class="{{ Route::is('admin.posts.pending') ? 'active' : '' }}"><i class="fa fa-trash sub-icon"></i> Pendente</a></li>
+                        @endif
                     </ul>
                 </li>
 
@@ -63,18 +66,17 @@
                     </a>
                     <ul class="submenu">
                         <li><a href="{{ route('admin.categories.index') }}" class="{{ Route::is('admin.categories.index') ? 'active' : '' }}"><i class="fa fa-folder sub-icon"></i> Categorias</a></li>
-                        <li><a href="{{ route('admin.categories.trash') }}" class="{{ Route::is('admin.categories.trash') ? 'active' : '' }}"><i class="fa fa-trash sub-icon"></i> Lixeira</a></li>
+                        @if(auth()->user()->isOwner())
+                        <li><a href="{{ route('admin.categories.trash') }}" class="{{ Route::is('admin.categories.trash') ? 'active' : '' }}"><i class="fa fa-trash sub-icon"></i> Lixeira</a></li>@endif
                     </ul>
                 </li>
 
-                <li class="dropdown {{ Route::is('admin.tags.*') ? 'active' : '' }}">
-                    <a href="javascript:;" class="dropdown-toggle">
+                 <li>
+                    <a href="{{ route('admin.tags.index') }}"
+                       class="dropdown-toggle no-arrow {{ Route::is('admin.tags.index') ? 'active' : '' }}">
                         <span class="micon fa fa-tags"></span>
-                        <span class="mtext">Tags</span>
+                        <span class="mtext">Tag</span>
                     </a>
-                    <ul class="submenu">
-                        <li><a href="{{ route('admin.tags.index') }}" class="{{ Route::is('admin.tags.index') ? 'active' : '' }}"><i class="fa fa-tag sub-icon"></i> Tags</a></li>
-                    </ul>
                 </li>
 
                 <li><div class="dropdown-divider"></div></li>

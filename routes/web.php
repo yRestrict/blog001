@@ -48,20 +48,20 @@ Route::name('frontend.')->group(function () {
 // ─── Dashboard ────────────────────────────────────────────────────────────────
 Route::prefix('admin')->name('admin.')->group(function () {
 
-    Route::get('/', function () {
-        return auth()->check()
-            ? redirect()->route('admin.dashboard')
-            : redirect()->route('admin.login');
-    })->middleware('preventBackHistory')->name('index');
+    // Route::get('/', function () {
+    //     return auth()->check()
+    //         ? redirect()->route('admin.dashboard')
+    //         : redirect()->route('admin.login');
+    // })->middleware('preventBackHistory')->name('index');
 
     // ── Convidado ─────────────────────────────────────────────────────────────
     Route::middleware(['guest', 'preventBackHistory'])->group(function () {
-        Route::get('/login',                   [LoginController::class,          'showLoginForm'])->name('login');
-        Route::post('/login',                  [LoginController::class,          'login'])->name('login_handler');
-        Route::get('/forgot-password',         [ForgotPasswordController::class, 'showForgotForm'])->name('forgot');
-        Route::post('/send-password-reset-link',[ForgotPasswordController::class,'sendResetLink'])->name('send_password_reset_link');
-        Route::get('/password/reset/{token}',  [ResetPasswordController::class,  'showResetForm'])->name('password_reset_form');
-        Route::post('/reset-password-handler', [ResetPasswordController::class,  'resetPassword'])->name('reset_password_handler');
+        Route::get('/login',                    [LoginController::class,          'showLoginForm'])->name('login');
+        Route::post('/login',                   [LoginController::class,          'login'])->name('login_handler');
+        Route::get('/forgot-password',          [ForgotPasswordController::class, 'showForgotForm'])->name('forgot');
+        Route::post('/send-password-reset-link',[ForgotPasswordController::class, 'sendResetLink'])->name('send_password_reset_link');
+        Route::get('/password/reset/{token}',   [ResetPasswordController::class,  'showResetForm'])->name('password_reset_form');
+        Route::post('/reset-password-handler',  [ResetPasswordController::class,  'resetPassword'])->name('reset_password_handler');
     });
 
     // ── Autenticado ───────────────────────────────────────────────────────────
@@ -88,40 +88,37 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::get('/', [CommentController::class, 'index'])->name('index');
         });
 
+        // ── Posts — acessíveis a qualquer usuário autenticado ─────────────────
+        // A lógica de "ver só os próprios" e "não acessar lixeira" fica no controller.
+        Route::prefix('posts')->name('posts.')->group(function () {
+            Route::get('/',              [PostController::class, 'PostPage'])->name('index');
+            Route::get('/create',        [PostController::class, 'postCreate'])->name('create');
+            Route::post('/',             [PostController::class, 'postStore'])->name('store');
+            Route::post('/upload-image', [PostController::class, 'uploadImage'])->name('upload-image');
+            Route::get('/{post}/edit',   [PostController::class, 'postEdit'])->name('edit');
+            Route::put('/{post}',        [PostController::class, 'postUpdate'])->name('update');
+            Route::delete('/{post}',     [PostController::class, 'postDestroy'])->name('destroy');
+        });
+
+        Route::get('/media', [DashboardMediaController::class, 'index'])->name('media');
 
         // ── Owner ─────────────────────────────────────────────────────────────
         Route::middleware(['role:owner'])->group(function () {
 
             Route::get('/sidebars', [SidebarController::class, 'index'])->name('sidebars');
 
-            // Mídia
-            Route::get('/media', [DashboardMediaController::class, 'index'])->name('media');
-            
-
             // Sidebar
             Route::prefix('sidebar')->name('sidebar.')->group(function () {
                 Route::get('/', [CategoryController::class, 'categoriesPage'])->name('index');
             });
 
-            // Posts — estáticas antes das dinâmicas
+            // Posts exclusivos do owner (lixeira + aprovação)
             Route::prefix('posts')->name('posts.')->group(function () {
-                Route::get('/',              [PostController::class, 'PostPage'])->name('index');
-                Route::get('/create',        [PostController::class, 'postCreate'])->name('create');
-                Route::post('/',             [PostController::class, 'postStore'])->name('store');
-                Route::post('/upload-image', [PostController::class, 'uploadImage'])->name('upload-image');
-                Route::get('/pending',       [PostController::class, 'pendingPosts'])->name('pending');
-                Route::get('/trash',         [PostController::class, 'postTrash'])->name('trash');
-
-                Route::get('/{post}/edit',      [PostController::class, 'postEdit'])->name('edit');
-                Route::get('/{post}/downloads', [PostController::class, 'postDownloads'])->name('downloads');
-                Route::put('/{post}',           [PostController::class, 'postUpdate'])->name('update');
-                Route::delete('/{post}',        [PostController::class, 'postDestroy'])->name('destroy');
+                Route::get('/trash',            [PostController::class, 'postTrash'])->name('trash');
+                Route::get('/pending',          [PostController::class, 'pendingPosts'])->name('pending');
                 Route::patch('/{post}/approve', [PostController::class, 'approvePost'])->name('approve');
                 Route::patch('/{post}/reject',  [PostController::class, 'rejectPost'])->name('reject');
             });
-            
-
-            
 
             // Configurações
             Route::get('/settings', [SettingController::class, 'generalSettings'])->name('settings');
@@ -130,12 +127,12 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
             // Usuários
             Route::prefix('users')->name('users.')->group(function () {
-                Route::get('/',                              [UserController::class, 'index'])->name('index');
-                Route::get('/create',                        [UserController::class, 'create'])->name('create');
-                Route::post('/',                             [UserController::class, 'store'])->name('store');
-                Route::get('/{user}/edit',                   [UserController::class, 'edit'])->name('edit');
-                Route::put('/{user}',                        [UserController::class, 'update'])->name('update');
-                Route::patch('/{user}/toggle-auto-approve',  [UserController::class, 'toggleAutoApprove'])->name('toggle-auto-approve');
+                Route::get('/',                             [UserController::class, 'index'])->name('index');
+                Route::get('/create',                       [UserController::class, 'create'])->name('create');
+                Route::post('/',                            [UserController::class, 'store'])->name('store');
+                Route::get('/{user}/edit',                  [UserController::class, 'edit'])->name('edit');
+                Route::put('/{user}',                       [UserController::class, 'update'])->name('update');
+                Route::patch('/{user}/toggle-auto-approve', [UserController::class, 'toggleAutoApprove'])->name('toggle-auto-approve');
             });
         });
     });

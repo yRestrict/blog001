@@ -58,11 +58,11 @@ class User extends Authenticatable
         return $this->hasOne(UserSetting::class);
     }
 
-    public function isOwner(): bool   { return $this->role === UserRole::Owner; }
-    public function isAuthor(): bool  { return $this->role === UserRole::Author; }
+    public function isOwner(): bool { return $this->role === UserRole::Owner; }
+    public function isAuthor(): bool { return $this->role === UserRole::Author; }
     public function isVisitor(): bool { return $this->role === UserRole::Visitor; }
-    public function isActive(): bool  { return $this->status === UserStatus::Active; }
-    public function isBanned(): bool  { return $this->status === UserStatus::Banned; }
+    public function isActive(): bool { return $this->status === UserStatus::Active; }
+    public function isBanned(): bool { return $this->status === UserStatus::Banned; }
 
     public function hasMutedPost(int $postId, string $type): bool
     {

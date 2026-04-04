@@ -21,6 +21,7 @@ return new class extends Migration
             $table->boolean('featured')->default(false);
             $table->boolean('comment')->default(true);
             $table->string('status')->default('draft'); 
+            $table->boolean('pending_review')->default(false);
             $table->string('meta_keywords')->nullable();
             $table->text('meta_description')->nullable();
             $table->softDeletes();

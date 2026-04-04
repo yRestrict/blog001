@@ -88,6 +88,7 @@
 
                     {{-- Ações --}}
                     <div style="width: 100px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; gap: 4px;">
+
                         {{-- Visualizar --}}
                         <a href="{{ route('admin.posts.edit', $post) }}"
                            class="mir-action-btn mir-action-edit"
@@ -110,19 +111,16 @@
                             </button>
                         </form>
 
-                        {{-- Rejeitar --}}
-                        <form action="{{ route('admin.posts.reject', $post) }}" method="POST" style="display:inline;"
-                              onsubmit="return confirm('Rejeitar e mover para rascunho?')">
-                            @csrf
-                            @method('PATCH')
-                            <button type="submit" class="mir-action-btn mir-action-delete"
-                                    data-tooltip="Rejeitar post">
-                                <svg width="12" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                                    <line x1="18" y1="6" x2="6" y2="18"/>
-                                    <line x1="6" y1="6" x2="18" y2="18"/>
-                                </svg>
-                            </button>
-                        </form>
+                        {{-- Rejeitar — abre modal --}}
+                        <button type="button"
+                                class="mir-action-btn mir-action-delete"
+                                data-tooltip="Rejeitar post"
+                                onclick="openRejectModal({{ $post->id }}, '{{ addslashes($post->title) }}')">
+                            <svg width="12" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="18" y1="6" x2="6" y2="18"/>
+                                <line x1="6" y1="6" x2="18" y2="18"/>
+                            </svg>
+                        </button>
                     </div>
                 </div>
             @empty
@@ -168,4 +166,81 @@
 
     </div>
 
+    {{-- ── Modal de Rejeição ─────────────────────────────────────────────────── --}}
+    <div id="reject-modal" style="display:none; position:fixed; inset:0; z-index:9999;
+         background:rgba(0,0,0,.45); align-items:center; justify-content:center;">
+        <div style="background:#fff; border-radius:12px; padding:28px; width:100%; max-width:460px;
+                    margin:16px; box-shadow:0 20px 60px rgba(0,0,0,.2);">
+
+            {{-- Header --}}
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:18px;">
+                <div>
+                    <div style="font-size:.95rem; font-weight:700; color:#1a1d23;">Rejeitar Post</div>
+                    <div id="reject-post-title" style="font-size:.78rem; color:#9ca3af; margin-top:2px;"></div>
+                </div>
+                <button onclick="closeRejectModal()"
+                        style="background:none; border:none; cursor:pointer; color:#9ca3af; padding:4px;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                </button>
+            </div>
+
+            {{-- Form --}}
+            <form id="reject-form" method="POST">
+                @csrf
+                @method('PATCH')
+
+                <div class="form-group" style="margin-bottom: 20px;">
+                    <label class="mir-label" style="margin-bottom:6px; display:block;">
+                        Motivo da rejeição
+                        <span style="color:#9ca3af; font-weight:400;">(opcional)</span>
+                    </label>
+                    <textarea name="reason" rows="4" class="mir-input"
+                              placeholder="Explique ao autor o que precisa ser corrigido..."
+                              style="resize:vertical;"></textarea>
+                    <div style="font-size:.72rem; color:#9ca3af; margin-top:4px;">
+                        O autor será notificado com esta mensagem.
+                    </div>
+                </div>
+
+                <div style="display:flex; gap:8px; justify-content:flex-end;">
+                    <button type="button" onclick="closeRejectModal()" class="mir-btn-neutral">
+                        Cancelar
+                    </button>
+                    <button type="submit"
+                            style="display:inline-flex; align-items:center; gap:6px; padding:8px 16px;
+                                   background:#fee2e2; color:#991b1b; border:1px solid #fca5a5;
+                                   border-radius:7px; font-size:.82rem; font-weight:600; cursor:pointer;">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                        </svg>
+                        Rejeitar Post
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
 @endsection
+
+@push('scripts')
+<script>
+    function openRejectModal(postId, postTitle) {
+        const base = '{{ url("admin/posts") }}';
+        document.getElementById('reject-form').action = base + '/' + postId + '/reject';
+        document.getElementById('reject-post-title').textContent = postTitle;
+        document.getElementById('reject-modal').style.display = 'flex';
+    }
+
+    function closeRejectModal() {
+        document.getElementById('reject-modal').style.display = 'none';
+        document.querySelector('#reject-form textarea[name="reason"]').value = '';
+    }
+
+    // Fecha ao clicar fora do modal
+    document.getElementById('reject-modal').addEventListener('click', function(e) {
+        if (e.target === this) closeRejectModal();
+    });
+</script>
+@endpush

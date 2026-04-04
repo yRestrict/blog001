@@ -6,6 +6,8 @@ use Livewire\Component;
 use Livewire\WithPagination;
 use App\Models\Post;
 use App\Models\Category;
+use Illuminate\Support\Facades\Auth;
+use App\Models\User;
 
 class Posts extends Component
 {
@@ -78,10 +80,12 @@ class Posts extends Component
              + ($this->filterFeatured ? 1 : 0);
     }
 
-    // ─── Modal de exclusão ──────────────────────────────────────────────────
+    // ─── Modal de exclusão ───────────────────────────────────────────────────
     public function prepareDelete(int $id): void
     {
         $post = Post::findOrFail($id);
+        $this->authorize('delete', $post);
+
         $this->deletingPostId    = $post->id;
         $this->deletingPostTitle = $post->title;
     }
@@ -95,6 +99,8 @@ class Posts extends Component
     public function deletePost(): void
     {
         $post = Post::findOrFail($this->deletingPostId);
+        $this->authorize('delete', $post);
+
         $post->delete();
 
         $this->deletingPostId    = null;
@@ -102,10 +108,11 @@ class Posts extends Component
         $this->dispatch('notify', type: 'success', message: 'Post movido para a lixeira!');
     }
 
-    // ─── Alternar status (published → draft → private → published) ──────────
+    // ─── Alternar status — somente owner ─────────────────────────────────────
     public function toggleStatus(int $id): void
     {
         $post = Post::findOrFail($id);
+        $this->authorize('approve', $post);
 
         $newStatus = match ($post->status) {
             'published' => 'draft',
@@ -114,7 +121,11 @@ class Posts extends Component
             default     => 'published',
         };
 
-        $post->update(['status' => $newStatus]);
+        // Se o owner publica manualmente, limpa o pending_review
+        $post->update([
+            'status'         => $newStatus,
+            'pending_review' => false,
+        ]);
 
         $label = match ($newStatus) {
             'published' => 'publicado',
@@ -125,18 +136,24 @@ class Posts extends Component
         $this->dispatch('notify', type: 'info', message: "Post {$label}.");
     }
 
-    // ─── Render ───────────────────────────────────────────────────────────────
+    // ─── Render ──────────────────────────────────────────────────────────────
     public function render()
     {
-        // Base query com todos os filtros (exceto status — contamos por status)
+        $user    = Auth::user();
+        $isOwner = $user->isOwner();
+
+        // Base query — author só vê os próprios posts
         $baseQuery = Post::query()
+            ->when(! $isOwner, fn ($q) =>
+                $q->where('author_id', $user->id)
+            )
             ->when($this->search, fn ($q) =>
                 $q->where('title', 'like', '%' . $this->search . '%')
             )
-            ->when($this->filterCategory, fn ($q) =>
+            ->when($isOwner && $this->filterCategory, fn ($q) =>
                 $q->where('category_id', $this->filterCategory)
             )
-            ->when($this->filterAuthor, fn ($q) =>
+            ->when($isOwner && $this->filterAuthor, fn ($q) =>
                 $q->where('author_id', $this->filterAuthor)
             )
             ->when($this->filterPeriod, fn ($q) => match ($this->filterPeriod) {
@@ -150,13 +167,14 @@ class Posts extends Component
                 $q->where('featured', true)
             );
 
-        // Widgets refletem os filtros (exceto filterStatus)
+        // Contagens por status
         $totalPosts     = (clone $baseQuery)->count();
         $publishedPosts = (clone $baseQuery)->where('status', 'published')->count();
         $draftPosts     = (clone $baseQuery)->where('status', 'draft')->count();
         $privatePosts   = (clone $baseQuery)->where('status', 'private')->count();
+        $pendingPosts   = $isOwner ? Post::where('pending_review', true)->count() : 0;
 
-        // Posts paginados (com filtro de status)
+        // Posts paginados
         $posts = (clone $baseQuery)
             ->with(['author', 'category', 'tags'])
             ->when($this->filterStatus, fn ($q) =>
@@ -165,11 +183,14 @@ class Posts extends Component
             ->latest()
             ->paginate($this->perPage);
 
-        // Dados para dropdown de filtros
-        $categories = Category::orderBy('name')->get(['id', 'name']);
-        $authors    = \App\Models\User::whereHas('posts')
-                        ->orderBy('name')
-                        ->get(['id', 'name']);
+        // Dados para dropdown de filtros (somente owner usa)
+        $categories = $isOwner
+            ? Category::orderBy('name')->get(['id', 'name'])
+            : collect();
+
+        $authors = $isOwner
+            ? User::whereHas('posts')->orderBy('name')->get(['id', 'name'])
+            : collect();
 
         return view('livewire.admin.posts', [
             'posts'          => $posts,
@@ -177,9 +198,11 @@ class Posts extends Component
             'publishedPosts' => $publishedPosts,
             'draftPosts'     => $draftPosts,
             'privatePosts'   => $privatePosts,
-            'trashedPosts'   => Post::onlyTrashed()->count(),
+            'pendingPosts'   => $pendingPosts,
+            'trashedPosts'   => $isOwner ? Post::onlyTrashed()->count() : null,
             'categories'     => $categories,
             'authors'        => $authors,
+            'isOwner'        => $isOwner,
         ]);
     }
 }

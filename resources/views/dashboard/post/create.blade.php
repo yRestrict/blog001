@@ -164,19 +164,19 @@
                         <div class="form-group">
                             <label class="mir-label">Status</label>
                             <div class="status-pills">
-                                <label class="status-pill {{ old('status', 'draft') === 'draft' ? 'selected-draft' : '' }}">
+                                <label class="status-pill {{ old('status', 'published') === 'draft' ? 'selected-draft' : '' }}">
                                     <input type="radio" name="status" value="draft"
-                                        {{ old('status', 'draft') === 'draft' ? 'checked' : '' }}>
+                                        {{ old('status', 'published') === 'draft' ? 'checked' : '' }}>
                                     <span class="status-pill-ring"></span> Rascunho
                                 </label>
-                                <label class="status-pill {{ old('status') === 'published' ? 'selected-published' : '' }}">
+                                <label class="status-pill {{ old('status', 'published') === 'published' ? 'selected-published' : '' }}">
                                     <input type="radio" name="status" value="published"
-                                        {{ old('status') === 'published' ? 'checked' : '' }}>
+                                        {{ old('status', 'published') === 'published' ? 'checked' : '' }}>
                                     <span class="status-pill-ring"></span> Publicado
                                 </label>
-                                <label class="status-pill {{ old('status') === 'private' ? 'selected-private' : '' }}">
+                                <label class="status-pill {{ old('status', 'published') === 'private' ? 'selected-private' : '' }}">
                                     <input type="radio" name="status" value="private"
-                                        {{ old('status') === 'private' ? 'checked' : '' }}>
+                                        {{ old('status', 'published') === 'private' ? 'checked' : '' }}>
                                     <span class="status-pill-ring"></span> Privado
                                 </label>
                             </div>
@@ -185,17 +185,19 @@
 
                         <hr class="form-divider">
 
-                        <div class="form-group" style="margin-bottom: 12px;">
-                            <div class="mir-switch-wrap">
-                                <input type="hidden" name="featured" value="0">
-                                <input type="checkbox" name="featured" value="1" id="featured"
-                                    class="mir-switch-input" {{ old('featured') ? 'checked' : '' }}>
-                                <label for="featured" class="mir-switch-label">
-                                    <span class="mir-switch-track"><span class="mir-switch-thumb"></span></span>
-                                    <span class="mir-switch-text">Post em destaque</span>
-                                </label>
+                        @can('feature', $post ?? new \App\Models\Post())
+                            <div class="form-group" style="margin-bottom: 12px;">
+                                <div class="mir-switch-wrap">
+                                    <input type="hidden" name="featured" value="0">
+                                    <input type="checkbox" name="featured" value="1" id="featured"
+                                        class="mir-switch-input" {{ old('featured') ? 'checked' : '' }}>
+                                    <label for="featured" class="mir-switch-label">
+                                        <span class="mir-switch-track"><span class="mir-switch-thumb"></span></span>
+                                        <span class="mir-switch-text">Post em destaque</span>
+                                    </label>
+                                </div>
                             </div>
-                        </div>
+                        @endcan
                         <div class="form-group" style="margin-bottom: 0;">
                             <div class="mir-switch-wrap">
                                 <input type="hidden" name="comment" value="0">

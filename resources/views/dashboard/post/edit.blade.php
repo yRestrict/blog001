@@ -196,17 +196,19 @@
 
                         <hr class="form-divider">
 
-                        <div class="form-group" style="margin-bottom: 12px;">
-                            <div class="mir-switch-wrap">
-                                <input type="hidden" name="featured" value="0">
-                                <input type="checkbox" name="featured" value="1" id="featured"
-                                    class="mir-switch-input" {{ old('featured', $post->featured) ? 'checked' : '' }}>
-                                <label for="featured" class="mir-switch-label">
-                                    <span class="mir-switch-track"><span class="mir-switch-thumb"></span></span>
-                                    <span class="mir-switch-text">Post em destaque</span>
-                                </label>
+                        @can('feature', $post ?? new \App\Models\Post())
+                            <div class="form-group" style="margin-bottom: 12px;">
+                                <div class="mir-switch-wrap">
+                                    <input type="hidden" name="featured" value="0">
+                                    <input type="checkbox" name="featured" value="1" id="featured"
+                                        class="mir-switch-input" {{ old('featured', $post->featured) ? 'checked' : '' }}>
+                                    <label for="featured" class="mir-switch-label">
+                                        <span class="mir-switch-track"><span class="mir-switch-thumb"></span></span>
+                                        <span class="mir-switch-text">Post em destaque</span>
+                                    </label>
+                                </div>
                             </div>
-                        </div>
+                        @endcan
                         <div class="form-group" style="margin-bottom: 0;">
                             <div class="mir-switch-wrap">
                                 <input type="hidden" name="comment" value="0">

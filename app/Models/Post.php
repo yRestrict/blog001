@@ -20,20 +20,22 @@ class Post extends Model
         'slug',
         'content',
         'thumbnail',
-        'views',       
+        'views',
         'featured',
         'comment',
         'status',
+        'pending_review',
         'meta_keywords',
         'meta_description',
         'downloads',
     ];
 
     protected $casts = [
-        'featured'  => 'boolean',
-        'comment'   => 'boolean',
-        'views'     => 'integer',
-        'downloads' => 'integer',
+        'featured'       => 'boolean',
+        'comment'        => 'boolean',
+        'pending_review' => 'boolean',
+        'views'          => 'integer',
+        'downloads'      => 'integer',
     ];
 
     public function getSlugOptions(): SlugOptions

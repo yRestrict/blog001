@@ -9,11 +9,16 @@ use App\Models\Setting;
 use Artesaos\SEOTools\Facades\SEOMeta;
 use Artesaos\SEOTools\Facades\SEOTools;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\Auth;
+
 
 class PostController extends Controller
 {
     public function index($slug)
     {
+        $user = Auth::user();
+
+        // Busca o post pelo slug — sem filtrar status ainda
         $post = Post::with([
                         'category',
                         'author',
@@ -22,15 +27,36 @@ class PostController extends Controller
                         'comments.replies.user',
                     ])
                     ->withCount(['tags', 'likes', 'comments'])
-                    ->where('status', 'published')
                     ->where('slug', $slug)
-                    ->firstOrFail();
+                    ->first();
 
-        $post->increment('views');
+        // Post não existe → 404
+        if (! $post) {
+            abort(404);
+        }
+
+        // Regras de visibilidade:
+        // - published  → qualquer um
+        // - private    → owner ou author dono do post (logado)
+        // - draft      → ninguém no frontend
+
+        $user = Auth::user();
+        $canView = match ($post->status) {
+            'published' => true,
+            'private'   => $user && ($user->isOwner() || $user->id === $post->author_id),
+            default     => false,
+        };
+
+        if (! $canView) {
+            abort(404);
+        }
+
+        // Só incrementa views em posts publicados
+        if ($post->status === 'published') {
+            $post->increment('views');
+        }
 
         // ── SEO ───────────────────────────────────────────────────────────────
-        // Usa excerpt() que remove o <select> do code-block antes de strip_tags
-        // $description = $post->meta_description ?: $post->excerpt(160);
         $description = $post->meta_description ?? $post->clean_description;
 
         SEOTools::setTitle($post->title, false);
