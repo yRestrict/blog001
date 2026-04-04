@@ -12,12 +12,20 @@
             <span class="page-header-sub">Gerencie todos os posts do blog</span>
         </div>
         <div class="page-header-right">
-            <a href="{{ route('admin.posts.trash') }}" class="mir-btn-neutral">
-                <i class="fa-solid fa-trash-can"></i> Lixeira
-                @if($trashedPosts > 0)
-                    <span style="display:inline-flex;align-items:center;justify-content:center;min-width:18px;height:18px;padding:0 5px;border-radius:50px;font-size:.65rem;font-weight:700;background:#fee2e2;color:#991b1b;margin-left:2px;">{{ $trashedPosts }}</span>
-                @endif
-            </a>
+            @if($isOwner)
+                <a href="{{ route('admin.posts.pending') }}" class="mir-btn-neutral">
+                    <i class="fa-solid fa-clock"></i> Pendentes
+                    @if($pendingPosts > 0)
+                        <span style="display:inline-flex;align-items:center;justify-content:center;min-width:18px;height:18px;padding:0 5px;border-radius:50px;font-size:.65rem;font-weight:700;background:#fef3c7;color:#92400e;margin-left:2px;">{{ $pendingPosts }}</span>
+                    @endif
+                </a>
+                <a href="{{ route('admin.posts.trash') }}" class="mir-btn-neutral">
+                    <i class="fa-solid fa-trash-can"></i> Lixeira
+                    @if($trashedPosts > 0)
+                        <span style="display:inline-flex;align-items:center;justify-content:center;min-width:18px;height:18px;padding:0 5px;border-radius:50px;font-size:.65rem;font-weight:700;background:#fee2e2;color:#991b1b;margin-left:2px;">{{ $trashedPosts }}</span>
+                    @endif
+                </a>
+            @endif
             <a href="{{ route('admin.posts.create') }}" class="mir-btn-primary-lg">
                 <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
                 Novo Post
@@ -93,65 +101,67 @@
                 <option value="private">Privado</option>
             </select>
             <div style="flex:1;"></div>
-            <div class="filter-dropdown-wrap">
-                <button wire:click="toggleFilters" class="filter-dropdown-btn {{ $showFilters ? 'open' : '' }}">
-                    <i class="fa-solid fa-sliders" style="font-size:.75rem;"></i>
-                    Filtros
-                    @if($this->activeFilterCount > 0)
-                        <span class="filter-badge">{{ $this->activeFilterCount }}</span>
+            @if($isOwner)
+                <div class="filter-dropdown-wrap">
+                    <button wire:click="toggleFilters" class="filter-dropdown-btn {{ $showFilters ? 'open' : '' }}">
+                        <i class="fa-solid fa-sliders" style="font-size:.75rem;"></i>
+                        Filtros
+                        @if($this->activeFilterCount > 0)
+                            <span class="filter-badge">{{ $this->activeFilterCount }}</span>
+                        @endif
+                    </button>
+                    @if($showFilters)
+                        <div class="filter-dropdown-panel open">
+                            <div class="filter-panel-header">
+                                <span class="filter-panel-title">Filtros</span>
+                                <button wire:click="clearFilters" class="filter-panel-clear">Limpar tudo</button>
+                            </div>
+                            <div class="filter-panel-body">
+                                <div class="filter-group">
+                                    <div class="filter-group-label">Categoria</div>
+                                    <div class="filter-chips">
+                                        @foreach($categories as $cat)
+                                            <span wire:click="setFilterCategory({{ $cat->id }})" class="filter-chip {{ $filterCategory === $cat->id ? 'active' : '' }}">{{ $cat->name }}</span>
+                                        @endforeach
+                                    </div>
+                                </div>
+                                <div class="filter-group">
+                                    <div class="filter-group-label">Autor</div>
+                                    <div class="filter-chips">
+                                        @foreach($authors as $author)
+                                            <span wire:click="setFilterAuthor({{ $author->id }})" class="filter-chip {{ $filterAuthor === $author->id ? 'active' : '' }}">{{ $author->name }}</span>
+                                        @endforeach
+                                    </div>
+                                </div>
+                                <div class="filter-group">
+                                    <div class="filter-group-label">Período</div>
+                                    <div class="filter-chips">
+                                        <span wire:click="setFilterPeriod('today')" class="filter-chip {{ $filterPeriod === 'today' ? 'active' : '' }}">Hoje</span>
+                                        <span wire:click="setFilterPeriod('this_week')" class="filter-chip {{ $filterPeriod === 'this_week' ? 'active' : '' }}">Esta semana</span>
+                                        <span wire:click="setFilterPeriod('this_month')" class="filter-chip {{ $filterPeriod === 'this_month' ? 'active' : '' }}">Este mês</span>
+                                        <span wire:click="setFilterPeriod('this_year')" class="filter-chip {{ $filterPeriod === 'this_year' ? 'active' : '' }}">Este ano</span>
+                                    </div>
+                                </div>
+                                <div class="filter-group" style="margin-bottom:0;">
+                                    <div class="filter-group-label">Opções</div>
+                                    <div class="filter-chips">
+                                        <span wire:click="toggleFilterFeatured" class="filter-chip {{ $filterFeatured ? 'active' : '' }}">
+                                            <span class="filter-chip-dot" style="background:#f59e0b;"></span>
+                                            Destaques
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="filter-panel-footer">
+                                <button wire:click="toggleFilters" class="mir-btn-ghost" style="padding:5px 12px;font-size:.76rem;">Fechar</button>
+                            </div>
+                        </div>
                     @endif
-                </button>
-                @if($showFilters)
-                    <div class="filter-dropdown-panel open">
-                        <div class="filter-panel-header">
-                            <span class="filter-panel-title">Filtros</span>
-                            <button wire:click="clearFilters" class="filter-panel-clear">Limpar tudo</button>
-                        </div>
-                        <div class="filter-panel-body">
-                            <div class="filter-group">
-                                <div class="filter-group-label">Categoria</div>
-                                <div class="filter-chips">
-                                    @foreach($categories as $cat)
-                                        <span wire:click="setFilterCategory({{ $cat->id }})" class="filter-chip {{ $filterCategory === $cat->id ? 'active' : '' }}">{{ $cat->name }}</span>
-                                    @endforeach
-                                </div>
-                            </div>
-                            <div class="filter-group">
-                                <div class="filter-group-label">Autor</div>
-                                <div class="filter-chips">
-                                    @foreach($authors as $author)
-                                        <span wire:click="setFilterAuthor({{ $author->id }})" class="filter-chip {{ $filterAuthor === $author->id ? 'active' : '' }}">{{ $author->name }}</span>
-                                    @endforeach
-                                </div>
-                            </div>
-                            <div class="filter-group">
-                                <div class="filter-group-label">Período</div>
-                                <div class="filter-chips">
-                                    <span wire:click="setFilterPeriod('today')" class="filter-chip {{ $filterPeriod === 'today' ? 'active' : '' }}">Hoje</span>
-                                    <span wire:click="setFilterPeriod('this_week')" class="filter-chip {{ $filterPeriod === 'this_week' ? 'active' : '' }}">Esta semana</span>
-                                    <span wire:click="setFilterPeriod('this_month')" class="filter-chip {{ $filterPeriod === 'this_month' ? 'active' : '' }}">Este mês</span>
-                                    <span wire:click="setFilterPeriod('this_year')" class="filter-chip {{ $filterPeriod === 'this_year' ? 'active' : '' }}">Este ano</span>
-                                </div>
-                            </div>
-                            <div class="filter-group" style="margin-bottom:0;">
-                                <div class="filter-group-label">Opções</div>
-                                <div class="filter-chips">
-                                    <span wire:click="toggleFilterFeatured" class="filter-chip {{ $filterFeatured ? 'active' : '' }}">
-                                        <span class="filter-chip-dot" style="background:#f59e0b;"></span>
-                                        Destaques
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="filter-panel-footer">
-                            <button wire:click="toggleFilters" class="mir-btn-ghost" style="padding:5px 12px;font-size:.76rem;">Fechar</button>
-                        </div>
-                    </div>
-                @endif
-            </div>
+                </div>
+            @endif
         </div>
 
-        {{-- Loading bar — elemento permanente, animação via classe --}}
+        {{-- Loading bar --}}
         <div class="post-loading-track" wire:loading.class="post-loading-active"></div>
 
         {{-- Table Header --}}
@@ -165,7 +175,7 @@
             <span class="plh-actions">Ações</span>
         </div>
 
-        {{-- Data Rows com loading overlay --}}
+        {{-- Data Rows --}}
         <div class="mir-data-list" wire:loading.class="mir-loading-overlay">
             @forelse($posts as $post)
                 <div class="mir-data-row" wire:key="post-{{ $post->id }}">
@@ -186,6 +196,11 @@
                             @if($post->featured)
                                 <span class="mir-badge-feat">
                                     <i class="fa-solid fa-star" style="font-size:.55rem"></i> Destaque
+                                </span>
+                            @endif
+                            @if($post->pending_review)
+                                <span class="mir-badge-pending">
+                                    <i class="fa-solid fa-clock" style="font-size:.55rem"></i> Pendente
                                 </span>
                             @endif
                         </div>
@@ -214,12 +229,19 @@
                     {{-- Divider --}}
                     <div class="mir-divider"></div>
 
-                    {{-- Status Pill --}}
+                    {{-- Status Pill — owner alterna, author só visualiza --}}
                     <div style="width:90px;flex-shrink:0;display:flex;justify-content:center;">
-                        <button wire:click="toggleStatus({{ $post->id }})" class="mir-status is-{{ $post->status }}" data-tooltip="Clique para alterar status">
-                            <span class="mir-status-ring"></span>
-                            {{ match($post->status) { 'published' => 'Publicado', 'private' => 'Privado', default => 'Rascunho' } }}
-                        </button>
+                        @if($isOwner)
+                            <button wire:click="toggleStatus({{ $post->id }})" class="mir-status is-{{ $post->status }}" data-tooltip="Clique para alterar status">
+                                <span class="mir-status-ring"></span>
+                                {{ match($post->status) { 'published' => 'Publicado', 'private' => 'Privado', default => 'Rascunho' } }}
+                            </button>
+                        @else
+                            <span class="mir-status is-{{ $post->status }}">
+                                <span class="mir-status-ring"></span>
+                                {{ match($post->status) { 'published' => 'Publicado', 'private' => 'Privado', default => 'Rascunho' } }}
+                            </span>
+                        @endif
                     </div>
 
                     {{-- Divider --}}
@@ -227,6 +249,12 @@
 
                     {{-- Actions --}}
                     <div class="mir-actions">
+                        <a href="{{ route('frontend.post', $post->slug) }}"
+                           class="mir-action-btn mir-action-view"
+                           data-tooltip="Visualizar post"
+                           target="_blank">
+                            <i class="fa-solid fa-eye"></i>
+                        </a>
                         <a href="{{ route('admin.posts.edit', $post->id) }}" class="mir-action-btn mir-action-edit" data-tooltip="Editar post">
                             <i class="fa-solid fa-pen-to-square"></i>
                         </a>
@@ -258,7 +286,7 @@
             @endforelse
         </div>
 
-        {{-- Paginação — sempre visível --}}
+        {{-- Paginação --}}
         <div class="mir-pagination">
             <div class="mir-pagination-left">
                 <span class="mir-pagination-left-label">Por página</span>
@@ -271,17 +299,14 @@
             </div>
             <div class="mir-pagination-center">
                 @if($posts->lastPage() > 1)
-                    {{-- Previous --}}
                     <button wire:click="previousPage" class="mir-page-btn {{ $posts->onFirstPage() ? 'disabled' : '' }}" {{ $posts->onFirstPage() ? 'disabled' : '' }}>
                         <i class="fa-solid fa-chevron-left" style="font-size:.65rem"></i>
                     </button>
-                    {{-- Page numbers --}}
                     @foreach($posts->getUrlRange(1, $posts->lastPage()) as $page => $url)
                         <button wire:click="gotoPage({{ $page }})" class="mir-page-btn {{ $page == $posts->currentPage() ? 'active' : '' }}">
                             {{ $page }}
                         </button>
                     @endforeach
-                    {{-- Next --}}
                     <button wire:click="nextPage" class="mir-page-btn {{ !$posts->hasMorePages() ? 'disabled' : '' }}" {{ !$posts->hasMorePages() ? 'disabled' : '' }}>
                         <i class="fa-solid fa-chevron-right" style="font-size:.65rem"></i>
                     </button>
@@ -349,7 +374,6 @@
     {{-- SCOPED STYLES                                                    --}}
     {{-- ================================================================ --}}
     <style>
-        /* ── Section Card (post-specific) ──────────────────── */
         .post-section {
             background: #fff;
             border-radius: 10px;
@@ -375,12 +399,9 @@
             border-bottom: 1px solid #f0f0f0;
             gap: 16px;
         }
-
-        /* ── Thumbnail ──────────────────────────────────────── */
         .post-thumb {
             width: 48px; height: 48px;
             border-radius: 8px;
-            object-fit: cover;
             border: 1px solid #e5e7eb;
             flex-shrink: 0;
             background: #f3f4f6;
@@ -389,15 +410,12 @@
             overflow: hidden;
         }
         .post-thumb img { width: 100%; height: 100%; object-fit: cover; }
-
-        /* ── Body ───────────────────────────────────────────── */
         .post-body { flex: 1 1 0; min-width: 0; }
         .post-name {
             font-size: .875rem; font-weight: 600; color: #1a1d23;
             white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
             display: flex; align-items: center; gap: 6px; min-width: 0;
         }
-
         .post-name-text {
             white-space: nowrap;
             overflow: hidden;
@@ -409,14 +427,17 @@
             display: flex; align-items: center; gap: 6px;
         }
         .post-info-dot { width: 3px; height: 3px; border-radius: 50%; background: #d1d5db; }
-
-        /* ── Meta ───────────────────────────────────────────── */
         .post-meta {
             display: flex; align-items: center; gap: 8px;
             flex-shrink: 0; width: 160px; justify-content: flex-end;
         }
-
-        /* ── Loading track ──────────────────────────────────── */
+        .mir-badge-pending {
+            display: inline-flex; align-items: center; gap: 3px;
+            padding: 2px 7px; border-radius: 50px;
+            font-size: .65rem; font-weight: 700;
+            background: #fef3c7; color: #92400e;
+            flex-shrink: 0;
+        }
         .post-loading-track {
             height: 3px;
             background: #f0f0f0;
@@ -426,20 +447,15 @@
         .post-loading-track.post-loading-active::after {
             content: '';
             position: absolute;
-            top: 0;
-            left: -40%;
-            width: 40%;
-            height: 100%;
+            top: 0; left: -40%;
+            width: 40%; height: 100%;
             background: linear-gradient(90deg, transparent, #6366f1, transparent);
             border-radius: 2px;
             animation: mir-loading-slide 1.2s ease-in-out infinite;
         }
-
-        /* ── Toast container ─────────────────────────────────── */
         #post-toast-container {
             position: fixed;
-            bottom: 24px;
-            right: 24px;
+            bottom: 24px; right: 24px;
             z-index: 9999;
             display: flex;
             flex-direction: column;
@@ -447,12 +463,8 @@
         }
     </style>
 
-    {{-- ================================================================ --}}
-    {{-- SCRIPTS: Toast                                                   --}}
-    {{-- ================================================================ --}}
     @push('scripts')
     <script>
-    /* ─── Toast ─────────────────────────────────────────────────────── */
     function postShowToast(type, message) {
         const container = document.getElementById('post-toast-container');
         if (!container) return;

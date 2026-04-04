@@ -40,6 +40,8 @@ class PostsTrash extends Component
     // ─── Restaurar post ─────────────────────────────────────────────────────
     public function restorePost(int $id): void
     {
+        $this->authorize('viewTrashed', Post::class);
+
         Post::onlyTrashed()->findOrFail($id)->restore();
         $this->dispatch('notify', type: 'success', message: 'Post restaurado com sucesso!');
     }
@@ -47,6 +49,8 @@ class PostsTrash extends Component
     // ─── Restaurar todos ────────────────────────────────────────────────────
     public function restoreAll(): void
     {
+        $this->authorize('viewTrashed', Post::class);
+
         Post::onlyTrashed()->restore();
         $this->dispatch('notify', type: 'success', message: 'Todos os posts foram restaurados!');
     }
@@ -54,6 +58,8 @@ class PostsTrash extends Component
     // ─── Preparar exclusão permanente (abre modal) ──────────────────────────
     public function prepareForceDelete(int $id): void
     {
+        $this->authorize('forceDelete', Post::class);
+
         $post = Post::onlyTrashed()->findOrFail($id);
         $this->deletingPostId = $post->id;
         $this->deletingPostTitle = $post->title;
@@ -68,20 +74,19 @@ class PostsTrash extends Component
     // ─── Excluir permanentemente ────────────────────────────────────────────
     public function forceDeletePost(): void
     {
-        if (!$this->deletingPostId) {
+        $this->authorize('forceDelete', Post::class);
+
+        if (! $this->deletingPostId) {
             return;
         }
 
         $post = Post::onlyTrashed()->findOrFail($this->deletingPostId);
 
-        // Remove imagem do disco se existir
         if ($post->thumbnail && file_exists(public_path('uploads/posts/' . $post->thumbnail))) {
             unlink(public_path('uploads/posts/' . $post->thumbnail));
         }
 
-        // Desvincula tags da pivot antes de excluir
         $post->tags()->detach();
-
         $post->forceDelete();
 
         $this->deletingPostId = null;
@@ -89,9 +94,11 @@ class PostsTrash extends Component
         $this->dispatch('notify', type: 'success', message: 'Post excluído permanentemente!');
     }
 
-    // ─── Esvaziar lixeira (modal) ───────────────────────────────────────────
+    // ─── Esvaziar lixeira ───────────────────────────────────────────────────
     public function confirmEmptyTrash(): void
     {
+        $this->authorize('forceDelete', Post::class);
+
         $this->confirmingEmptyTrash = true;
     }
 
@@ -102,6 +109,8 @@ class PostsTrash extends Component
 
     public function emptyTrash(): void
     {
+        $this->authorize('forceDelete', Post::class);
+
         $posts = Post::onlyTrashed()->get();
 
         foreach ($posts as $post) {
@@ -119,6 +128,8 @@ class PostsTrash extends Component
     // ─── Render ─────────────────────────────────────────────────────────────
     public function render()
     {
+        $this->authorize('viewTrashed', Post::class);
+
         $posts = Post::onlyTrashed()
             ->with(['author', 'category'])
             ->when($this->search, fn ($q) =>

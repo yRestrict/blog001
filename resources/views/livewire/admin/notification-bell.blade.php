@@ -42,13 +42,16 @@
                             {{-- Ícone por tipo --}}
                             <div class="mr-3 mt-1" style="font-size: 1.4rem; min-width: 30px; text-align:center;">
                                 @switch($notification->data['type'])
-                                    @case('comment')  💬 @break
-                                    @case('reply')    💬 @break
+                                    @case('comment')          💬 @break
+                                    @case('reply')            💬 @break
                                     @case('reaction')
                                         {{ $notification->data['emoji'] ?? '👍' }}
                                     @break
                                     @case('comment_approved') ✅ @break
-                                    @default 🔔
+                                    @case('post_approved')    ✅ @break
+                                    @case('post_rejected')    ❌ @break
+                                    @case('post_pending')     ⏳ @break
+                                    @default                  🔔
                                 @endswitch
                             </div>
 
