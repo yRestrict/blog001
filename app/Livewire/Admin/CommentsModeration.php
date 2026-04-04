@@ -5,6 +5,8 @@ namespace App\Livewire\Admin;
 use App\Models\Comment;
 use App\Models\PostNotificationSetting;
 use App\Notifications\CommentApprovedNotification;
+use App\Notifications\CommentModeratedByAuthorNotification;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -16,7 +18,7 @@ class CommentsModeration extends Component
     public string $filterStatus = 'pending';
     public string $search       = '';
     public bool   $showTrash    = false;
-    public int    $perPage       = 10;
+    public int    $perPage      = 10;
 
     // Para o modal de exclusão
     public ?int   $deletingCommentId    = null;
@@ -39,11 +41,16 @@ class CommentsModeration extends Component
     public function approve(int $id): void
     {
         $comment = Comment::findOrFail($id);
-
         $this->authorizeComment($comment);
 
         $comment->update(['status' => 'approved']);
         CommentApprovedNotification::dispatch($comment);
+
+        // Se quem aprovou é author, notifica os owners
+        $user = Auth::user();
+        if ($user->isAuthor()) {
+            $this->notifyOwners($comment, 'approved');
+        }
 
         $this->dispatch('notify', type: 'success', message: 'Comentário aprovado!');
     }
@@ -54,11 +61,24 @@ class CommentsModeration extends Component
         $this->authorizeComment($comment);
 
         $comment->update(['status' => 'rejected']);
+
+        // Se quem rejeitou é author, notifica os owners
+        $user = Auth::user();
+        if ($user->isAuthor()) {
+            $this->notifyOwners($comment, 'rejected');
+        }
+
         $this->dispatch('notify', type: 'warning', message: 'Comentário rejeitado.');
     }
 
     public function prepareDelete(int $id): void
     {
+        // Somente owner pode excluir
+        if (! Auth::user()->isOwner()) {
+            $this->dispatch('notify', type: 'error', message: 'Você não tem permissão para excluir comentários.');
+            return;
+        }
+
         $comment = Comment::findOrFail($id);
         $this->deletingCommentId   = $comment->id;
         $this->deletingCommentBody = \Illuminate\Support\Str::limit($comment->body, 80);
@@ -72,10 +92,15 @@ class CommentsModeration extends Component
 
     public function destroy(): void
     {
-        $comment = Comment::findOrFail($this->deletingCommentId);
-        $this->authorizeComment($comment);
+        // Somente owner pode excluir
+        if (! Auth::user()->isOwner()) {
+            $this->dispatch('notify', type: 'error', message: 'Você não tem permissão para excluir comentários.');
+            return;
+        }
 
+        $comment = Comment::findOrFail($this->deletingCommentId);
         $comment->delete();
+
         $this->deletingCommentId   = null;
         $this->deletingCommentBody = '';
         $this->dispatch('notify', type: 'success', message: 'Comentário removido.');
@@ -83,34 +108,47 @@ class CommentsModeration extends Component
 
     public function restore(int $id): void
     {
-        $comment = Comment::onlyTrashed()->findOrFail($id);
-        $this->authorizeComment($comment);
+        if (! Auth::user()->isOwner()) {
+            $this->dispatch('notify', type: 'error', message: 'Você não tem permissão para restaurar comentários.');
+            return;
+        }
 
+        $comment = Comment::onlyTrashed()->findOrFail($id);
         $comment->restore();
         $this->dispatch('notify', type: 'success', message: 'Comentário restaurado.');
     }
 
     public function forceDelete(int $id): void
     {
-        $comment = Comment::onlyTrashed()->findOrFail($id);
-        $this->authorizeComment($comment);
+        if (! Auth::user()->isOwner()) {
+            $this->dispatch('notify', type: 'error', message: 'Você não tem permissão para excluir permanentemente.');
+            return;
+        }
 
+        $comment = Comment::onlyTrashed()->findOrFail($id);
         $comment->forceDelete();
         $this->dispatch('notify', type: 'success', message: 'Comentário excluído permanentemente.');
     }
 
     public function approveAll(): void
     {
+        $user    = Auth::user();
+        $isOwner = $user->isOwner();
+
         $query = Comment::where('status', 'pending');
 
         // Author só aprova dos próprios posts
-        if (! Auth::user()->isOwner()) {
+        if (! $isOwner) {
             $query->whereHas('post', fn($q) => $q->where('author_id', Auth::id()));
         }
 
-        $query->get()->each(function ($comment) {
+        $query->get()->each(function ($comment) use ($user, $isOwner) {
             $comment->update(['status' => 'approved']);
             CommentApprovedNotification::dispatch($comment);
+
+            if (! $isOwner) {
+                $this->notifyOwners($comment, 'approved');
+            }
         });
 
         $this->dispatch('notify', type: 'success', message: 'Todos os pendentes foram aprovados!');
@@ -155,6 +193,12 @@ class CommentsModeration extends Component
         $user    = Auth::user();
         $isOwner = $user->isOwner();
 
+        // Carrega mute settings do usuário logado para os posts visíveis
+        $mutedPostIds = PostNotificationSetting::where('user_id', $user->id)
+            ->where(fn($q) => $q->where('mute_likes', true)->orWhere('mute_comments', true))
+            ->pluck('post_id')
+            ->toArray();
+
         $query = $this->showTrash
             ? Comment::onlyTrashed()->with(['post', 'user', 'parent'])
             : Comment::with(['post', 'user', 'parent'])
@@ -197,6 +241,7 @@ class CommentsModeration extends Component
             'trashCount'    => $trashCount,
             'totalCount'    => $totalCount,
             'isOwner'       => $isOwner,
+            'mutedPostIds'  => $mutedPostIds,
         ]);
     }
 
@@ -211,6 +256,14 @@ class CommentsModeration extends Component
         // Author só pode moderar comentários dos próprios posts
         if ($comment->post->author_id !== $user->id) {
             abort(403);
+        }
+    }
+
+    private function notifyOwners(Comment $comment, string $action): void
+    {
+        $owners = User::where('role', 'owner')->get();
+        foreach ($owners as $owner) {
+            $owner->notify(new CommentModeratedByAuthorNotification($comment, $action));
         }
     }
 }

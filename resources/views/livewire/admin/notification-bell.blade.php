@@ -48,10 +48,11 @@
                                         {{ $notification->data['emoji'] ?? '👍' }}
                                     @break
                                     @case('comment_approved') ✅ @break
-                                    @case('post_approved')    ✅ @break
-                                    @case('post_rejected')    ❌ @break
-                                    @case('post_pending')     ⏳ @break
-                                    @default                  🔔
+                                    @case('post_approved')              ✅ @break
+                                    @case('post_rejected')              ❌ @break
+                                    @case('post_pending')               ⏳ @break
+                                    @case('comment_moderated_by_author') 🛡️ @break
+                                    @default                            🔔
                                 @endswitch
                             </div>
 

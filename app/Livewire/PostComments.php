@@ -140,8 +140,8 @@ class PostComments extends Component
 
         $user = Auth::user();
 
-        if ($user->isOwner()) return 'approved';
-        if ($user->isAuthor() && $this->post->author_id === $user->id) return 'approved';
+        // Owner e Author vão direto como aprovado em qualquer post
+        if ($user->isOwner() || $user->isAuthor()) return 'approved';
 
         return 'pending';
     }

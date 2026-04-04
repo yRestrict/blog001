@@ -5,7 +5,6 @@
     {{-- SCOPED STYLES                                                    --}}
     {{-- ================================================================ --}}
     <style>
-        /* ── Section Card (cmt-specific) ──────────────────── */
         .cmt-section {
             background: #fff;
             border-radius: 10px;
@@ -31,123 +30,75 @@
             border-bottom: 1px solid #f0f0f0;
             gap: 16px;
         }
-
-        /* ── Table Header ──────────────────────────────────── */
-        .cmt-header { width: 48px; flex-shrink: 0; }
-        .cmth-author { width: 160px; flex-shrink: 0; }
-        .cmth-body   { flex: 1 1 0; min-width: 0; }
-        .cmth-post   { width: 140px; flex-shrink: 0; }
-        .cmth-date   { width: 90px; flex-shrink: 0; text-align: right; }
-        .cmth-status { width: 90px; flex-shrink: 0; text-align: center; }
+        .cmth-author  { width: 160px; flex-shrink: 0; }
+        .cmth-body    { flex: 1 1 0; min-width: 0; }
+        .cmth-post    { width: 140px; flex-shrink: 0; }
+        .cmth-date    { width: 90px; flex-shrink: 0; text-align: right; }
+        .cmth-status  { width: 90px; flex-shrink: 0; text-align: center; }
         .cmth-actions { width: 100px; flex-shrink: 0; text-align: center; }
-        .plh-divider { width: 1px; height: 16px; background: #e5e7eb; margin: 0 10px; flex-shrink: 0; }
-
-        /* ── Data Row Columns ──────────────────────────────── */
-        .cmt-author {
-            width: 160px;
-            flex-shrink: 0;
-            min-width: 0;
-        }
+        .plh-divider  { width: 1px; height: 16px; background: #e5e7eb; margin: 0 10px; flex-shrink: 0; }
+        .cmt-author   { width: 160px; flex-shrink: 0; min-width: 0; }
         .cmt-author-name {
-            font-size: .875rem;
-            font-weight: 600;
-            color: #1a1d23;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+            font-size: .875rem; font-weight: 600; color: #1a1d23;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
         }
         .cmt-author-email {
-            font-size: .72rem;
-            color: #9ca3af;
+            font-size: .72rem; color: #9ca3af;
             font-family: ui-monospace, monospace;
             margin-top: 1px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
         }
-
-        .cmt-body {
-            flex: 1 1 0;
-            min-width: 0;
-        }
+        .cmt-body { flex: 1 1 0; min-width: 0; }
         .cmt-reply-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            padding: 2px 8px;
-            border-radius: 50px;
-            font-size: .65rem;
-            font-weight: 600;
-            background: #ede9fe;
-            color: #6d28d9;
+            display: inline-flex; align-items: center; gap: 4px;
+            padding: 2px 8px; border-radius: 50px;
+            font-size: .65rem; font-weight: 600;
+            background: #ede9fe; color: #6d28d9;
             margin-bottom: 3px;
         }
         .cmt-text {
-            font-size: .82rem;
-            color: #374151;
-            line-height: 1.4;
+            font-size: .82rem; color: #374151; line-height: 1.4;
             display: -webkit-box;
             -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
             overflow: hidden;
         }
-
-        .cmt-post {
-            width: 140px;
-            flex-shrink: 0;
-            min-width: 0;
-        }
+        .cmt-post { width: 140px; flex-shrink: 0; min-width: 0; }
         .cmt-post-link {
-            font-size: .78rem;
-            font-weight: 500;
-            color: #6366f1;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            display: block;
-            text-decoration: none;
-            transition: color .15s;
+            font-size: .78rem; font-weight: 500; color: #6366f1;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+            display: block; text-decoration: none; transition: color .15s;
         }
         .cmt-post-link:hover { color: #4f46e5; text-decoration: underline; }
 
+        /* ── Mute button — normal e mutado ──────────────────── */
         .cmt-mute-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            padding: 2px 7px;
-            border-radius: 4px;
-            font-size: .65rem;
-            font-weight: 600;
-            color: #9ca3af;
-            background: transparent;
-            border: 1px solid #e5e7eb;
-            cursor: pointer;
-            transition: all .15s;
-            margin-top: 4px;
+            display: inline-flex; align-items: center; gap: 4px;
+            padding: 2px 7px; border-radius: 4px;
+            font-size: .65rem; font-weight: 600;
+            cursor: pointer; transition: all .15s;
+            margin-top: 4px; border: 1px solid;
         }
-        .cmt-mute-btn:hover {
-            background: #f3f4f6;
-            color: #6b7280;
-            border-color: #d1d5db;
+        .cmt-mute-btn.is-muted {
+            background: #fef3c7; color: #92400e; border-color: #fde68a;
+        }
+        .cmt-mute-btn.is-muted:hover {
+            background: #fde68a; border-color: #f59e0b;
+        }
+        .cmt-mute-btn.not-muted {
+            background: transparent; color: #9ca3af; border-color: #e5e7eb;
+        }
+        .cmt-mute-btn.not-muted:hover {
+            background: #f3f4f6; color: #6b7280; border-color: #d1d5db;
         }
 
         .cmt-date {
-            width: 90px;
-            flex-shrink: 0;
-            font-size: .72rem;
-            color: #9ca3af;
-            text-align: right;
+            width: 90px; flex-shrink: 0;
+            font-size: .72rem; color: #9ca3af; text-align: right;
         }
-
-        /* ── Toast container ──────────────────────────────── */
         #cmt-toast-container {
-            position: fixed;
-            bottom: 24px;
-            right: 24px;
-            z-index: 9999;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
+            position: fixed; bottom: 24px; right: 24px;
+            z-index: 9999; display: flex; flex-direction: column; gap: 10px;
         }
     </style>
 
@@ -173,12 +124,15 @@
                     <i class="fa-solid fa-arrow-left"></i> Voltar
                 </button>
             @else
-                <button wire:click="$set('showTrash', true)" class="mir-btn-neutral">
-                    <i class="fa-solid fa-trash-can"></i> Lixeira
-                    @if($trashCount > 0)
-                        <span style="display:inline-flex;align-items:center;justify-content:center;min-width:18px;height:18px;padding:0 5px;border-radius:50px;font-size:.65rem;font-weight:700;background:#fee2e2;color:#991b1b;margin-left:2px;">{{ $trashCount }}</span>
-                    @endif
-                </button>
+                {{-- Lixeira só para owner --}}
+                @if($isOwner)
+                    <button wire:click="$set('showTrash', true)" class="mir-btn-neutral">
+                        <i class="fa-solid fa-trash-can"></i> Lixeira
+                        @if($trashCount > 0)
+                            <span style="display:inline-flex;align-items:center;justify-content:center;min-width:18px;height:18px;padding:0 5px;border-radius:50px;font-size:.65rem;font-weight:700;background:#fee2e2;color:#991b1b;margin-left:2px;">{{ $trashCount }}</span>
+                        @endif
+                    </button>
+                @endif
                 @if($pendingCount > 0)
                     <button wire:click="approveAll()"
                             wire:confirm="Aprovar todos os comentários pendentes?"
@@ -239,7 +193,7 @@
     {{-- ================================================================ --}}
     <div class="cmt-section">
 
-        {{-- Camada 1 — Section Header --}}
+        {{-- Section Header --}}
         <div class="cmt-section-header">
             <div class="cmt-section-header-left">
                 <h3 class="cmt-section-title">{{ $showTrash ? 'Lixeira' : 'Comentários' }}</h3>
@@ -247,7 +201,7 @@
             </div>
         </div>
 
-        {{-- Camada 2 — Filter Header --}}
+        {{-- Filter Header --}}
         <div class="cmt-filter-header">
             <div style="position:relative; flex:1; max-width:280px;">
                 <i class="fa-solid fa-magnifying-glass" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#9ca3af;font-size:.75rem;"></i>
@@ -281,7 +235,7 @@
             <span class="cmth-actions">Ações</span>
         </div>
 
-        {{-- Data Rows com loading overlay --}}
+        {{-- Data Rows --}}
         <div class="mir-data-list" wire:loading.class="mir-loading-overlay">
             @forelse($comments as $comment)
                 <div class="mir-data-row" wire:key="cmt-{{ $comment->id }}">
@@ -309,6 +263,9 @@
                     {{-- Post --}}
                     <div class="cmt-post">
                         @if($comment->post)
+                            @php
+                                $isMuted = in_array($comment->post->id, $mutedPostIds);
+                            @endphp
                             <a href="{{ route('frontend.post', $comment->post->slug) }}"
                                target="_blank"
                                class="cmt-post-link"
@@ -316,9 +273,10 @@
                                 {{ Str::limit($comment->post->title, 25) }}
                             </a>
                             <button wire:click="openMuteModal({{ $comment->post->id }}, '{{ addslashes($comment->post->title) }}')"
-                                    class="cmt-mute-btn"
-                                    data-tooltip="Silenciar notificações deste post">
-                                <i class="fa-solid fa-bell-slash" style="font-size:.6rem"></i> Mute
+                                    class="cmt-mute-btn {{ $isMuted ? 'is-muted' : 'not-muted' }}"
+                                    data-tooltip="{{ $isMuted ? 'Notificações silenciadas — clique para ajustar' : 'Silenciar notificações deste post' }}">
+                                <i class="fa-solid {{ $isMuted ? 'fa-bell-slash' : 'fa-bell' }}" style="font-size:.6rem"></i>
+                                {{ $isMuted ? 'Mutado' : 'Mute' }}
                             </button>
                         @else
                             <span style="font-size:.78rem;color:#d1d5db;">— removido —</span>
@@ -355,25 +313,27 @@
                     {{-- Ações --}}
                     <div class="mir-actions" style="width:100px;justify-content:center;">
                         @if($showTrash)
-                            {{-- Ações da lixeira --}}
-                            <button wire:click="restore({{ $comment->id }})"
-                                    class="mir-action-btn mir-action-restore"
-                                    data-tooltip="Restaurar comentário">
-                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <polyline points="1 4 1 10 7 10"></polyline>
-                                    <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
-                                </svg>
-                            </button>
-                            <button wire:click="forceDelete({{ $comment->id }})"
-                                    wire:confirm="Excluir permanentemente? Esta ação não pode ser desfeita."
-                                    class="mir-action-btn mir-action-delete"
-                                    data-tooltip="Excluir permanentemente">
-                                <svg width="12" height="13" viewBox="0 0 12 14" fill="none">
-                                    <path d="M1 3.5h10M4 3.5V2.5h4v1M2 3.5l.8 8a1 1 0 001 .9h4.4a1 1 0 001-.9l.8-8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
-                                </svg>
-                            </button>
+                            {{-- Lixeira: somente owner vê --}}
+                            @if($isOwner)
+                                <button wire:click="restore({{ $comment->id }})"
+                                        class="mir-action-btn mir-action-restore"
+                                        data-tooltip="Restaurar comentário">
+                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <polyline points="1 4 1 10 7 10"></polyline>
+                                        <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+                                    </svg>
+                                </button>
+                                <button wire:click="forceDelete({{ $comment->id }})"
+                                        wire:confirm="Excluir permanentemente? Esta ação não pode ser desfeita."
+                                        class="mir-action-btn mir-action-delete"
+                                        data-tooltip="Excluir permanentemente">
+                                    <svg width="12" height="13" viewBox="0 0 12 14" fill="none">
+                                        <path d="M1 3.5h10M4 3.5V2.5h4v1M2 3.5l.8 8a1 1 0 001 .9h4.4a1 1 0 001-.9l.8-8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </button>
+                            @endif
                         @else
-                            {{-- Ações normais --}}
+                            {{-- Aprovar --}}
                             @if($comment->status !== 'approved')
                                 <button wire:click="approve({{ $comment->id }})"
                                         class="mir-action-btn mir-action-restore"
@@ -384,6 +344,7 @@
                                 </button>
                             @endif
 
+                            {{-- Rejeitar --}}
                             @if($comment->status !== 'rejected')
                                 <button wire:click="reject({{ $comment->id }})"
                                         class="mir-action-btn mir-action-delete"
@@ -395,13 +356,16 @@
                                 </button>
                             @endif
 
-                            <button wire:click="prepareDelete({{ $comment->id }})"
-                                    class="mir-action-btn mir-action-delete"
-                                    data-tooltip="Mover para lixeira">
-                                <svg width="12" height="13" viewBox="0 0 12 14" fill="none">
-                                    <path d="M1 3.5h10M4 3.5V2.5h4v1M2 3.5l.8 8a1 1 0 001 .9h4.4a1 1 0 001-.9l.8-8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
-                                </svg>
-                            </button>
+                            {{-- Excluir — somente owner --}}
+                            @if($isOwner)
+                                <button wire:click="prepareDelete({{ $comment->id }})"
+                                        class="mir-action-btn mir-action-delete"
+                                        data-tooltip="Mover para lixeira">
+                                    <svg width="12" height="13" viewBox="0 0 12 14" fill="none">
+                                        <path d="M1 3.5h10M4 3.5V2.5h4v1M2 3.5l.8 8a1 1 0 001 .9h4.4a1 1 0 001-.9l.8-8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </button>
+                            @endif
                         @endif
                     </div>
                 </div>
@@ -439,17 +403,14 @@
                     </select>
                 </div>
                 <div class="mir-pagination-center">
-                    {{-- Previous --}}
                     <button wire:click="previousPage" class="mir-page-btn {{ $comments->onFirstPage() ? 'disabled' : '' }}" {{ $comments->onFirstPage() ? 'disabled' : '' }}>
                         <i class="fa-solid fa-chevron-left" style="font-size:.6rem"></i>
                     </button>
-                    {{-- Page numbers --}}
                     @foreach($comments->getUrlRange(1, $comments->lastPage()) as $page => $url)
                         <button wire:click="gotoPage({{ $page }})" class="mir-page-btn {{ $page == $comments->currentPage() ? 'active' : '' }}">
                             {{ $page }}
                         </button>
                     @endforeach
-                    {{-- Next --}}
                     <button wire:click="nextPage" class="mir-page-btn {{ !$comments->hasMorePages() ? 'disabled' : '' }}" {{ !$comments->hasMorePages() ? 'disabled' : '' }}>
                         <i class="fa-solid fa-chevron-right" style="font-size:.6rem"></i>
                     </button>
@@ -468,7 +429,6 @@
         <div class="mir-modal-overlay" style="display:flex" x-data x-on:keydown.escape.window="$wire.cancelDelete()">
             <div class="mir-modal-dialog" style="max-width:540px">
                 <div class="mir-modal-content">
-
                     <div class="mir-modal-header">
                         <div class="mir-modal-title">
                             <div class="mir-modal-icon mir-modal-icon-delete">
@@ -483,7 +443,6 @@
                             <i class="fa-solid fa-xmark"></i>
                         </button>
                     </div>
-
                     <div class="mir-modal-body">
                         <p style="color:#6d7279;font-size:.9rem;line-height:1.6;margin:0;">
                             Tem certeza que deseja mover este comentário para a lixeira?
@@ -493,14 +452,12 @@
                             </span>
                         </p>
                     </div>
-
                     <div class="mir-modal-footer">
                         <button wire:click="cancelDelete" class="mir-btn-ghost">Cancelar</button>
                         <button wire:click="destroy" class="mir-btn-danger">
                             <i class="fa fa-trash-alt" style="font-size:.75rem"></i> Mover para lixeira
                         </button>
                     </div>
-
                 </div>
             </div>
         </div>
@@ -513,7 +470,6 @@
         <div class="mir-modal-overlay" style="display:flex" x-data x-on:keydown.escape.window="$wire.closeMuteModal()">
             <div class="mir-modal-dialog" style="max-width:480px">
                 <div class="mir-modal-content">
-
                     <div class="mir-modal-header">
                         <div class="mir-modal-title">
                             <div class="mir-modal-icon mir-modal-icon-edit">
@@ -528,62 +484,47 @@
                             <i class="fa-solid fa-xmark"></i>
                         </button>
                     </div>
-
                     <div class="mir-modal-body">
                         <div class="mb-3">
                             <div class="mir-switch-wrap">
-                                <input type="checkbox"
-                                       class="mir-switch-input"
-                                       id="muteLikes"
-                                       wire:model="muteLikes">
+                                <input type="checkbox" class="mir-switch-input" id="muteLikes" wire:model="muteLikes">
                                 <label class="mir-switch-label" for="muteLikes">
-                                    <span class="mir-switch-track">
-                                        <span class="mir-switch-thumb"></span>
-                                    </span>
+                                    <span class="mir-switch-track"><span class="mir-switch-thumb"></span></span>
                                     <span class="mir-switch-text">Silenciar likes/dislikes deste post</span>
                                 </label>
                             </div>
                         </div>
-
                         <div>
                             <div class="mir-switch-wrap">
-                                <input type="checkbox"
-                                       class="mir-switch-input"
-                                       id="muteComments"
-                                       wire:model="muteComments">
+                                <input type="checkbox" class="mir-switch-input" id="muteComments" wire:model="muteComments">
                                 <label class="mir-switch-label" for="muteComments">
-                                    <span class="mir-switch-track">
-                                        <span class="mir-switch-thumb"></span>
-                                    </span>
+                                    <span class="mir-switch-track"><span class="mir-switch-thumb"></span></span>
                                     <span class="mir-switch-text">Silenciar comentários deste post</span>
                                 </label>
                             </div>
                         </div>
                     </div>
-
                     <div class="mir-modal-footer">
                         <button wire:click="closeMuteModal" class="mir-btn-ghost">Cancelar</button>
                         <button wire:click="saveMute" class="mir-btn-primary-lg">
                             <i class="fa-solid fa-floppy-disk" style="font-size:.75rem"></i> Salvar
                         </button>
                     </div>
-
                 </div>
             </div>
         </div>
     @endif
 
     {{-- ================================================================ --}}
-    {{-- SCRIPTS: Toast + Tooltips                                        --}}
+    {{-- SCRIPTS                                                          --}}
     {{-- ================================================================ --}}
     @push('scripts')
     <script>
-    /* ─── Toast ─────────────────────────────────────────────────────── */
     function cmtShowToast(type, message) {
         const container = document.getElementById('cmt-toast-container');
-        const icons = { success: 'fa-check-circle', error: 'fa-exclamation-circle', warning: 'fa-exclamation-triangle', info: 'fa-info-circle' };
-        const classes = { success: 'mir-toast-success', error: 'mir-toast-error', warning: 'mir-toast-error', info: 'mir-toast-info' };
-        const toast = document.createElement('div');
+        const icons    = { success: 'fa-check-circle', error: 'fa-exclamation-circle', warning: 'fa-exclamation-triangle', info: 'fa-info-circle' };
+        const classes  = { success: 'mir-toast-success', error: 'mir-toast-error', warning: 'mir-toast-error', info: 'mir-toast-info' };
+        const toast    = document.createElement('div');
         toast.className = `mir-toast ${classes[type] || classes.info}`;
         toast.innerHTML = `
             <i class="fa ${icons[type] || icons.info} mir-toast-icon"></i>
@@ -599,8 +540,6 @@
     document.addEventListener('livewire:initialized', () => {
         Livewire.on('notify', ({ type, message }) => cmtShowToast(type, message));
     });
-
-    /* Tooltips: JS global no master.blade.php */
     </script>
     @endpush
 
