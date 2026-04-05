@@ -19,9 +19,6 @@
                     onclick="event.preventDefault();document.getElementById('logout-form').submit();">
                     <i class="dw dw-logout"></i> Log Out
                 </a>
-                <form action="{{ route('admin.logout') }}" id="logout-form" method="POST">
-                    @csrf
-                </form>
             </div>
         </div>
     </div>   

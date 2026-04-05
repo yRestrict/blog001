@@ -9,6 +9,8 @@
       <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('dashboard/vendors/images/apple-touch-icon.png') }}" />
       <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('dashboard/vendors/images/favicon-32x32.png') }}" />
       <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('dashboard/vendors/images/favicon-16x16.png') }}" />
+      <meta name="csrf-token" content="{{ csrf_token() }}">
+
 
       <!-- Mobile Specific Metas -->
       <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
@@ -162,6 +164,31 @@
       <script src="https://cdn.jsdelivr.net/gh/livewire/sortable@v1.x.x/dist/livewire-sortable.js"></script>
 
       {{-- Tooltip inteligente global (design system mir-) --}}
+      {{-- <script>
+         document.addEventListener('livewire:init', () => {
+            Livewire.hook('request', ({ fail }) => {
+               fail(({ status, preventDefault }) => {
+                  if (status === 419) {
+                     preventDefault();
+                     window.location.reload();
+                  }
+               });
+            });
+         });
+      </script> --}}
+
+      <script>
+      document.addEventListener('livewire:init', () => {
+         Livewire.hook('request', ({ fail }) => {
+            fail(({ status, preventDefault }) => {
+                  if (status === 419) {
+                     preventDefault();
+                     window.location.href = '{{ route("admin.login") }}';
+                  }
+            });
+         });
+      });
+      </script>
       <script>
       (function() {
           var GAP = 8;

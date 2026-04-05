@@ -461,4 +461,29 @@
     }
 </style>
 
+<div id="prf-toast-container" aria-live="polite"></div>
+
+@push('scripts')
+<script>
+(function () {
+    function prfShowToast(type, message) {
+        const container = document.getElementById('prf-toast-container');
+        const icons = { success: 'fa-circle-check', error: 'fa-circle-exclamation', warning: 'fa-triangle-exclamation', info: 'fa-circle-info' };
+        const toast = document.createElement('div');
+        toast.className = `mir-toast mir-toast-${type}`;
+        toast.innerHTML = `<i class="fa-solid ${icons[type] || icons.info} mir-toast-icon"></i><span class="mir-toast-msg">${message}</span>`;
+        container.appendChild(toast);
+        setTimeout(() => {
+            toast.style.animation = 'mir-toast-out 200ms ease forwards';
+            setTimeout(() => toast.remove(), 210);
+        }, 3500);
+    }
+ 
+    document.addEventListener('livewire:initialized', () => {
+        Livewire.on('notify', ({ type, message }) => prfShowToast(type, message));
+    });
+})();
+</script>
+@endpush
+
 </div>

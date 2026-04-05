@@ -22,8 +22,9 @@ class CommentsModeration extends Component
     public int    $perPage       = 10;
 
     // Modal de exclusão
-    public ?int   $deletingCommentId   = null;
-    public string $deletingCommentBody = '';
+    public ?int   $deletingCommentId     = null;
+    public string $deletingCommentBody   = '';
+    public int    $deletingRepliesCount  = 0;
 
     // Modal de mute
     public bool   $muteModal     = false;
@@ -75,15 +76,17 @@ class CommentsModeration extends Component
             return;
         }
 
-        $comment = Comment::findOrFail($id);
-        $this->deletingCommentId   = $comment->id;
-        $this->deletingCommentBody = Str::limit($comment->body, 80);
+        $comment = Comment::withCount('allReplies')->findOrFail($id);
+        $this->deletingCommentId    = $comment->id;
+        $this->deletingCommentBody  = Str::limit($comment->body, 80);
+        $this->deletingRepliesCount = $comment->all_replies_count;
     }
 
     public function cancelDelete(): void
     {
-        $this->deletingCommentId   = null;
-        $this->deletingCommentBody = '';
+        $this->deletingCommentId    = null;
+        $this->deletingCommentBody  = '';
+        $this->deletingRepliesCount = 0;
     }
 
     public function destroy(): void

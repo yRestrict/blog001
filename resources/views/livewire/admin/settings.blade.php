@@ -1,9 +1,6 @@
 {{-- livewire/admin/settings.blade.php --}}
 <div>
 
-{{-- ================================================================ --}}
-{{-- PAGE HEADER ACTION                                               --}}
-{{-- ================================================================ --}}
 <div class="page-header-action">
     <div class="page-header-left">
         <h1 class="page-header-title">Configurações</h1>
@@ -11,12 +8,8 @@
     </div>
 </div>
 
-{{-- ================================================================ --}}
-{{-- GRID DE SEÇÕES                                                    --}}
-{{-- ================================================================ --}}
 <div class="set-grid">
 
-    {{-- ── SEÇÃO: Configurações Gerais ───────────────────────────────── --}}
     <div class="set-section-card">
         <div class="set-section-header">
             <div class="set-section-icon"><i class="fa-solid fa-gear"></i></div>
@@ -30,73 +23,41 @@
                 <div class="set-form-grid">
                     <div>
                         <label class="mir-label">Título do Site <span class="mir-required">*</span></label>
-                        <input type="text"
-                               class="mir-input @error('site_title') is-invalid @enderror"
-                               wire:model.defer="site_title"
-                               placeholder="Ex: Meu Blog Incrível">
+                        <input type="text" class="mir-input @error('site_title') is-invalid @enderror" wire:model.defer="site_title" placeholder="Ex: Meu Blog Incrível">
                         @error('site_title') <div class="set-field-error">{{ $message }}</div> @enderror
                     </div>
-
                     <div>
                         <label class="mir-label">E-mail do Site <span class="mir-required">*</span></label>
-                        <input type="email"
-                               class="mir-input @error('site_email') is-invalid @enderror"
-                               wire:model.defer="site_email"
-                               placeholder="contato@meusite.com">
+                        <input type="email" class="mir-input @error('site_email') is-invalid @enderror" wire:model.defer="site_email" placeholder="contato@meusite.com">
                         @error('site_email') <div class="set-field-error">{{ $message }}</div> @enderror
                     </div>
-
                     <div>
                         <label class="mir-label">Telefone <span class="set-optional">(opcional)</span></label>
-                        <input type="text"
-                               class="mir-input @error('site_phone') is-invalid @enderror"
-                               wire:model.defer="site_phone"
-                               placeholder="+55 (11) 99999-0000">
+                        <input type="text" class="mir-input @error('site_phone') is-invalid @enderror" wire:model.defer="site_phone" placeholder="+55 (11) 99999-0000">
                         @error('site_phone') <div class="set-field-error">{{ $message }}</div> @enderror
                     </div>
-
                     <div>
                         <label class="mir-label">Meta Keywords <span class="set-optional">(opcional)</span></label>
-                        <input type="text"
-                               class="mir-input @error('site_meta_keywords') is-invalid @enderror"
-                               wire:model.defer="site_meta_keywords"
-                               placeholder="blog, tecnologia, laravel">
+                        <input type="text" class="mir-input @error('site_meta_keywords') is-invalid @enderror" wire:model.defer="site_meta_keywords" placeholder="blog, tecnologia, laravel">
                         @error('site_meta_keywords') <div class="set-field-error">{{ $message }}</div> @enderror
-                        <div class="set-field-hint">
-                            <i class="fa-solid fa-circle-info"></i> Separe as palavras-chave com vírgulas
-                        </div>
+                        <div class="set-field-hint"><i class="fa-solid fa-circle-info"></i> Separe as palavras-chave com vírgulas</div>
                     </div>
-
                     <div class="set-form-full">
                         <label class="mir-label">Descrição do Site <span class="set-optional">(opcional)</span></label>
-                        <textarea class="mir-input"
-                                  wire:model.defer="site_description"
-                                  rows="3" style="resize:vertical;"
-                                  placeholder="Descrição completa para uso em páginas como 'Sobre', rodapé, etc."></textarea>
+                        <textarea class="mir-input" wire:model.defer="site_description" rows="3" style="resize:vertical;" placeholder="Descrição completa..."></textarea>
                         @error('site_description') <div class="set-field-error">{{ $message }}</div> @enderror
-                        <div class="set-field-hint">
-                            <i class="fa-solid fa-circle-info"></i> Texto longo para uso geral no site (máx. 1000 caracteres)
-                        </div>
+                        <div class="set-field-hint"><i class="fa-solid fa-circle-info"></i> Texto longo para uso geral no site (máx. 1000 caracteres)</div>
                     </div>
-
                     <div class="set-form-full">
                         <label class="mir-label">Meta Description <span class="set-optional">(opcional)</span></label>
-                        <textarea class="mir-input"
-                                  wire:model.defer="site_meta_description"
-                                  rows="3" style="resize:vertical;"
-                                  placeholder="Descrição exibida nos resultados de busca do Google..."></textarea>
+                        <textarea class="mir-input" wire:model.defer="site_meta_description" rows="3" style="resize:vertical;" placeholder="Descrição exibida nos resultados de busca do Google..."></textarea>
                         @error('site_meta_description') <div class="set-field-error">{{ $message }}</div> @enderror
-                        <div class="set-field-hint">
-                            <i class="fa-solid fa-magnifying-glass"></i> Descrição curta para mecanismos de busca (máx. 500 caracteres)
-                        </div>
+                        <div class="set-field-hint"><i class="fa-solid fa-magnifying-glass"></i> Descrição curta para mecanismos de busca (máx. 500 caracteres)</div>
                     </div>
                 </div>
                 <div class="set-section-footer">
-                    <button type="submit" class="mir-btn-primary-lg"
-                            wire:loading.attr="disabled" wire:target="updateGeneralSettings">
-                        <span wire:loading wire:target="updateGeneralSettings">
-                            <span class="spinner-border spinner-border-sm mr-1"></span>
-                        </span>
+                    <button type="submit" class="mir-btn-primary-lg" wire:loading.attr="disabled" wire:target="updateGeneralSettings">
+                        <span wire:loading wire:target="updateGeneralSettings"><span class="spinner-border spinner-border-sm mr-1"></span></span>
                         <i class="fa-solid fa-floppy-disk" wire:loading.remove wire:target="updateGeneralSettings"></i>
                         Salvar Configurações
                     </button>
@@ -105,7 +66,6 @@
         </div>
     </div>
 
-    {{-- ── SEÇÃO: Redes Sociais ──────────────────────────────────────── --}}
     <div class="set-section-card">
         <div class="set-section-header">
             <div class="set-section-icon set-section-icon-social"><i class="fa-solid fa-share-nodes"></i></div>
@@ -126,29 +86,20 @@
                         'whatsapp_url'  => ['label' => 'WhatsApp',    'icon' => 'fa-brands fa-whatsapp',    'class' => 'set-si-whatsapp',  'placeholder' => 'https://wa.me/5511999990000'],
                     ];
                 @endphp
-
                 <div class="set-form-grid">
                     @foreach($socials as $key => $social)
                         <div>
                             <label class="mir-label">{{ $social['label'] }}</label>
                             <div class="set-social-input @error('site_social_links.' . $key) is-invalid @enderror">
-                                <span class="set-social-icon {{ $social['class'] }}">
-                                    <i class="{{ $social['icon'] }}"></i>
-                                </span>
-                                <input type="text"
-                                       class="set-social-field"
-                                       wire:model="site_social_links.{{ $key }}"
-                                       placeholder="{{ $social['placeholder'] }}">
+                                <span class="set-social-icon {{ $social['class'] }}"><i class="{{ $social['icon'] }}"></i></span>
+                                <input type="text" class="set-social-field" wire:model="site_social_links.{{ $key }}" placeholder="{{ $social['placeholder'] }}">
                             </div>
-                            @error('site_social_links.' . $key)
-                                <div class="set-field-error">{{ $message }}</div>
-                            @enderror
+                            @error('site_social_links.' . $key) <div class="set-field-error">{{ $message }}</div> @enderror
                         </div>
                     @endforeach
                 </div>
                 <div class="set-section-footer">
-                    <button type="submit" class="mir-btn-primary-lg"
-                            wire:loading.attr="disabled" wire:target="updateSocialLinks">
+                    <button type="submit" class="mir-btn-primary-lg" wire:loading.attr="disabled" wire:target="updateSocialLinks">
                         <span wire:loading wire:target="updateSocialLinks"><span class="spinner-border spinner-border-sm mr-1"></span></span>
                         <i class="fa-solid fa-floppy-disk" wire:loading.remove wire:target="updateSocialLinks"></i>
                         Salvar Redes Sociais
@@ -158,7 +109,6 @@
         </div>
     </div>
 
-    {{-- ── SEÇÃO: Logo & Favicon ─────────────────────────────────────── --}}
     <div class="set-section-card set-section-full">
         <div class="set-section-header">
             <div class="set-section-icon set-section-icon-amber"><i class="fa-solid fa-image"></i></div>
@@ -170,8 +120,6 @@
         <div class="set-section-body">
             <form wire:submit.prevent="updateLogoFavicon">
                 <div class="set-logo-grid">
-
-                    {{-- Logo (Tema Claro) --}}
                     <div class="set-logo-card">
                         <div class="set-logo-header set-logo-header-light">
                             <span><i class="fa-solid fa-sun" style="color:#d97706;margin-right:4px;"></i> Logo (Tema Claro)</span>
@@ -193,8 +141,6 @@
                             <div wire:loading wire:target="new_logo_light" class="set-field-hint mt-1"><span class="spinner-border spinner-border-sm"></span> Carregando...</div>
                         </div>
                     </div>
-
-                    {{-- Logo (Tema Escuro) --}}
                     <div class="set-logo-card">
                         <div class="set-logo-header set-logo-header-dark">
                             <span><i class="fa-solid fa-moon" style="color:#818cf8;margin-right:4px;"></i> Logo (Tema Escuro)</span>
@@ -216,8 +162,6 @@
                             <div wire:loading wire:target="new_logo_dark" class="set-field-hint mt-1"><span class="spinner-border spinner-border-sm"></span> Carregando...</div>
                         </div>
                     </div>
-
-                    {{-- Favicon --}}
                     <div class="set-logo-card">
                         <div class="set-logo-header set-logo-header-light">
                             <span><i class="fa-solid fa-globe" style="color:#6366f1;margin-right:4px;"></i> Favicon</span>
@@ -245,11 +189,8 @@
                         </div>
                     </div>
                 </div>
-
                 <div class="set-section-footer">
-                    <span class="set-field-hint" style="margin:0;">
-                        <i class="fa-solid fa-circle-info"></i> Apenas os campos com novo arquivo serão atualizados.
-                    </span>
+                    <span class="set-field-hint" style="margin:0;"><i class="fa-solid fa-circle-info"></i> Apenas os campos com novo arquivo serão atualizados.</span>
                     <button type="submit" class="mir-btn-primary-lg"
                             {{ !$new_logo_light && !$new_logo_dark && !$new_favicon ? 'disabled' : '' }}
                             wire:loading.attr="disabled" wire:target="updateLogoFavicon">
@@ -264,151 +205,42 @@
 
 </div>
 
-{{-- ================================================================ --}}
-{{-- SCOPED STYLES (prefixo set-)                                     --}}
-{{-- ================================================================ --}}
+{{-- Toast container --}}
+<div id="set-toast-container" aria-live="polite"></div>
+
 <style>
-    /* ── Grid de seções ─────────────────────────────────── */
-    .set-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 24px;
-    }
-
-    /* ── Section Card ────────────────────────────────────── */
-    .set-section-card {
-        background: #fff;
-        border-radius: 10px;
-        border: 1px solid #e9ecef;
-        box-shadow: 0 1px 4px rgba(0,0,0,.05);
-        overflow: hidden;
-        display: flex;
-        flex-direction: column;
-    }
-    .set-section-full {
-        grid-column: 1 / -1;
-    }
-    .set-section-header {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        padding: 16px 20px;
-        border-bottom: 1px solid #f0f0f0;
-    }
-    .set-section-icon {
-        width: 34px; height: 34px; border-radius: 8px;
-        background: #ede9fe; color: #6366f1;
-        display: flex; align-items: center; justify-content: center;
-        flex-shrink: 0; font-size: .82rem;
-    }
-    .set-section-icon-social { background: #d1fae5; color: #059669; }
-    .set-section-icon-amber { background: #fef3c7; color: #d97706; }
-    .set-section-title { font-size: .88rem; font-weight: 700; color: #1a1d23; }
-    .set-section-sub { font-size: .72rem; color: #9ca3af; margin-top: 1px; }
-    .set-section-body { padding: 20px; flex: 1; }
-    .set-section-footer {
-        padding: 16px 20px;
-        border-top: 1px solid #f0f0f0;
-        background: #fafafa;
-        display: flex;
-        align-items: center;
-        justify-content: flex-end;
-        gap: 16px;
-    }
-
-    /* ── Form grid interno ──────────────────────────────── */
-    .set-form-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 16px;
-        margin-bottom: 0;
-    }
-    .set-form-full { grid-column: 1 / -1; }
-
-    /* ── Form helpers ─────────────────────────────────────── */
-    .set-optional { font-size: .72rem; font-weight: 400; color: #9ca3af; }
-    .set-field-error { font-size: .78rem; color: #ef4444; margin-top: 4px; }
-    .set-field-hint {
-        font-size: .75rem; color: #9ca3af; margin-top: 5px;
-        display: flex; align-items: center; gap: 4px;
-    }
-
-    /* ── Logo grid (3 colunas) ──────────────────────────── */
-    .set-logo-grid {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 16px;
-    }
-
-    /* ── Logo cards ──────────────────────────────────────── */
-    .set-logo-card { border-radius: 10px; border: 1px solid #e9ecef; overflow: hidden; }
-    .set-logo-header {
-        display: flex; align-items: center; justify-content: space-between;
-        padding: 12px 16px; font-size: .82rem; font-weight: 600;
-    }
-    .set-logo-header-light { background: #f8f9fa; color: #374151; border-bottom: 1px solid #e9ecef; }
-    .set-logo-header-dark { background: #1e2130; color: #e5e7eb; border-bottom: 1px solid #374151; }
-    .set-logo-preview-light {
-        min-height: 110px; background: #fff; display: flex; align-items: center; justify-content: center;
-        border-bottom: 1px solid #e9ecef; padding: 16px;
-    }
-    .set-logo-preview-dark {
-        min-height: 110px; background: #1a1a2e; display: flex; align-items: center; justify-content: center;
-        border-bottom: 1px solid #374151; padding: 16px;
-    }
-    .set-logo-preview-browser {
-        min-height: 110px; background: #e8e8e8; display: flex; flex-direction: column; align-items: center; justify-content: center;
-        border-bottom: 1px solid #e9ecef; padding: 16px;
-    }
-    .set-logo-empty {
-        display: flex; flex-direction: column; align-items: center;
-        gap: 6px; color: #9ca3af; font-size: .75rem; text-align: center;
-    }
-    .set-logo-footer { padding: 14px 16px; background: #fafafa; }
-    .set-file-input {
-        width: 100%; padding: 7px;
-        border: 1.5px dashed #d1d5db; border-radius: 8px;
-        font-size: .8rem; color: #6d7279;
-        cursor: pointer; background: #fff; transition: border-color .15s;
-    }
-    .set-file-input:hover { border-color: #6366f1; }
-
-    /* ── Social inputs ───────────────────────────────────── */
-    .set-social-input {
-        display: flex; align-items: center;
-        border: 1.5px solid #e5e7eb; border-radius: 8px; overflow: hidden;
-        transition: border-color .15s, box-shadow .15s;
-    }
-    .set-social-input:focus-within { border-color: #6366f1; box-shadow: 0 0 0 3px rgba(99,102,241,.12); }
-    .set-social-input.is-invalid { border-color: #ef4444; }
-    .set-social-icon {
-        width: 40px; flex-shrink: 0;
-        display: flex; align-items: center; justify-content: center;
-        background: #f9fafb; border-right: 1px solid #e5e7eb;
-        font-size: .9rem; color: #6d7279; align-self: stretch;
-    }
-    .set-social-field {
-        flex: 1; padding: 8px 12px;
-        border: none; outline: none;
-        font-size: .84rem; color: #1a1d23; background: transparent;
-    }
-
-    /* Social icon colors */
-    .set-si-facebook  { color: #3b5998; }
-    .set-si-instagram { color: #e1306c; }
-    .set-si-twitter   { color: #1da1f2; }
-    .set-si-youtube   { color: #ff0000; }
-    .set-si-linkedin  { color: #0077b5; }
-    .set-si-whatsapp  { color: #25d366; }
-
-    /* ── Responsivo ──────────────────────────────────────── */
-    @media (max-width: 992px) {
-        .set-grid { grid-template-columns: 1fr; }
-        .set-logo-grid { grid-template-columns: 1fr; }
-    }
-    @media (max-width: 768px) {
-        .set-form-grid { grid-template-columns: 1fr; }
-    }
+    .set-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;}
+    .set-section-card{background:#fff;border-radius:10px;border:1px solid #e9ecef;box-shadow:0 1px 4px rgba(0,0,0,.05);overflow:hidden;display:flex;flex-direction:column;}
+    .set-section-full{grid-column:1 / -1;}
+    .set-section-header{display:flex;align-items:center;gap:12px;padding:16px 20px;border-bottom:1px solid #f0f0f0;}
+    .set-section-icon{width:34px;height:34px;border-radius:8px;background:#ede9fe;color:#6366f1;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.82rem;}
+    .set-section-icon-social{background:#d1fae5;color:#059669;} .set-section-icon-amber{background:#fef3c7;color:#d97706;}
+    .set-section-title{font-size:.88rem;font-weight:700;color:#1a1d23;} .set-section-sub{font-size:.72rem;color:#9ca3af;margin-top:1px;}
+    .set-section-body{padding:20px;flex:1;}
+    .set-section-footer{padding:16px 20px;border-top:1px solid #f0f0f0;background:#fafafa;display:flex;align-items:center;justify-content:flex-end;gap:16px;}
+    .set-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:0;} .set-form-full{grid-column:1 / -1;}
+    .set-optional{font-size:.72rem;font-weight:400;color:#9ca3af;} .set-field-error{font-size:.78rem;color:#ef4444;margin-top:4px;}
+    .set-field-hint{font-size:.75rem;color:#9ca3af;margin-top:5px;display:flex;align-items:center;gap:4px;}
+    .set-logo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+    .set-logo-card{border-radius:10px;border:1px solid #e9ecef;overflow:hidden;}
+    .set-logo-header{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;font-size:.82rem;font-weight:600;}
+    .set-logo-header-light{background:#f8f9fa;color:#374151;border-bottom:1px solid #e9ecef;}
+    .set-logo-header-dark{background:#1e2130;color:#e5e7eb;border-bottom:1px solid #374151;}
+    .set-logo-preview-light{min-height:110px;background:#fff;display:flex;align-items:center;justify-content:center;border-bottom:1px solid #e9ecef;padding:16px;}
+    .set-logo-preview-dark{min-height:110px;background:#1a1a2e;display:flex;align-items:center;justify-content:center;border-bottom:1px solid #374151;padding:16px;}
+    .set-logo-preview-browser{min-height:110px;background:#e8e8e8;display:flex;flex-direction:column;align-items:center;justify-content:center;border-bottom:1px solid #e9ecef;padding:16px;}
+    .set-logo-empty{display:flex;flex-direction:column;align-items:center;gap:6px;color:#9ca3af;font-size:.75rem;text-align:center;}
+    .set-logo-footer{padding:14px 16px;background:#fafafa;}
+    .set-file-input{width:100%;padding:7px;border:1.5px dashed #d1d5db;border-radius:8px;font-size:.8rem;color:#6d7279;cursor:pointer;background:#fff;transition:border-color .15s;}
+    .set-file-input:hover{border-color:#6366f1;}
+    .set-social-input{display:flex;align-items:center;border:1.5px solid #e5e7eb;border-radius:8px;overflow:hidden;transition:border-color .15s,box-shadow .15s;}
+    .set-social-input:focus-within{border-color:#6366f1;box-shadow:0 0 0 3px rgba(99,102,241,.12);} .set-social-input.is-invalid{border-color:#ef4444;}
+    .set-social-icon{width:40px;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:#f9fafb;border-right:1px solid #e5e7eb;font-size:.9rem;color:#6d7279;align-self:stretch;}
+    .set-social-field{flex:1;padding:8px 12px;border:none;outline:none;font-size:.84rem;color:#1a1d23;background:transparent;}
+    .set-si-facebook{color:#3b5998;} .set-si-instagram{color:#e1306c;} .set-si-twitter{color:#1da1f2;}
+    .set-si-youtube{color:#ff0000;} .set-si-linkedin{color:#0077b5;} .set-si-whatsapp{color:#25d366;}
+    @media(max-width:992px){.set-grid{grid-template-columns:1fr;} .set-logo-grid{grid-template-columns:1fr;}}
+    @media(max-width:768px){.set-form-grid{grid-template-columns:1fr;}}
 </style>
 
 @push('scripts')
@@ -426,6 +258,25 @@ function previewImage(event, previewId, placeholderId) {
     };
     reader.readAsDataURL(file);
 }
+
+(function () {
+    function setShowToast(type, message) {
+        const container = document.getElementById('set-toast-container');
+        const icons = { success: 'fa-circle-check', error: 'fa-circle-exclamation', warning: 'fa-triangle-exclamation', info: 'fa-circle-info' };
+        const toast = document.createElement('div');
+        toast.className = `mir-toast mir-toast-${type}`;
+        toast.innerHTML = `<i class="fa-solid ${icons[type] || icons.info} mir-toast-icon"></i><span class="mir-toast-msg">${message}</span>`;
+        container.appendChild(toast);
+        setTimeout(() => {
+            toast.style.animation = 'mir-toast-out 200ms ease forwards';
+            setTimeout(() => toast.remove(), 210);
+        }, 3500);
+    }
+
+    document.addEventListener('livewire:initialized', () => {
+        Livewire.on('notify', ({ type, message }) => setShowToast(type, message));
+    });
+})();
 </script>
 @endpush
 

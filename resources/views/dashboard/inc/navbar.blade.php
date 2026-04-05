@@ -16,10 +16,14 @@
     ─────────────────────────────────────────────── --}}
     <div class="header-right">
 
-
         @livewire('admin.notification-bell')
 
         @livewire('admin.top-user-info')
+
+        {{-- Form de logout fora do componente Livewire para garantir CSRF correto --}}
+        <form action="{{ route('admin.logout') }}" id="logout-form" method="POST" style="display:none;">
+            @csrf
+        </form>
 
         <div class="github-link">
             <a href="https://github.com/dropways/deskapp"

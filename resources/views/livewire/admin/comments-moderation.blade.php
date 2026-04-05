@@ -70,8 +70,6 @@
             display: block; text-decoration: none; transition: color .15s;
         }
         .cmt-post-link:hover { color: #4f46e5; text-decoration: underline; }
-
-        /* ── Mute button — normal e mutado ──────────────────── */
         .cmt-mute-btn {
             display: inline-flex; align-items: center; gap: 4px;
             padding: 2px 7px; border-radius: 4px;
@@ -79,19 +77,10 @@
             cursor: pointer; transition: all .15s;
             margin-top: 4px; border: 1px solid;
         }
-        .cmt-mute-btn.is-muted {
-            background: #fef3c7; color: #92400e; border-color: #fde68a;
-        }
-        .cmt-mute-btn.is-muted:hover {
-            background: #fde68a; border-color: #f59e0b;
-        }
-        .cmt-mute-btn.not-muted {
-            background: transparent; color: #9ca3af; border-color: #e5e7eb;
-        }
-        .cmt-mute-btn.not-muted:hover {
-            background: #f3f4f6; color: #6b7280; border-color: #d1d5db;
-        }
-
+        .cmt-mute-btn.is-muted { background: #fef3c7; color: #92400e; border-color: #fde68a; }
+        .cmt-mute-btn.is-muted:hover { background: #fde68a; border-color: #f59e0b; }
+        .cmt-mute-btn.not-muted { background: transparent; color: #9ca3af; border-color: #e5e7eb; }
+        .cmt-mute-btn.not-muted:hover { background: #f3f4f6; color: #6b7280; border-color: #d1d5db; }
         .cmt-date {
             width: 90px; flex-shrink: 0;
             font-size: .72rem; color: #9ca3af; text-align: right;
@@ -100,6 +89,15 @@
             position: fixed; bottom: 24px; right: 24px;
             z-index: 9999; display: flex; flex-direction: column; gap: 10px;
         }
+
+        /* ── Aviso de replies no modal ──────────────────── */
+        .cmt-delete-warning {
+            display: flex; gap: 12px; align-items: flex-start;
+            background: #fff7ed; border: 1px solid #fed7aa;
+            border-radius: 8px; padding: 12px 14px;
+            margin-top: 14px; font-size: .82rem; color: #9a3412;
+        }
+        .cmt-delete-warning i { flex-shrink: 0; margin-top: 2px; }
     </style>
 
     {{-- ================================================================ --}}
@@ -124,7 +122,6 @@
                     <i class="fa-solid fa-arrow-left"></i> Voltar
                 </button>
             @else
-                {{-- Lixeira só para owner --}}
                 @if($isOwner)
                     <button wire:click="$set('showTrash', true)" class="mir-btn-neutral">
                         <i class="fa-solid fa-trash-can"></i> Lixeira
@@ -193,7 +190,6 @@
     {{-- ================================================================ --}}
     <div class="cmt-section">
 
-        {{-- Section Header --}}
         <div class="cmt-section-header">
             <div class="cmt-section-header-left">
                 <h3 class="cmt-section-title">{{ $showTrash ? 'Lixeira' : 'Comentários' }}</h3>
@@ -201,7 +197,6 @@
             </div>
         </div>
 
-        {{-- Filter Header --}}
         <div class="cmt-filter-header">
             <div style="position:relative; flex:1; max-width:280px;">
                 <i class="fa-solid fa-magnifying-glass" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#9ca3af;font-size:.75rem;"></i>
@@ -217,10 +212,8 @@
             @endif
         </div>
 
-        {{-- Loading bar --}}
         <div class="mir-loading-track" wire:loading.class="mir-loading-active"></div>
 
-        {{-- Table Header --}}
         <div class="mir-table-header">
             <span class="cmth-author">Autor</span>
             <span class="cmth-body">Comentário</span>
@@ -235,12 +228,10 @@
             <span class="cmth-actions">Ações</span>
         </div>
 
-        {{-- Data Rows --}}
         <div class="mir-data-list" wire:loading.class="mir-loading-overlay">
             @forelse($comments as $comment)
                 <div class="mir-data-row" wire:key="cmt-{{ $comment->id }}">
 
-                    {{-- Autor --}}
                     <div class="cmt-author">
                         <div class="cmt-author-name">{{ $comment->author_name }}</div>
                         @if($comment->guest_email)
@@ -250,7 +241,6 @@
                         @endif
                     </div>
 
-                    {{-- Comentário --}}
                     <div class="cmt-body">
                         @if($comment->parent_id)
                             <span class="cmt-reply-badge">
@@ -260,12 +250,9 @@
                         <div class="cmt-text">{{ Str::limit($comment->body, 100) }}</div>
                     </div>
 
-                    {{-- Post --}}
                     <div class="cmt-post">
                         @if($comment->post)
-                            @php
-                                $isMuted = in_array($comment->post->id, $mutedPostIds);
-                            @endphp
+                            @php $isMuted = in_array($comment->post->id, $mutedPostIds); @endphp
                             <a href="{{ route('frontend.post', $comment->post->slug) }}"
                                target="_blank"
                                class="cmt-post-link"
@@ -283,10 +270,8 @@
                         @endif
                     </div>
 
-                    {{-- Divider --}}
                     <div class="mir-divider"></div>
 
-                    {{-- Status --}}
                     @if(! $showTrash)
                         <div style="width:90px;flex-shrink:0;display:flex;justify-content:center;">
                             <span class="mir-status is-{{ $comment->status }}" data-tooltip="Status do comentário">
@@ -301,19 +286,15 @@
                         <div class="mir-divider"></div>
                     @endif
 
-                    {{-- Data --}}
                     <div class="cmt-date">
                         {{ $comment->created_at->format('d/m/Y') }}
                         <div style="font-size:.65rem;margin-top:1px;">{{ $comment->created_at->format('H:i') }}</div>
                     </div>
 
-                    {{-- Divider --}}
                     <div class="mir-divider"></div>
 
-                    {{-- Ações --}}
                     <div class="mir-actions" style="width:100px;justify-content:center;">
                         @if($showTrash)
-                            {{-- Lixeira: somente owner vê --}}
                             @if($isOwner)
                                 <button wire:click="restore({{ $comment->id }})"
                                         class="mir-action-btn mir-action-restore"
@@ -333,7 +314,6 @@
                                 </button>
                             @endif
                         @else
-                            {{-- Aprovar --}}
                             @if($comment->status !== 'approved')
                                 <button wire:click="approve({{ $comment->id }})"
                                         class="mir-action-btn mir-action-restore"
@@ -343,8 +323,6 @@
                                     </svg>
                                 </button>
                             @endif
-
-                            {{-- Rejeitar --}}
                             @if($comment->status !== 'rejected')
                                 <button wire:click="reject({{ $comment->id }})"
                                         class="mir-action-btn mir-action-delete"
@@ -355,8 +333,6 @@
                                     </svg>
                                 </button>
                             @endif
-
-                            {{-- Excluir — somente owner --}}
                             @if($isOwner)
                                 <button wire:click="prepareDelete({{ $comment->id }})"
                                         class="mir-action-btn mir-action-delete"
@@ -371,26 +347,20 @@
                 </div>
             @empty
                 <div class="mir-empty-state">
-                    <div class="mir-empty-icon">
-                        <i class="fa-solid fa-comments"></i>
-                    </div>
+                    <div class="mir-empty-icon"><i class="fa-solid fa-comments"></i></div>
                     <h3 class="mir-empty-title">
                         {{ $showTrash ? 'Lixeira vazia' : 'Nenhum comentário encontrado' }}
                     </h3>
                     <p class="mir-empty-desc">
-                        @if($showTrash)
-                            Nenhum comentário na lixeira.
-                        @elseif($search || $filterStatus)
-                            Tente ajustar os filtros ou termos de busca.
-                        @else
-                            Ainda não há comentários para moderar.
+                        @if($showTrash) Nenhum comentário na lixeira.
+                        @elseif($search || $filterStatus) Tente ajustar os filtros ou termos de busca.
+                        @else Ainda não há comentários para moderar.
                         @endif
                     </p>
                 </div>
             @endforelse
         </div>
 
-        {{-- Pagination --}}
         @if($comments->hasPages())
             <div class="mir-pagination">
                 <div class="mir-pagination-left">
@@ -451,11 +421,24 @@
                                 "{{ $deletingCommentBody }}"
                             </span>
                         </p>
+
+                        {{-- Aviso de replies — só aparece se houver respostas --}}
+                        @if($deletingRepliesCount > 0)
+                            <div class="cmt-delete-warning">
+                                <i class="fa-solid fa-triangle-exclamation"></i>
+                                <div>
+                                    <strong>Atenção:</strong> este comentário possui
+                                    <strong>{{ $deletingRepliesCount }} {{ $deletingRepliesCount === 1 ? 'resposta' : 'respostas' }}</strong>.
+                                    Ao movê-lo para a lixeira, todas as respostas serão movidas junto.
+                                </div>
+                            </div>
+                        @endif
                     </div>
                     <div class="mir-modal-footer">
                         <button wire:click="cancelDelete" class="mir-btn-ghost">Cancelar</button>
                         <button wire:click="destroy" class="mir-btn-danger">
-                            <i class="fa fa-trash-alt" style="font-size:.75rem"></i> Mover para lixeira
+                            <i class="fa fa-trash-alt" style="font-size:.75rem"></i>
+                            {{ $deletingRepliesCount > 0 ? 'Sim, mover tudo para lixeira' : 'Mover para lixeira' }}
                         </button>
                     </div>
                 </div>
