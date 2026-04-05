@@ -2770,6 +2770,7 @@ select.mir-input {
     text-align: center;
     transition: all .15s;
     cursor: pointer;
+    display: flex;
 }
 
 .upload-area:hover {

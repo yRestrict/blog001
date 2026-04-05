@@ -30,7 +30,7 @@ class FooterSettings extends Component
 
         Setting::clearCache();
 
-        $this->dispatch('showToastr', type: 'success', message: 'Configurações do footer salvas!');
+        $this->dispatch('notify', type: 'success', message: 'Configurações do footer salvas!');
     }
 
     public function render()

@@ -1,4 +1,3 @@
-{{-- livewire/admin/categories.blade.php --}}
 <div>
 
     {{-- ================================================================ --}}
@@ -12,8 +11,14 @@
             </h1>
             <span class="page-header-sub">Gerencie categorias pai e categorias do sistema</span>
         </div>
+        @if($isOwner)
+            <div class="page-header-right">
+                <a href="{{ route('admin.categories.trash') }}" class="mir-btn-neutral">
+                    <i class="fa-solid fa-trash-can"></i> Lixeira
+                </a>
+            </div>
+        @endif
     </div>
-
 
     {{-- ================================================================ --}}
     {{-- SEÇÃO: CATEGORIAS PAI                                             --}}
@@ -24,15 +29,17 @@
                 <h2 class="cat-section-title">Categorias Pai</h2>
                 <span class="cat-section-sub">Agrupe suas categorias em grupos maiores</span>
             </div>
-            <button class="mir-btn-primary-lg" wire:click="openAddParentCategory">
-                <svg width="11" height="11" viewBox="0 0 12 12" fill="none">
-                    <path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                </svg>
-                Nova Cat. Pai
-            </button>
+            @if($canCreate)
+                <button class="mir-btn-primary-lg" wire:click="openAddParentCategory">
+                    <svg width="11" height="11" viewBox="0 0 12 12" fill="none">
+                        <path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                    Nova Cat. Pai
+                </button>
+            @endif
         </div>
 
-        {{-- Section Header: busca --}}
+        {{-- Filter Header --}}
         <div class="cat-filter-header">
             <div style="position:relative; flex:1; max-width:280px;">
                 <i class="fa-solid fa-magnifying-glass" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#9ca3af;font-size:.75rem;"></i>
@@ -95,20 +102,24 @@
                         <div class="mir-divider"></div>
 
                         <div class="mir-actions">
-                            <button class="mir-action-btn mir-action-edit"
-                                    wire:click="openEditParentCategory({{ $item->id }})"
-                                    data-tooltip="Editar">
-                                <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
-                                    <path d="M9 2l2 2-7.5 7.5H1.5v-2L9 2z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>
-                                </svg>
-                            </button>
-                            <button class="mir-action-btn mir-action-delete"
-                                    wire:click="$dispatch('confirm-delete-parent', { id: {{ $item->id }}, name: '{{ addslashes($item->name) }}' })"
-                                    data-tooltip="Excluir">
-                                <svg width="12" height="13" viewBox="0 0 12 14" fill="none">
-                                    <path d="M1 3.5h10M4 3.5V2.5h4v1M2 3.5l.8 8a1 1 0 001 .9h4.4a1 1 0 001-.9l.8-8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
-                                </svg>
-                            </button>
+                            @if($canCreate)
+                                <button class="mir-action-btn mir-action-edit"
+                                        wire:click="openEditParentCategory({{ $item->id }})"
+                                        data-tooltip="Editar">
+                                    <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+                                        <path d="M9 2l2 2-7.5 7.5H1.5v-2L9 2z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>
+                                    </svg>
+                                </button>
+                            @endif
+                            @if($canDelete)
+                                <button class="mir-action-btn mir-action-delete"
+                                        wire:click="$dispatch('confirm-delete-parent', { id: {{ $item->id }}, name: '{{ addslashes($item->name) }}' })"
+                                        data-tooltip="Excluir">
+                                    <svg width="12" height="13" viewBox="0 0 12 14" fill="none">
+                                        <path d="M1 3.5h10M4 3.5V2.5h4v1M2 3.5l.8 8a1 1 0 001 .9h4.4a1 1 0 001-.9l.8-8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </button>
+                            @endif
                         </div>
                     </div>
                 @endforeach
@@ -126,15 +137,17 @@
                 <h2 class="cat-section-title">Categorias</h2>
                 <span class="cat-section-sub">Gerencie todas as categorias do sistema</span>
             </div>
-            <button class="mir-btn-primary-lg" wire:click="openAddCategory">
-                <svg width="11" height="11" viewBox="0 0 12 12" fill="none">
-                    <path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                </svg>
-                Nova Categoria
-            </button>
+            @if($canCreate)
+                <button class="mir-btn-primary-lg" wire:click="openAddCategory">
+                    <svg width="11" height="11" viewBox="0 0 12 12" fill="none">
+                        <path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                    Nova Categoria
+                </button>
+            @endif
         </div>
 
-        {{-- Section Header: busca + filtros --}}
+        {{-- Filter Header --}}
         <div class="cat-filter-header">
             <div style="position:relative; flex:1; max-width:280px;">
                 <i class="fa-solid fa-magnifying-glass" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#9ca3af;font-size:.75rem;"></i>
@@ -219,32 +232,44 @@
 
                         <div class="mir-divider"></div>
 
+                        {{-- Status: clicável só para quem pode criar/editar --}}
                         <div style="width:90px;flex-shrink:0;display:flex;justify-content:center;">
-                            <button class="mir-status {{ $category->status ? 'is-active' : 'is-inactive' }}"
-                                    wire:click="toggleCategoryStatus({{ $category->id }})"
-                                    data-tooltip="{{ $category->status ? 'Clique para desativar' : 'Clique para ativar' }}">
-                                <span class="mir-status-ring"></span>
-                                {{ $category->status ? 'Ativo' : 'Inativo' }}
-                            </button>
+                            @if($canCreate)
+                                <button class="mir-status {{ $category->status ? 'is-active' : 'is-inactive' }}"
+                                        wire:click="toggleCategoryStatus({{ $category->id }})"
+                                        data-tooltip="{{ $category->status ? 'Clique para desativar' : 'Clique para ativar' }}">
+                                    <span class="mir-status-ring"></span>
+                                    {{ $category->status ? 'Ativo' : 'Inativo' }}
+                                </button>
+                            @else
+                                <span class="mir-status {{ $category->status ? 'is-active' : 'is-inactive' }}" style="cursor:default;">
+                                    <span class="mir-status-ring"></span>
+                                    {{ $category->status ? 'Ativo' : 'Inativo' }}
+                                </button>
+                            @endif
                         </div>
 
                         <div class="mir-divider"></div>
 
                         <div class="mir-actions">
-                            <button class="mir-action-btn mir-action-edit"
-                                    wire:click="openEditCategory({{ $category->id }})"
-                                    data-tooltip="Editar categoria">
-                                <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
-                                    <path d="M9 2l2 2-7.5 7.5H1.5v-2L9 2z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>
-                                </svg>
-                            </button>
-                            <button class="mir-action-btn mir-action-delete"
-                                    wire:click="$dispatch('confirm-delete-category', { id: {{ $category->id }}, name: '{{ addslashes($category->name) }}' })"
-                                    data-tooltip="Excluir categoria">
-                                <svg width="12" height="13" viewBox="0 0 12 14" fill="none">
-                                    <path d="M1 3.5h10M4 3.5V2.5h4v1M2 3.5l.8 8a1 1 0 001 .9h4.4a1 1 0 001-.9l.8-8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
-                                </svg>
-                            </button>
+                            @if($canCreate)
+                                <button class="mir-action-btn mir-action-edit"
+                                        wire:click="openEditCategory({{ $category->id }})"
+                                        data-tooltip="Editar categoria">
+                                    <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+                                        <path d="M9 2l2 2-7.5 7.5H1.5v-2L9 2z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>
+                                    </svg>
+                                </button>
+                            @endif
+                            @if($canDelete)
+                                <button class="mir-action-btn mir-action-delete"
+                                        wire:click="$dispatch('confirm-delete-category', { id: {{ $category->id }}, name: '{{ addslashes($category->name) }}' })"
+                                        data-tooltip="Excluir categoria">
+                                    <svg width="12" height="13" viewBox="0 0 12 14" fill="none">
+                                        <path d="M1 3.5h10M4 3.5V2.5h4v1M2 3.5l.8 8a1 1 0 001 .9h4.4a1 1 0 001-.9l.8-8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </button>
+                            @endif
                         </div>
                     </div>
                 @endforeach
@@ -256,7 +281,7 @@
     {{-- ================================================================ --}}
     {{-- MODAL: CATEGORIA PAI (Add / Edit)                                 --}}
     {{-- ================================================================ --}}
-    @if ($showParentCategoryModal)
+    @if ($showParentCategoryModal && $canCreate)
     <div class="mir-modal-overlay">
         <div class="mir-modal-dialog" style="max-width:540px;">
             <div class="mir-modal-content">
@@ -317,7 +342,7 @@
     {{-- ================================================================ --}}
     {{-- MODAL: CATEGORIA (Add / Edit)                                     --}}
     {{-- ================================================================ --}}
-    @if ($showCategoryModal)
+    @if ($showCategoryModal && $canCreate)
     <div class="mir-modal-overlay">
         <div class="mir-modal-dialog" style="max-width:540px;">
             <div class="mir-modal-content">
@@ -420,6 +445,7 @@
     {{-- ================================================================ --}}
     {{-- MODAL: CONFIRMAÇÃO EXCLUSÃO — CATEGORIA PAI (Alpine.js)           --}}
     {{-- ================================================================ --}}
+    @if($canDelete)
     <div x-data="{ show: false, itemId: null, itemName: '' }"
          x-on:confirm-delete-parent.window="itemId = $event.detail.id; itemName = $event.detail.name; show = true"
          x-show="show"
@@ -468,10 +494,7 @@
         </div>
     </div>
 
-
-    {{-- ================================================================ --}}
-    {{-- MODAL: CONFIRMAÇÃO EXCLUSÃO — CATEGORIA (Alpine.js)               --}}
-    {{-- ================================================================ --}}
+    {{-- MODAL: CONFIRMAÇÃO EXCLUSÃO — CATEGORIA (Alpine.js) --}}
     <div x-data="{ show: false, itemId: null, itemName: '' }"
          x-on:confirm-delete-category.window="itemId = $event.detail.id; itemName = $event.detail.name; show = true"
          x-show="show"
@@ -515,6 +538,7 @@
             </div>
         </div>
     </div>
+    @endif
 
 
     {{-- ================================================================ --}}
@@ -524,10 +548,9 @@
 
 
     {{-- ================================================================ --}}
-    {{-- SCOPED STYLES (apenas cat- específicos)                          --}}
+    {{-- SCOPED STYLES                                                    --}}
     {{-- ================================================================ --}}
     <style>
-        /* ── Section Card ──────────────────────────────────── */
         .cat-section {
             background: #fff;
             border-radius: 10px;
@@ -553,73 +576,40 @@
         }
         .cat-section-title { font-size: .95rem; font-weight: 700; color: #1a1d23; margin: 0; }
         .cat-section-sub { font-size: .78rem; color: #9ca3af; margin-top: 2px; }
-
-        /* ── Table Header: larguras ────────────────────────── */
         .cat-plh-handle  { width: 22px; flex-shrink: 0; }
         .cat-plh-body    { flex: 1 1 0; min-width: 0; }
         .cat-plh-meta    { width: 60px; flex-shrink: 0; text-align: right; }
         .cat-plh-catmeta { width: 180px; flex-shrink: 0; text-align: right; }
         .cat-plh-status  { width: 90px; flex-shrink: 0; }
         .cat-plh-actions { width: 68px; flex-shrink: 0; }
-
-        /* ── Drag Handle ───────────────────────────────────── */
         .cat-handle {
-            cursor: grab;
-            color: #c9cdd4;
-            flex-shrink: 0;
-            display: flex;
-            align-items: center;
-            transition: color .15s;
-            padding: 4px 6px 4px 0;
-            width: 22px;
+            cursor: grab; color: #c9cdd4; flex-shrink: 0;
+            display: flex; align-items: center;
+            transition: color .15s; padding: 4px 6px 4px 0; width: 22px;
         }
         .cat-handle:hover { color: #6366f1; }
         .mir-data-row.sortable-chosen .cat-handle { cursor: grabbing; }
-
-        /* ── Body ──────────────────────────────────────────── */
         .cat-body { flex: 1 1 0; min-width: 0; }
         .cat-name {
             font-size: .875rem; font-weight: 600; color: #1a1d23;
             white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
         }
-        .cat-slug {
-            font-size: .72rem; color: #9ca3af;
-            font-family: ui-monospace, monospace; margin-top: 1px;
-        }
-
-        /* ── Meta (parent categories) ──────────────────────── */
-        .cat-meta {
-            display: flex; align-items: center; gap: 8px;
-            flex-shrink: 0; width: 60px; justify-content: flex-end;
-        }
-
-        /* ── Meta (categories — pai + posts) ───────────────── */
-        .cat-catmeta {
-            display: flex; align-items: center; gap: 8px;
-            flex-shrink: 0; width: 180px; justify-content: flex-end;
-        }
+        .cat-slug { font-size: .72rem; color: #9ca3af; font-family: ui-monospace, monospace; margin-top: 1px; }
+        .cat-meta { display: flex; align-items: center; gap: 8px; flex-shrink: 0; width: 60px; justify-content: flex-end; }
+        .cat-catmeta { display: flex; align-items: center; gap: 8px; flex-shrink: 0; width: 180px; justify-content: flex-end; }
         .cat-no-parent { font-size: .75rem; color: #c4c8cf; }
-
-        /* ── Modal form grid ───────────────────────────────── */
-        .cat-modal-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px;
-        }
+        .cat-modal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
         .cat-modal-full { grid-column: 1 / -1; }
-
-        /* ── Sortable ──────────────────────────────────────── */
         .sortable-ghost  { opacity: .4; background: #ede9fe !important; border-radius: 8px; }
         .sortable-chosen { box-shadow: 0 4px 18px rgba(99,102,241,.18); border-radius: 8px; }
     </style>
 
 
     {{-- ================================================================ --}}
-    {{-- SCRIPTS: Toast + Sortable                                        --}}
+    {{-- SCRIPTS                                                          --}}
     {{-- ================================================================ --}}
     @push('scripts')
     <script>
-    /* ─── Toast ─────────────────────────────────────────────────────── */
     function catShowToast(type, message) {
         const container = document.getElementById('cat-toast-container');
         const icons = { success: 'fa-circle-check', error: 'fa-circle-exclamation', info: 'fa-circle-info' };
@@ -636,10 +626,8 @@
         }, 3500);
     }
 
-    /* ─── Sortable ──────────────────────────────────────────────────── */
     document.addEventListener('livewire:initialized', () => {
         initCatSortable();
-
         Livewire.on('notify', ({ type, message }) => catShowToast(type, message));
         Livewire.hook('morph.updated', () => { initCatSortable(); });
     });

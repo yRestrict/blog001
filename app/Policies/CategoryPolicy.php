@@ -7,46 +7,46 @@ use App\Models\Category;
 
 class CategoryPolicy
 {
-    /**
-     * Antes de qualquer check, se for owner libera tudo.
-     * Retornar null deixa cair nos metodos individuais (caso queira granularidade futura).
-     */
     public function before(User $user, string $ability): ?bool
     {
         if ($user->isOwner()) {
             return true;
         }
 
-        return null; // cai no metodo especifico
+        return null;
     }
 
+    // Ver lista — todos autenticados podem ver
     public function viewAny(User $user): bool
     {
-        return false;
+        return false; // owner já passa no before; não-owner não acessa lixeira
     }
 
+    // Criar — author com auto_approve pode
     public function create(User $user): bool
     {
-        return false;
+        return $user->isAuthor() && $user->autoApprovePosts();
     }
 
+    // Editar — author com auto_approve pode
     public function update(User $user, Category $category): bool
     {
-        return false;
+        return $user->isAuthor() && $user->autoApprovePosts();
     }
 
+    // Excluir — somente owner (before)
     public function delete(User $user, Category $category): bool
     {
         return false;
     }
 
-    // Para restaurar da lixeira
+    // Restaurar — somente owner (before)
     public function restore(User $user, Category $category): bool
     {
         return false;
     }
 
-    // Para excluir permanentemente
+    // Excluir permanentemente — somente owner (before)
     public function forceDelete(User $user, Category $category): bool
     {
         return false;

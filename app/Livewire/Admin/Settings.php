@@ -70,7 +70,7 @@ class Settings extends Component
         );
 
         Setting::clearCache();
-        $this->dispatch('showToastr', type: 'success', message: __('messages.social_links_updated'));
+        $this->dispatch('notify', type: 'success', message: __('messages.social_links_updated'));
     }
 
     public function updateGeneralSettings()
@@ -99,7 +99,7 @@ class Settings extends Component
         // ✅ Limpa cache direto do Model
         Setting::clearCache();
 
-        $this->dispatch('showToastr', type: 'success', message: __('messages.general_settings_updated'));
+        $this->dispatch('notify', type: 'success', message: __('messages.general_settings_updated'));
     }
 
     public function updateLogoFavicon()
@@ -161,7 +161,7 @@ class Settings extends Component
 
         $this->reset(['new_logo_light', 'new_logo_dark', 'new_favicon']);
 
-        $this->dispatch('showToastr', type: 'success', message: __('messages.logo_favicon_updated'));
+        $this->dispatch('notify', type: 'success', message: __('messages.logo_favicon_updated'));
     }
 
     public function render()

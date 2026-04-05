@@ -5,37 +5,32 @@ namespace App\Livewire\Admin;
 use Livewire\Component;
 use App\Models\Category;
 use App\Models\ParentCategory;
+use Illuminate\Support\Facades\Auth;
 
 class Categories extends Component
 {
-    // ─── Busca e Filtros ────────────────────────────────────────────────────────
-
-    public string $searchParent     = '';
-    public string $searchCategory   = '';
-    public string $filterStatus     = '';
-    public string $filterParent     = '';
+    // ─── Busca e Filtros ──────────────────────────────────────────────────────
+    public string $searchParent   = '';
+    public string $searchCategory = '';
+    public string $filterStatus   = '';
+    public string $filterParent   = '';
 
     // ─── Estado dos modais ────────────────────────────────────────────────────
-
     public bool $showParentCategoryModal = false;
     public bool $showCategoryModal       = false;
 
     // ─── Formulário: Parent Category ─────────────────────────────────────────
-
     public ?int   $parentCategoryId   = null;
     public string $parentCategoryName = '';
     public bool   $isEditingParent    = false;
 
     // ─── Formulário: Category ────────────────────────────────────────────────
-
     public ?int   $categoryId          = null;
     public string $categoryName        = '';
     public ?int   $categoryParentId    = null;
     public string $categoryDescription = '';
     public bool   $categoryStatus      = true;
     public bool   $isEditingCategory   = false;
-
-    // ─── Mensagens de validação ───────────────────────────────────────────────
 
     protected $messages = [
         'parentCategoryName.required' => 'O nome da categoria pai é obrigatório.',
@@ -45,7 +40,20 @@ class Categories extends Component
         'categoryParentId.exists'     => 'A categoria pai selecionada não existe.',
     ];
 
-    // ─── Regras dinâmicas ────────────────────────────────────────────────────
+    // ─── Helpers de permissão ─────────────────────────────────────────────────
+
+    private function canCreate(): bool
+    {
+        $user = Auth::user();
+        return $user->isOwner() || ($user->isAuthor() && $user->autoApprovePosts());
+    }
+
+    private function canDelete(): bool
+    {
+        return Auth::user()->isOwner();
+    }
+
+    // ─── Regras dinâmicas ─────────────────────────────────────────────────────
 
     protected function parentCategoryRules(): array
     {
@@ -76,30 +84,44 @@ class Categories extends Component
 
     public function openAddParentCategory(): void
     {
+        if (! $this->canCreate()) {
+            $this->dispatch('notify', type: 'error', message: 'Você não tem permissão para criar categorias.');
+            return;
+        }
+
         $this->resetParentCategoryForm();
         $this->showParentCategoryModal = true;
     }
 
     public function openEditParentCategory(int $id): void
     {
+        if (! $this->canCreate()) {
+            $this->dispatch('notify', type: 'error', message: 'Você não tem permissão para editar categorias.');
+            return;
+        }
+
         $item = ParentCategory::findOrFail($id);
 
-        $this->parentCategoryId   = $item->id;
-        $this->parentCategoryName = $item->name;
-        $this->isEditingParent    = true;
+        $this->parentCategoryId        = $item->id;
+        $this->parentCategoryName      = $item->name;
+        $this->isEditingParent         = true;
         $this->showParentCategoryModal = true;
     }
 
     public function saveParentCategory(): void
     {
+        if (! $this->canCreate()) {
+            $this->dispatch('notify', type: 'error', message: 'Você não tem permissão para salvar categorias.');
+            return;
+        }
+
         $this->validate($this->parentCategoryRules());
 
         if ($this->isEditingParent) {
             $item       = ParentCategory::findOrFail($this->parentCategoryId);
             $item->name = $this->parentCategoryName;
-            $item->slug = null; // força regeneração do slug
+            $item->slug = null;
             $item->save();
-
             $this->dispatch('notify', type: 'success', message: 'Categoria pai atualizada com sucesso!');
         } else {
             ParentCategory::create(['name' => $this->parentCategoryName]);
@@ -111,6 +133,11 @@ class Categories extends Component
 
     public function deleteParentCategory(int $id): void
     {
+        if (! $this->canDelete()) {
+            $this->dispatch('notify', type: 'error', message: 'Você não tem permissão para excluir categorias.');
+            return;
+        }
+
         $item = ParentCategory::findOrFail($id);
         $item->categories()->update(['parent_category_id' => null]);
         $item->delete();
@@ -120,6 +147,8 @@ class Categories extends Component
 
     public function reorderParentCategories(array $ordered): void
     {
+        if (! $this->canCreate()) return;
+
         foreach ($ordered as $entry) {
             ParentCategory::where('id', $entry['id'])->update(['ordering' => $entry['ordering']]);
         }
@@ -145,12 +174,22 @@ class Categories extends Component
 
     public function openAddCategory(): void
     {
+        if (! $this->canCreate()) {
+            $this->dispatch('notify', type: 'error', message: 'Você não tem permissão para criar categorias.');
+            return;
+        }
+
         $this->resetCategoryForm();
         $this->showCategoryModal = true;
     }
 
     public function openEditCategory(int $id): void
     {
+        if (! $this->canCreate()) {
+            $this->dispatch('notify', type: 'error', message: 'Você não tem permissão para editar categorias.');
+            return;
+        }
+
         $cat = Category::findOrFail($id);
 
         $this->categoryId          = $cat->id;
@@ -164,6 +203,11 @@ class Categories extends Component
 
     public function saveCategory(): void
     {
+        if (! $this->canCreate()) {
+            $this->dispatch('notify', type: 'error', message: 'Você não tem permissão para salvar categorias.');
+            return;
+        }
+
         $this->validate($this->categoryRules());
 
         $data = [
@@ -175,7 +219,7 @@ class Categories extends Component
 
         if ($this->isEditingCategory) {
             $cat       = Category::findOrFail($this->categoryId);
-            $cat->slug = null; // força regeneração do slug
+            $cat->slug = null;
             $cat->update($data);
             $this->dispatch('notify', type: 'success', message: 'Categoria atualizada com sucesso!');
         } else {
@@ -188,14 +232,24 @@ class Categories extends Component
 
     public function deleteCategory(int $id): void
     {
+        if (! $this->canDelete()) {
+            $this->dispatch('notify', type: 'error', message: 'Você não tem permissão para excluir categorias.');
+            return;
+        }
+
         Category::findOrFail($id)->delete();
         $this->dispatch('notify', type: 'success', message: 'Categoria removida com sucesso!');
     }
 
     public function toggleCategoryStatus(int $id): void
     {
+        if (! $this->canCreate()) {
+            $this->dispatch('notify', type: 'error', message: 'Você não tem permissão para alterar o status.');
+            return;
+        }
+
         $cat = Category::findOrFail($id);
-        $cat->update(['status' => !$cat->status]);
+        $cat->update(['status' => ! $cat->status]);
 
         $label = $cat->status ? 'ativada' : 'desativada';
         $this->dispatch('notify', type: 'info', message: "Categoria {$label}.");
@@ -203,6 +257,8 @@ class Categories extends Component
 
     public function reorderCategories(array $ordered): void
     {
+        if (! $this->canCreate()) return;
+
         foreach ($ordered as $entry) {
             Category::where('id', $entry['id'])->update(['ordering' => $entry['ordering']]);
         }
@@ -231,6 +287,8 @@ class Categories extends Component
 
     public function render()
     {
+        $user = Auth::user();
+
         $catQuery = Category::with('parentCategory')->withCount('posts')->orderBy('ordering');
 
         if ($this->searchCategory) {
@@ -256,6 +314,9 @@ class Categories extends Component
             'categories'          => $catQuery->get(),
             'allCategories'       => Category::count(),
             'allParentCategories' => ParentCategory::orderBy('name')->get(),
+            'canCreate'           => $this->canCreate(),
+            'canDelete'           => $this->canDelete(),
+            'isOwner'             => $user->isOwner(),
         ]);
     }
 }

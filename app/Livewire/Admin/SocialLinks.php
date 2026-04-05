@@ -64,7 +64,7 @@ class SocialLinks extends Component
 
         Auth::user()->load('socialLinks');
 
-        $this->dispatch('showToastr', type: 'success', message: 'Redes sociais atualizadas com sucesso!');
+        $this->dispatch('notify', type: 'success', message: 'Redes sociais atualizadas com sucesso!');
         $this->dispatch('$refresh');
     }
 

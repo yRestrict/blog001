@@ -182,11 +182,8 @@
 
                     {{-- Thumbnail --}}
                     <div class="post-thumb">
-                        @if($post->thumbnail)
-                            <img src="{{ asset('uploads/posts/' . $post->thumbnail) }}" alt="">
-                        @else
-                            <i class="fa-solid fa-image"></i>
-                        @endif
+                        {{-- Removido o @if pois agora a imagem é obrigatória --}}
+                        <img src="{{ asset('uploads/posts/' . $post->thumbnail) }}" alt="{{ $post->title }}">
                     </div>
 
                     {{-- Body --}}

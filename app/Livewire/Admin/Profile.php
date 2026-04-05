@@ -62,7 +62,7 @@ class Profile extends Component
             'bio' => $this->bio,
         ]);
 
-        $this->dispatch('showToastr', type: 'success', message: __('messages.profile_updated'));
+        $this->dispatch('notify', type: 'success', message: __('messages.profile_updated'));
         $this->dispatch('UpdateProfileInfo')->to(TopUserInfo::class);
     }
 

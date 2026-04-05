@@ -218,7 +218,7 @@
                         <div class="section-icon-header">
                             <span class="section-icon section-icon-amber"><i class="fa-solid fa-image"></i></span>
                             <div>
-                                <div class="post-section-title">Imagem Destacada</div>
+                                <div class="post-section-title">Imagem Destacada <span class="mir-required">*</span></div>
                                 <div class="post-section-sub">Imagem principal do post</div>
                             </div>
                         </div>
