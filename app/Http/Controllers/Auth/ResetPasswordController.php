@@ -75,7 +75,7 @@ class ResetPasswordController extends Controller
         ]);
 
         // 5. Envia e-mail de confirmação
-        $this->sendConfirmationEmail($user, $request->new_password);
+        $this->sendConfirmationEmail($user);
 
         // 6. Elimina o token usado
         DB::table('password_reset_tokens')->where('email', $user->email)->delete();
@@ -83,18 +83,8 @@ class ResetPasswordController extends Controller
         return redirect()->route('admin.login')->with('success', __('auth.password_reset_success'));
     }
 
-    private function sendConfirmationEmail($user, $newPassword)
+    private function sendConfirmationEmail($user)
     {
-        $data = ['user' => $user, 'new_password' => $newPassword];
-        $mail_body = view('email-templates.password-changes-template', $data)->render();
-
-        $mailConfig = [
-            'recipient_address' => $user->email,
-            'recipient_name'    => $user->username,
-            'subject'           => __('auth.password_changed_email_subject'),
-            'body'              => $mail_body,
-        ];
-
         Mail::to($user->email)->send(new PasswordChangedMail($user));
     }
 }
