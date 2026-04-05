@@ -25,12 +25,12 @@ class DatabaseSeeder extends Seeder
 
         $this->call([
             UserSeeder::class,
-            ParentCategorySeeder::class,
-            CategorySeeder::class,
-            TagSeeder::class,
-            PostSeeder::class,
-            UserSocialLinkSeeder::class,
-            SettingSeeder::class,
+            // ParentCategorySeeder::class,
+            // CategorySeeder::class,
+            // TagSeeder::class,
+            // PostSeeder::class,
+            // UserSocialLinkSeeder::class,
+            // SettingSeeder::class,
         ]);
     }
 }
