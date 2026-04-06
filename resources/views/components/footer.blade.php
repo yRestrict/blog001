@@ -5,11 +5,14 @@
                 <div class="col-lg-5 col-md-6 mb-5 mb-lg-0">
                     <div class="footer-brand mb-3">
                         @if ($settings && $settings->site_logo_dark)
+                            <img src="{{ asset('uploads/logo/' . $settings->site_logo_light) }}"
+                                alt="{{ $settings->site_title ?? config('app.name') }}"
+                                class="logo-dark"/>
                             <img src="{{ asset('uploads/logo/' . $settings->site_logo_dark) }}"
                                 alt="{{ $settings->site_title ?? config('app.name') }}"
-                                class="logo-white"/>
+                                class="logo-white display-none"/>
                         @else
-                            <span class="fw-bold" style="color:#fff;">{{ config('app.name') }}</span>
+                            <span class="fw-bold">{{ config('app.name') }}</span>
                         @endif
                             
                     </div>
