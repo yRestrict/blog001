@@ -189,9 +189,9 @@ Table of Content
        theiaStickySidebar
     -----------------------------------*/
 
-    jQuery('.oredoo-sidebar,.oredoo-content').theiaStickySidebar({
-        additionalMarginTop: 150
-    });
+    // jQuery('.oredoo-sidebar,.oredoo-content').theiaStickySidebar({
+    //     additionalMarginTop: 150
+    // });
 
      /* -----------------------------------
        section-scroll-marquee
