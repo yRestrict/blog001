@@ -30,7 +30,7 @@ class DatabaseSeeder extends Seeder
             // TagSeeder::class,
             // PostSeeder::class,
             // UserSocialLinkSeeder::class,
-            // SettingSeeder::class,
+            SettingSeeder::class,
         ]);
     }
 }
