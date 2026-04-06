@@ -7,12 +7,7 @@
                         @if ($settings && $settings->site_logo_dark)
                             <img src="{{ asset('uploads/logo/' . $settings->site_logo_dark) }}"
                                 alt="{{ $settings->site_title ?? config('app.name') }}"
-                                class="logo-white "/>
-
-                                
-                            <img src="{{ asset('uploads/logo/' . $settings->site_logo_light) }}"
-                                alt="{{ $settings->site_title ?? config('app.name') }}"
-                                class="logo-dark display-none"/>
+                                style="max-height: 38px; width: auto; display: block;">
                         @else
                             <span class="fw-bold">{{ config('app.name') }}</span>
                         @endif
