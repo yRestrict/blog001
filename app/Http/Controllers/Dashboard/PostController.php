@@ -15,6 +15,9 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
+
 
 class PostController extends Controller
 {
@@ -341,6 +344,38 @@ class PostController extends Controller
         }
 
         return $tagIds;
+    }
+
+    public function uploadImage(Request $request)
+    {
+        // Validação
+        $request->validate([
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:5120', // 5MB max
+        ]);
+
+        try {
+            $file = $request->file('image');
+            
+            // Gera nome único
+            $filename = time() . '_' . Str::random(20) . '.' . $file->getClientOriginalExtension();
+            
+            // Define o caminho (ano/mês para organização)
+            $path = 'uploads/posts/' . date('Y/m');
+            
+            // Move o arquivo para a pasta pública
+            $file->move(public_path($path), $filename);
+            
+            // Retorna a URL pública
+            $url = asset($path . '/' . $filename);
+            
+            return response()->json(['url' => $url]);
+            
+        } catch (\Exception $e) {
+            Log::error('Upload de imagem falhou: ' . $e->getMessage());
+            return response()->json([
+                'error' => 'Erro ao fazer upload da imagem: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
     private function buildCategoriesHtml(?int $selectedId = null): string
