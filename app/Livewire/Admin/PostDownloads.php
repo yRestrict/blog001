@@ -7,6 +7,7 @@ use App\Models\PostDownload;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class PostDownloads extends Component
 {
@@ -151,7 +152,12 @@ class PostDownloads extends Component
 
             if (!empty($btn['uploadedFile'])) {
                 if ($filePath) Storage::disk('public')->delete($filePath);
-                $filePath = $btn['uploadedFile']->store('downloads', 'public');
+                $originalName = pathinfo($btn['uploadedFile']->getClientOriginalName(), PATHINFO_FILENAME);
+                $extension = $btn['uploadedFile']->getClientOriginalExtension();
+
+                $filename = Str::slug($originalName) . '-' . time() . '.' . $extension;
+
+                $filePath = $btn['uploadedFile']->storeAs('downloads', $filename, 'public');
             }
 
             $data = [
