@@ -382,11 +382,33 @@ if (featuredImageInput) featuredImageInput.addEventListener('change', function (
         tiHidden.value = tags.join(', ');
     }
 
+    const MAX_TAGS = 5;
+
     function addTag(val) {
         val = val.trim().toUpperCase();
-        if (val && !tags.includes(val)) { tags.push(val); renderTags(); syncHidden(); }
+        if (val && !tags.includes(val)) {
+            if (tags.length >= MAX_TAGS) {
+                tiInput.value = '';
+                hideSug();
+                return;
+            }
+            tags.push(val);
+            renderTags();
+            syncHidden();
+        }
         tiInput.value = '';
         hideSug();
+        updateInputState();
+    }
+
+    function updateInputState() {
+        if (tags.length >= MAX_TAGS) {
+            tiInput.disabled = true;
+            tiInput.placeholder = 'Limite de ' + MAX_TAGS + ' tags atingido';
+        } else {
+            tiInput.disabled = false;
+            tiInput.placeholder = 'Adicionar tag...';
+        }
     }
 
     function renderTags() {
@@ -401,7 +423,7 @@ if (featuredImageInput) featuredImageInput.addEventListener('change', function (
             btn.addEventListener('click', e => {
                 e.stopPropagation();
                 tags = tags.filter(t => t !== btn.dataset.tag);
-                renderTags(); syncHidden();
+                renderTags(); syncHidden(); updateInputState();
             });
         });
     }
@@ -456,6 +478,7 @@ if (featuredImageInput) featuredImageInput.addEventListener('change', function (
     document.addEventListener('click', e => { if (!tiWrap.contains(e.target) && !tiSug.contains(e.target)) hideSug(); });
 
     renderTags();
+    updateInputState();
 })();
 </script>
 @endpush

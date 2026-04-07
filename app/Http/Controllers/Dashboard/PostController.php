@@ -55,6 +55,13 @@ class PostController extends Controller
             'meta_description' => 'nullable|string|max:500',
         ]);
 
+        if ($request->filled('tags')) {
+            $tags = array_filter(array_map('trim', explode(',', $request->tags)));
+            if (count($tags) > 5) {
+                return back()->withErrors(['tags' => 'Máximo de 4 tags por post.'])->withInput();
+            }
+        }
+
         if ($request->hasFile('thumbnail')) {
             $filename = time() . '_' . $request->file('thumbnail')->getClientOriginalName();
             $request->file('thumbnail')->move(public_path('uploads/posts'), $filename);
@@ -130,6 +137,13 @@ class PostController extends Controller
             'meta_keywords'    => 'nullable|string|max:255',
             'meta_description' => 'nullable|string|max:500',
         ]);
+
+        if ($request->filled('tags')) {
+            $tags = array_filter(array_map('trim', explode(',', $request->tags)));
+            if (count($tags) > 5) {
+                return back()->withErrors(['tags' => 'Máximo de 4 tags por post.'])->withInput();
+            }
+        }
 
         if ($request->hasFile('thumbnail')) {
             if ($post->thumbnail && file_exists(public_path('uploads/posts/' . $post->thumbnail))) {

@@ -150,13 +150,22 @@
                         </div>
 
                         <div class="form-group" style="position: relative;">
-                            <label class="mir-label">Tags <span style="color:#9ca3af; font-weight:400;">(separe por vírgula)</span></label>
-                            {{-- Hidden que envia as tags --}}
-                            <input type="hidden" name="tags" id="tag-hidden" value="{{ old('tags') }}">
+                            <label class="mir-label">
+                                Tags 
+                                <span style="color:#9ca3af; font-weight:400;">(máximo 4, separe por vírgula)</span>
+                            </label>
+                            <input type="hidden" name="tags" id="tag-hidden"
+                                value="{{ old('tags', $currentTags ?? '') }}">
                             <div class="ti-wrap" id="ti-wrap">
                                 <input class="ti-input" id="ti-real" placeholder="Ex: LARAVEL, PHP" autocomplete="off">
                             </div>
                             <div class="ti-suggestions" id="ti-suggestions"></div>
+                            <div id="tag-counter" style="font-size:.72rem;color:#9ca3af;margin-top:4px;">
+                                <span id="tag-count">0</span>/5 tags
+                            </div>
+                            @error('tags')
+                                <span class="invalid-feedback" style="display:block;">{{ $message }}</span>
+                            @enderror
                         </div>
 
                         <hr class="form-divider">
