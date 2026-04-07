@@ -404,7 +404,7 @@ class Sidebar extends Component
         if ($this->type === 'categories') {
             $categoriesList = Category::where('status', true)
                 ->withCount(['posts' => fn($q) => $q->where('status', true)])
-                ->orderBy('title')
+                ->orderBy('name')
                 ->get();
         }
 
