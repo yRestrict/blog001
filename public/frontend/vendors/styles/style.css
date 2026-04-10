@@ -3942,6 +3942,11 @@ input:checked + .slider:before {
   margin-right: 10px;
 }
 
+.entry-meta .post-author, 
+.entry-meta .post-author a {
+    text-transform: none !important;
+}
+
 .post-single-title .entry-cat .category-style-1 {
   font-size: 14px;
 }

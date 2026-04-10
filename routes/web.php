@@ -23,7 +23,6 @@ use App\Http\Controllers\Frontend\PostController as FrontendPostController;
 use App\Http\Controllers\Frontend\SearchController;
 use App\Http\Controllers\Frontend\CategoryController as FrontendCategoryController;
 use App\Http\Controllers\Frontend\TagController as FrontendTagController;
-use App\Http\Controllers\Frontend\CommentController as FrontendCommentController;
 use App\Http\Controllers\Dashboard\SearchController as DashboardSearchController;
 
 
@@ -38,8 +37,6 @@ Route::name('frontend.')->group(function () {
     Route::get('/user/{username}',           [FrontendUserController::class,     'index'])->name('user');
     Route::get('/search',                    [SearchController::class,           'index'])->name('search');
     Route::get('/post/{slug}',               [FrontendPostController::class,     'index'])->name('post');
-    Route::post('/comment/{id}',             [FrontendCommentController::class,  'index'])->name('comment');
-    Route::post('/comment-reply',            [FrontendCommentController::class,  'reply'])->name('comment.reply');
     Route::get('/category/{slug}',           [FrontendCategoryController::class, 'index'])->name('category');
     Route::get('/tag/{id}',                  [FrontendTagController::class,      'index'])->name('tag');
     Route::get('/post/download/{download}',  [FrontendPostController::class,     'download'])->name('post.download');

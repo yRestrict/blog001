@@ -35,7 +35,8 @@
 		<script src="{{ asset("frontend/vendors/scripts/owl.carousel.min.js") }}"></script>		
 		<script src="{{ asset('frontend/vendors/scripts/bootstrap.min.js') }}"></script> 
 		<script src="{{ asset('frontend/vendors/scripts/switch.js') }}"></script>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/css-element-queries/1.2.3/ResizeSensor.min.js"></script>
+		{{-- <script src="https://cdnjs.cloudflare.com/ajax/libs/css-element-queries/1.2.3/ResizeSensor.min.js"></script> --}}
+		<script src="{{ asset('frontend/vendors/scripts/resizesensor.min.js') }}"></script>
 		<script src="{{ asset('frontend/vendors/scripts/theia-sticky-sidebar.js') }}"></script>
 		<script src="{{ asset('frontend/vendors/scripts/main.js') }}"></script>
 		
