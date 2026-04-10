@@ -2364,7 +2364,7 @@ select.mir-input {
 }
 
 .widget-icon-total      { background: #fef3c7; color: #d97706; }
-.widget-icon-views      { background: #fce7f3; color: #5951e7; }
+.widget-icon-views      { background: #e0e7ff; color: #5951e7; }
 .widget-icon-published  { background: #d1fae5; color: #059669; }
 .widget-icon-draft      { background: #f3f4f6; color: #6b7280; }
 .widget-icon-private    { background: #e0e7ff; color: #4f46e5; }
