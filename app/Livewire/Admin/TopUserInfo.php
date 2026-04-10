@@ -11,8 +11,11 @@ class TopUserInfo extends Component
     protected $listeners = ['UpdateProfileInfo' => '$refresh'];
     public function render()
     {
+        $user = User::findOrFail(Auth::id());
+
         return view('livewire.admin.top-user-info', [
-            'user' => User::findOrFail(Auth::id()),
+            'user'    => $user,
+            'isOwner' => $user->isOwner(),
         ]);
     }  
 }

@@ -16,6 +16,7 @@ class Dashboard extends Component
         return view('livewire.admin.dashboard', [
             // ─── Estatísticas de Posts ────────────────────────────────────────
             'totalPosts'     => Post::count(),
+            'totalViews'     => Post::sum('views'),
             'publishedPosts' => Post::where('status', 'published')->count(),
             'draftPosts'     => Post::where('status', 'draft')->count(),
             'privatePosts'   => Post::where('status', 'private')->count(),

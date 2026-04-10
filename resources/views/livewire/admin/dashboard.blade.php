@@ -92,6 +92,15 @@
                 <i class="fa-solid fa-comments"></i>
             </div>
         </div>
+        <div class="widget-card widget-card-views">
+            <div class="widget-info">
+                <span class="widget-label">Total de Views</span>
+                <span class="widget-value">{{ number_format($totalViews) }}</span>
+            </div>
+            <div class="widget-icon widget-icon-views">
+                <i class="fa-solid fa-eye"></i>
+            </div>
+        </div>
     </div>
 
     {{-- ================================================================ --}}
@@ -135,6 +144,8 @@
             <span class="plh-divider"></span>
             <span class="plh-status">Status</span>
             <span class="plh-divider"></span>
+            <span style="width:80px;flex-shrink:0;text-align:right;">Views</span>
+            <span class="plh-divider"></span>
             <span style="width:100px;flex-shrink:0;text-align:right;">Data</span>
         </x-mir.table-header>
 
@@ -165,6 +176,15 @@
                     <x-mir.divider />
 
                     <x-mir.status-pill :status="$post->status" />
+
+                    <x-mir.divider />
+
+                    <div style="width:80px;flex-shrink:0;text-align:right;">
+                        <span class="dash-post-date">
+                            <i class="fa-solid fa-eye" style="font-size:.65rem;color:#9ca3af;margin-right:2px;"></i>
+                            {{ number_format($post->views ?? 0) }}
+                        </span>
+                    </div>
 
                     <x-mir.divider />
 
@@ -211,6 +231,8 @@
     .dash-shortcut-label {
         font-size: .9rem; font-weight: 700; letter-spacing: .2px;
     }
+    .widget-card-views  { background: linear-gradient(135deg, #0ea5e9, #0284c7); }
+    .widget-icon-views  { background: rgba(255,255,255,.15); color: #fff; }
     .dash-post-date {
         font-size: .78rem; color: #9ca3af; font-weight: 500;
     }
