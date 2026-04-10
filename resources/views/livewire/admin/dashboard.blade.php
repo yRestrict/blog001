@@ -228,8 +228,6 @@
     .dash-shortcut-label {
         font-size: .9rem; font-weight: 700; letter-spacing: .2px;
     }
-    .widget-card-views  { background: linear-gradient(135deg, #0ea5e9, #0284c7); }
-    .widget-icon-views  { background: rgba(255,255,255,.15); color: #fff; }
     .dash-post-date {
         font-size: .78rem; color: #9ca3af; font-weight: 500;
     }
