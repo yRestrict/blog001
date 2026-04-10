@@ -23,6 +23,17 @@
                 <i class="fa-solid fa-file-lines"></i>
             </div>
         </div>
+
+        <div class="widget-card widget-card-totalviews">
+            <div class="widget-info">
+                <span class="widget-label">Total de Views</span>
+                <span class="widget-value">{{ number_format($totalViews) }}</span>
+            </div>
+            <div class="widget-icon widget-icon-views">
+                <i class="fa-solid fa-eye"></i>
+            </div>
+        </div>
+
         <div class="widget-card widget-card-published">
             <div class="widget-info">
                 <span class="widget-label">Publicados</span>
@@ -32,15 +43,9 @@
                 <i class="fa-solid fa-circle-check"></i>
             </div>
         </div>
-        <div class="widget-card widget-card-draft">
-            <div class="widget-info">
-                <span class="widget-label">Rascunhos</span>
-                <span class="widget-value">{{ $draftPosts }}</span>
-            </div>
-            <div class="widget-icon widget-icon-draft">
-                <i class="fa-solid fa-pen-clip"></i>
-            </div>
-        </div>
+
+
+
         <div class="widget-card widget-card-private">
             <div class="widget-info">
                 <span class="widget-label">Privados</span>
@@ -92,15 +97,7 @@
                 <i class="fa-solid fa-comments"></i>
             </div>
         </div>
-        <div class="widget-card widget-card-views">
-            <div class="widget-info">
-                <span class="widget-label">Total de Views</span>
-                <span class="widget-value">{{ number_format($totalViews) }}</span>
-            </div>
-            <div class="widget-icon widget-icon-views">
-                <i class="fa-solid fa-eye"></i>
-            </div>
-        </div>
+    
     </div>
 
     {{-- ================================================================ --}}

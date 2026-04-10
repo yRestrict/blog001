@@ -2307,6 +2307,7 @@ select.mir-input {
 
 /* Faixa lateral por tipo */
 .widget-card-total::before     { background: #f59e0b; }
+.widget-card-totalviews::before { background: #4f46e5; }
 .widget-card-published::before { background: #10b981; }
 .widget-card-draft::before     { background: #9ca3af; }
 .widget-card-private::before   { background: #6366f1; }
@@ -2363,6 +2364,7 @@ select.mir-input {
 }
 
 .widget-icon-total      { background: #fef3c7; color: #d97706; }
+.widget-icon-views      { background: #fce7f3; color: #5951e7; }
 .widget-icon-published  { background: #d1fae5; color: #059669; }
 .widget-icon-draft      { background: #f3f4f6; color: #6b7280; }
 .widget-icon-private    { background: #e0e7ff; color: #4f46e5; }
