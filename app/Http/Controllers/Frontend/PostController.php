@@ -18,7 +18,6 @@ class PostController extends Controller
     {
         $user = Auth::user();
 
-        // Busca o post pelo slug — sem filtrar status ainda
         $post = Post::with([
                         'category',
                         'author',
@@ -30,15 +29,9 @@ class PostController extends Controller
                     ->where('slug', $slug)
                     ->first();
 
-        // Post não existe → 404
         if (! $post) {
             abort(404);
         }
-
-        // Regras de visibilidade:
-        // - published  → qualquer um
-        // - private    → owner ou author dono do post (logado)
-        // - draft      → ninguém no frontend
 
         $user = Auth::user();
         $canView = match ($post->status) {
@@ -51,19 +44,20 @@ class PostController extends Controller
             abort(404);
         }
 
-        // Só incrementa views em posts publicados
         if ($post->status === 'published') {
             $post->increment('views');
         }
 
         // ── SEO ───────────────────────────────────────────────────────────────
-        $description = $post->meta_description ?? $post->clean_description;
+        $description  = $post->meta_description ?? $post->clean_description;
+        $canonicalUrl = route('frontend.post', $post->slug);
 
         SEOTools::setTitle($post->title, false);
         SEOTools::setDescription($description);
         SEOMeta::setKeywords($post->meta_keywords ?? '');
+        SEOTools::setCanonical($canonicalUrl);
 
-        SEOTools::opengraph()->setUrl(request()->url());
+        SEOTools::opengraph()->setUrl($canonicalUrl);
         SEOTools::opengraph()->addProperty('type', 'article');
         SEOTools::opengraph()->addProperty('article:author', $post->author->name);
         SEOTools::opengraph()->addProperty('article:published_time', $post->created_at->toIso8601String());
@@ -71,7 +65,7 @@ class PostController extends Controller
             SEOTools::opengraph()->addImage(asset('uploads/posts/' . $post->thumbnail));
         }
 
-        SEOTools::twitter()->setUrl(request()->url());
+        SEOTools::twitter()->setUrl($canonicalUrl);
         if ($post->thumbnail) {
             SEOTools::twitter()->addImage(asset('uploads/posts/' . $post->thumbnail));
         }
