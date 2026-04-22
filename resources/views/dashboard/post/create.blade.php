@@ -152,7 +152,7 @@
                         <div class="form-group" style="position: relative;">
                             <label class="mir-label">
                                 Tags 
-                                <span style="color:#9ca3af; font-weight:400;">(máximo 4, separe por vírgula)</span>
+                                <span style="color:#9ca3af; font-weight:400;">(máximo 5, separe por vírgula)</span>
                             </label>
                             <input type="hidden" name="tags" id="tag-hidden"
                                 value="{{ old('tags', $currentTags ?? '') }}">
