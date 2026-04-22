@@ -13,10 +13,10 @@ class PostDownloads extends Component
 {
     use WithFileUploads;
 
-    public ?int  $postId     = null;
-    public bool  $showModal  = false;
-    public array $buttons    = [];
-    public ?int  $openIndex  = null; // índice do accordion aberto
+    public ?int  $postId    = null;
+    public bool  $showModal = false;
+    public array $buttons   = [];
+    public ?int  $openIndex = null;
 
     protected function rules(): array
     {
@@ -47,9 +47,10 @@ class PostDownloads extends Component
     public function openModal(): void
     {
         if ($this->postId) {
+            // Edição: sempre carrega do banco
             $this->loadFromDb();
         }
-        // Abre o primeiro item por padrão
+        // Criação: mantém os buttons em memória — não toca em nada
         $this->openIndex = count($this->buttons) > 0 ? 0 : null;
         $this->showModal = true;
     }
@@ -90,7 +91,6 @@ class PostDownloads extends Component
             'uploadedFile' => null,
             'position'     => 'block',
         ];
-        // Abre o novo botão automaticamente e fecha os outros
         $this->openIndex = count($this->buttons) - 1;
     }
 
@@ -99,22 +99,23 @@ class PostDownloads extends Component
         $btn = $this->buttons[$index];
 
         if ($this->postId && !empty($btn['id'])) {
+            // Edição: remove do banco e apaga arquivo
             $record = PostDownload::find($btn['id']);
             if ($record) {
                 if ($record->file) Storage::disk('public')->delete($record->file);
                 $record->delete();
             }
-        } elseif (!empty($btn['existingFile'])) {
+        } elseif (!$this->postId && !empty($btn['existingFile'])) {
+            // Criação: arquivo já foi movido para storage no save() anterior — apaga do disco
             Storage::disk('public')->delete($btn['existingFile']);
         }
 
         array_splice($this->buttons, $index, 1);
         $this->syncOrder();
 
-        // Ajusta o índice aberto após remoção
         if ($this->openIndex === $index) {
             $this->openIndex = count($this->buttons) > 0 ? max(0, $index - 1) : null;
-        } elseif ($this->openIndex > $index) {
+        } elseif ($this->openIndex !== null && $this->openIndex > $index) {
             $this->openIndex--;
         }
     }
@@ -129,6 +130,7 @@ class PostDownloads extends Component
             }
         }
         $this->buttons[$index]['existingFile'] = null;
+        $this->buttons[$index]['uploadedFile'] = null;
     }
 
     public function save(): void
@@ -141,40 +143,100 @@ class PostDownloads extends Component
         $this->validate();
 
         if (!$this->postId) {
-            // Post ainda não foi salvo — fecha o modal
-            // Os botões serão persistidos após o postStore via syncDownloads()
+            // ── Criação: persiste arquivos no disco e salva na sessão ──────────
+            $pending = [];
+
+            foreach ($this->buttons as $i => $btn) {
+                // URL tem prioridade: se tem URL, ignora o arquivo
+                if (!empty($btn['url'])) {
+                    // Se tinha arquivo pendente de upload anterior, apaga para não ficar órfão
+                    if (!empty($btn['existingFile'])) {
+                        Storage::disk('public')->delete($btn['existingFile']);
+                    }
+                    $pending[] = [
+                        'label'    => $btn['label'],
+                        'url'      => $btn['url'],
+                        'position' => $btn['position'],
+                        'file'     => null,
+                    ];
+                    // Atualiza o button em memória para refletir o estado real
+                    $this->buttons[$i]['existingFile'] = null;
+                    continue;
+                }
+
+                $filePath = $btn['existingFile'] ?? null; // arquivo já salvo numa abertura anterior
+
+                if (!empty($btn['uploadedFile'])) {
+                    // Novo upload: apaga o anterior se existir
+                    if ($filePath) Storage::disk('public')->delete($filePath);
+
+                    $originalName = pathinfo($btn['uploadedFile']->getClientOriginalName(), PATHINFO_FILENAME);
+                    $extension    = $btn['uploadedFile']->getClientOriginalExtension();
+                    $filename     = Str::slug($originalName) . '-' . time() . '.' . $extension;
+                    $filePath     = $btn['uploadedFile']->storeAs('downloads', $filename, 'public');
+
+                    // Guarda o path no button em memória para se o modal reabrir
+                    $this->buttons[$i]['existingFile'] = $filePath;
+                    $this->buttons[$i]['uploadedFile'] = null;
+                }
+
+                $pending[] = [
+                    'label'    => $btn['label'],
+                    'url'      => null,
+                    'position' => $btn['position'],
+                    'file'     => $filePath,
+                ];
+            }
+
+            session(['pending_downloads' => $pending]);
             $this->showModal = false;
+            $this->dispatch('notify', type: 'info', message: 'Downloads configurados! Serão salvos ao criar o post.');
             return;
         }
 
+        // ── Edição: salva direto no banco ─────────────────────────────────────
         foreach ($this->buttons as $i => $btn) {
-            $filePath = $btn['existingFile'] ?? null;
+            // URL tem prioridade: se tem URL, não salva arquivo
+            if (!empty($btn['url'])) {
+                // Se tinha arquivo no banco, apaga
+                $existingFile = $btn['existingFile'] ?? null;
+                if ($existingFile) Storage::disk('public')->delete($existingFile);
 
-            if (!empty($btn['uploadedFile'])) {
-                if ($filePath) Storage::disk('public')->delete($filePath);
-                $originalName = pathinfo($btn['uploadedFile']->getClientOriginalName(), PATHINFO_FILENAME);
-                $extension = $btn['uploadedFile']->getClientOriginalExtension();
+                $data = [
+                    'post_id'  => $this->postId,
+                    'label'    => $btn['label'],
+                    'url'      => $btn['url'],
+                    'file'     => null,
+                    'position' => $btn['position'],
+                    'order'    => $i + 1,
+                ];
+            } else {
+                $filePath = $btn['existingFile'] ?? null;
 
-                $filename = Str::slug($originalName) . '-' . time() . '.' . $extension;
+                if (!empty($btn['uploadedFile'])) {
+                    if ($filePath) Storage::disk('public')->delete($filePath);
+                    $originalName = pathinfo($btn['uploadedFile']->getClientOriginalName(), PATHINFO_FILENAME);
+                    $extension    = $btn['uploadedFile']->getClientOriginalExtension();
+                    $filename     = Str::slug($originalName) . '-' . time() . '.' . $extension;
+                    $filePath     = $btn['uploadedFile']->storeAs('downloads', $filename, 'public');
+                }
 
-                $filePath = $btn['uploadedFile']->storeAs('downloads', $filename, 'public');
+                $data = [
+                    'post_id'  => $this->postId,
+                    'label'    => $btn['label'],
+                    'url'      => null,
+                    'file'     => $filePath,
+                    'position' => $btn['position'],
+                    'order'    => $i + 1,
+                ];
             }
-
-            $data = [
-                'post_id'  => $this->postId,
-                'label'    => $btn['label'],
-                'url'      => $btn['url'] ?: null,
-                'file'     => $filePath,
-                'position' => $btn['position'],
-                'order'    => $i + 1,
-            ];
 
             if (!empty($btn['id'])) {
                 PostDownload::findOrFail($btn['id'])->update($data);
             } else {
                 $created = PostDownload::create($data);
                 $this->buttons[$i]['id']           = $created->id;
-                $this->buttons[$i]['existingFile'] = $filePath;
+                $this->buttons[$i]['existingFile'] = $data['file'];
                 $this->buttons[$i]['uploadedFile'] = null;
             }
         }

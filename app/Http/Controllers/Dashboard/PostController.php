@@ -16,6 +16,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use App\Models\PostDownload;
 
 
 class PostController extends Controller
@@ -95,6 +96,20 @@ class PostController extends Controller
 
         $post = Post::create($data);
         $post->tags()->sync($this->resolveTagIds($data['tags'] ?? ''));
+
+        if (session()->has('pending_downloads')) {
+            foreach (session()->pull('pending_downloads') as $i => $btn) {
+                // URL tem prioridade — igual à lógica do componente
+                PostDownload::create([
+                    'post_id'  => $post->id,
+                    'label'    => $btn['label'],
+                    'url'      => $btn['url'] ?: null,
+                    'file'     => $btn['file'] ?? null,
+                    'position' => $btn['position'],
+                    'order'    => $i + 1,
+                ]);
+            }
+        }
 
         // Notifica todos os owners que há um post aguardando aprovação
         if ($data['pending_review']) {
