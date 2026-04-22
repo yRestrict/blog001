@@ -29,6 +29,8 @@ class Settings extends Component
     public $new_logo_dark;
     public $new_favicon;
     public $footer_category_order;
+    public $default_post_thumbnail;
+    public $new_default_post_thumbnail;
 
     public $site_social_links = []; 
 
@@ -46,6 +48,7 @@ class Settings extends Component
             $this->site_logo_light = $settings->site_logo_light;
             $this->site_logo_dark = $settings->site_logo_dark;
             $this->site_favicon = $settings->site_favicon;
+            $this->default_post_thumbnail = $settings->default_post_thumbnail;
             $this->site_social_links = $settings->site_social_links ?? [
                 'facebook_url' => '',
                 'twitter_url' => '',
@@ -162,6 +165,35 @@ class Settings extends Component
         $this->reset(['new_logo_light', 'new_logo_dark', 'new_favicon']);
 
         $this->dispatch('notify', type: 'success', message: __('messages.logo_favicon_updated'));
+    }
+
+    public function updateDefaultThumbnail()
+    {
+        $this->validate([
+            'new_default_post_thumbnail' => 'required|image|max:10240|mimes:png,jpg,jpeg',
+        ], [
+            'new_default_post_thumbnail.required' => 'Selecione uma imagem.',
+            'new_default_post_thumbnail.max'      => 'Máximo 10MB.',
+        ]);
+
+        $settings = Setting::firstOrCreate(['id' => 1]);
+
+        if ($settings->default_post_thumbnail && file_exists(public_path('uploads/posts/' . $settings->default_post_thumbnail))) {
+            unlink(public_path('uploads/posts/' . $settings->default_post_thumbnail));
+        }
+
+        $filename = 'default_thumbnail_' . time() . '.' . $this->new_default_post_thumbnail->extension();
+        $this->new_default_post_thumbnail->move(public_path('uploads/posts'), $filename);
+
+        $settings->default_post_thumbnail = $filename;
+        $settings->save();
+
+        Setting::clearCache();
+
+        $this->default_post_thumbnail = $filename;
+        $this->reset(['new_default_post_thumbnail']);
+
+        $this->dispatch('notify', type: 'success', message: 'Thumbnail padrão atualizada!');
     }
 
     public function render()

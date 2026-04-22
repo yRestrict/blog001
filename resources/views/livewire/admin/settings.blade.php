@@ -203,6 +203,89 @@
         </div>
     </div>
 
+
+    {{-- Thumbnail Padrão dos Posts --}}
+    <div class="set-section-card set-section-full">
+        <div class="set-section-header">
+            <div class="set-section-icon" style="background:#d1fae5;color:#059669;">
+                <i class="fa-solid fa-image"></i>
+            </div>
+            <div>
+                <div class="set-section-title">Thumbnail Padrão dos Posts</div>
+                <div class="set-section-sub">Usada automaticamente quando nenhuma imagem for enviada ao criar um post</div>
+            </div>
+        </div>
+        <div class="set-section-body">
+            <form wire:submit.prevent="updateDefaultThumbnail">
+                <div class="set-logo-grid" style="grid-template-columns: 1fr 2fr;">
+
+                    {{-- Preview --}}
+                    <div class="set-logo-card">
+                        <div class="set-logo-header set-logo-header-light">
+                            <span><i class="fa-solid fa-newspaper" style="color:#059669;margin-right:4px;"></i> Imagem Atual</span>
+                            <span style="font-size:.7rem;color:#9ca3af;font-weight:400;">JPG / PNG</span>
+                        </div>
+                        <div class="set-logo-preview-light" wire:ignore style="min-height:160px;">
+                            @if($default_post_thumbnail)
+                                <img id="preview_default_thumb"
+                                    src="{{ asset('uploads/posts/' . $default_post_thumbnail) }}"
+                                    alt="Thumbnail padrão"
+                                    style="max-height:140px;max-width:100%;object-fit:cover;border-radius:6px;">
+                                <span id="placeholder_default_thumb" style="display:none;" class="set-logo-empty">
+                                    <i class="fa-solid fa-image" style="font-size:1.5rem"></i> Nenhuma imagem definida
+                                </span>
+                            @else
+                                <img id="preview_default_thumb" src="" style="display:none;max-height:140px;max-width:100%;object-fit:cover;border-radius:6px;">
+                                <span id="placeholder_default_thumb" class="set-logo-empty">
+                                    <i class="fa-solid fa-image" style="font-size:1.5rem"></i> Nenhuma imagem definida
+                                </span>
+                            @endif
+                        </div>
+                        <div class="set-logo-footer">
+                            <div class="set-field-hint"><i class="fa-solid fa-circle-info"></i> Recomendado: 1280×720px · Máx 10MB</div>
+                        </div>
+                    </div>
+
+                    {{-- Upload --}}
+                    <div style="display:flex;flex-direction:column;justify-content:center;padding:8px 0;">
+                        <label class="mir-label" style="margin-bottom:8px;">Nova Thumbnail Padrão</label>
+                        <input type="file"
+                            class="set-file-input"
+                            wire:model="new_default_post_thumbnail"
+                            accept="image/*"
+                            onchange="previewImage(event,'preview_default_thumb','placeholder_default_thumb')">
+                        @error('new_default_post_thumbnail')
+                            <div class="set-field-error">{{ $message }}</div>
+                        @enderror
+                        <div wire:loading wire:target="new_default_post_thumbnail" class="set-field-hint mt-1">
+                            <span class="spinner-border spinner-border-sm"></span> Carregando...
+                        </div>
+                        <div class="set-field-hint" style="margin-top:10px;">
+                            <i class="fa-solid fa-lightbulb" style="color:#d97706;"></i>
+                            Ao criar um post sem enviar imagem, esta será usada automaticamente.
+                        </div>
+                    </div>
+
+                </div>
+                <div class="set-section-footer">
+                    <button type="submit"
+                            class="mir-btn-primary-lg"
+                            {{ !$new_default_post_thumbnail ? 'disabled' : '' }}
+                            wire:loading.attr="disabled"
+                            wire:target="updateDefaultThumbnail">
+                        <span wire:loading wire:target="updateDefaultThumbnail">
+                            <span class="spinner-border spinner-border-sm mr-1"></span>
+                        </span>
+                        <i class="fa-solid fa-cloud-arrow-up" wire:loading.remove wire:target="updateDefaultThumbnail"></i>
+                        Upload & Salvar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    
+
 </div>
 
 {{-- Toast container --}}

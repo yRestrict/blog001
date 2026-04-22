@@ -17,6 +17,7 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use App\Models\PostDownload;
+use App\Models\Setting;
 
 
 class PostController extends Controller
@@ -50,7 +51,7 @@ class PostController extends Controller
             'content'          => 'required|string',
             'category_id'      => 'required|exists:categories,id',
             'tags'             => 'nullable|string',
-            'thumbnail'        => 'required|image|mimes:jpg,jpeg,png|max:10240',
+            'thumbnail'        => 'nullable|image|mimes:jpg,jpeg,png|max:10240',
             'featured'         => 'nullable|boolean',
             'comment'          => 'nullable|boolean',
             'status'           => 'required|in:draft,published,private',
@@ -66,9 +67,13 @@ class PostController extends Controller
         }
 
         if ($request->hasFile('thumbnail')) {
-            $filename = time() . '_' . $request->file('thumbnail')->getClientOriginalName();
-            $request->file('thumbnail')->move(public_path('uploads/posts'), $filename);
-            $data['thumbnail'] = $filename;
+        $filename = time() . '_' . $request->file('thumbnail')->getClientOriginalName();
+        $request->file('thumbnail')->move(public_path('uploads/posts'), $filename);
+        $data['thumbnail'] = $filename;
+        } else {
+            // Usa a thumbnail padrão das configurações se existir
+            $defaultThumb = Setting::first()?->default_post_thumbnail;
+            $data['thumbnail'] = $defaultThumb ?? null;
         }
 
         $user = Auth::user();
