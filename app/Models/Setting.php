@@ -21,7 +21,9 @@ class Setting extends Model
         'site_logo_dark',
         'site_favicon',
         'site_social_links',
-        'footer_category_order', // 'posts' ou 'views'
+        'footer_category_order',
+        'default_post_thumbnail',
+        'site_logo_mobile',
     ];
 
     protected $casts = [
@@ -77,6 +79,24 @@ class Setting extends Model
     public static function logoDark()
     {
         $logo = self::get('site_logo_dark');
+        if ($logo && file_exists(public_path('uploads/logo/' . $logo))) {
+            return asset('uploads/logo/' . $logo);
+        }
+        return false;
+    }
+
+    public static function defaultPostThumbnail()
+    {
+        $thumb = self::get('default_post_thumbnail');
+        if ($thumb && file_exists(public_path('uploads/posts/' . $thumb))) {
+            return asset('uploads/posts/' . $thumb);
+        }
+        return false;
+    }
+
+    public static function logoMobile()
+    {
+        $logo = self::get('site_logo_mobile');
         if ($logo && file_exists(public_path('uploads/logo/' . $logo))) {
             return asset('uploads/logo/' . $logo);
         }
