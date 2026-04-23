@@ -183,7 +183,9 @@ class Settings extends Component
         }
 
         $filename = 'default_thumbnail_' . time() . '.' . $this->new_default_post_thumbnail->extension();
-        $this->new_default_post_thumbnail->move(public_path('uploads/posts'), $filename);
+        
+        // Troca move() por storeAs — funciona igual no Windows e Linux
+        $this->new_default_post_thumbnail->storeAs('uploads/posts', $filename, 'public_uploads');
 
         $settings->default_post_thumbnail = $filename;
         $settings->save();
