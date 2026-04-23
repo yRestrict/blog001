@@ -6070,6 +6070,32 @@ input:checked + .slider:before {
   .post-list-style1 h4 {
     font-size: 20px;
   }
+
+  .post-list-style0 {
+        flex-direction: column;
+        padding: 15px;
+    }
+
+    .post-list-style0 .post-list-image {
+        width: 100%;
+        min-width: 100%;
+        height: 200px;
+        border-radius: 10px;
+    }
+
+    .post-list-style0 .post-list-content {
+        padding: 15px 0 0 0;
+    }
+
+    .post-list-style0 .entry-title a {
+        font-size: 1.1rem;
+    }
+
+    /* Remove o hover de translateX no mobile (fica feio em touch) */
+    .post-list-style0:hover {
+        transform: none;
+    }
+  
   .post-list-style1 .post-list-title {
     padding: 0px 15px;
   }
