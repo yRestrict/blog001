@@ -5,7 +5,6 @@
         <div class="logo">
             <a class="navbar-brand fw-bold text-primary d-flex align-items-center" href="/">
                 @if ($siteSetting && $siteSetting->site_logo_light)
-                    {{-- Logo mobile (se existir) --}}
                     @if ($siteSetting->site_logo_mobile)
                         <img src="{{ asset('uploads/logo/' . $siteSetting->site_logo_mobile) }}"
                             alt="{{ $siteSetting->site_title ?? config('app.name') }}"
@@ -23,27 +22,14 @@
             </a>
         </div>
 
-        {{-- Ações mobile (dark mode + search + toggler) --}}
+        {{-- Ações mobile: search + hamburguer --}}
         <div class="d-flex align-items-center d-lg-none gap-2">
-            <div class="theme-switch-wrapper">
-                <label class="theme-switch" for="checkbox-mobile">
-                    <input type="checkbox" id="checkbox-mobile" aria-label="Alternar tema claro/escuro" />
-                    <div class="slider round">
-                        <svg class="icon-light text-warning" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
-                            <path d="M8 11a3 3 0 1 1 0-6 3 3 0 0 1 0 6zm0 1a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM8 0a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 0zm0 13a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 13zm8-5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2a.5.5 0 0 1 .5.5zM3 8a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2A.5.5 0 0 1 3 8zm10.657-5.657a.5.5 0 0 1 0 .707l-1.414 1.415a.5.5 0 1 1-.707-.708l1.414-1.414a.5.5 0 0 1 .707 0zm-9.193 9.193a.5.5 0 0 1 0 .707L3.05 13.657a.5.5 0 0 1-.707-.707l1.414-1.414a.5.5 0 0 1 .707 0zm9.193 2.121a.5.5 0 0 1-.707 0l-1.414-1.414a.5.5 0 0 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .707zM4.464 4.465a.5.5 0 0 1-.707 0L2.343 3.05a.5.5 0 1 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .708z"/>
-                        </svg>
-                        <svg class="icon-dark text-dark" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
-                            <path d="M6 .278a.768.768 0 0 1 .08.858 7.208 7.208 0 0 0-.878 3.46c0 4.021 3.278 7.277 7.318 7.277.527 0 1.04-.055 1.533-.16a.787.787 0 0 1 .81.316.733.733 0 0 1-.031.893A8.349 8.349 0 0 1 8.344 16C3.734 16 0 12.286 0 7.71 0 4.266 2.114 1.312 5.124.06A.752.752 0 0 1 6 .278z"/>
-                        </svg>
-                    </div>
-                </label>
-            </div>
             <button class="btn btn-link p-0 border-0 search-toggle" type="button" title="Search">
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-search text-muted" viewBox="0 0 16 16">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor"
+                    class="bi bi-search text-muted" viewBox="0 0 16 16">
                     <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
                 </svg>
             </button>
-            {{-- Hamburguer --}}
             <button class="mob-drawer-toggle" id="mobDrawerToggle" aria-label="Abrir menu">
                 <span></span>
                 <span></span>
@@ -73,13 +59,16 @@
                     </label>
                 </div>
                 <button class="btn btn-link p-0 border-0 search-toggle ms-3" type="button" title="Search">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-search text-muted" viewBox="0 0 16 16">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
+                        class="bi bi-search text-muted" viewBox="0 0 16 16">
                         <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
                     </svg>
                 </button>
                 @auth
-                <a href="{{ route('admin.dashboard') }}" class="btn btn-link p-0 border-0" style="margin-left: 6px;" title="Dashboard">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-grid-fill text-muted" viewBox="0 0 16 16">
+                <a href="{{ route('admin.dashboard') }}" class="btn btn-link p-0 border-0"
+                   style="margin-left: 6px;" title="Dashboard">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
+                        class="bi bi-grid-fill text-muted" viewBox="0 0 16 16">
                         <path d="M1 2.5A1.5 1.5 0 0 1 2.5 1h3A1.5 1.5 0 0 1 7 2.5v3A1.5 1.5 0 0 1 5.5 7h-3A1.5 1.5 0 0 1 1 5.5v-3zm8 0A1.5 1.5 0 0 1 10.5 1h3A1.5 1.5 0 0 1 15 2.5v3A1.5 1.5 0 0 1 13.5 7h-3A1.5 1.5 0 0 1 9 5.5v-3zm-8 8A1.5 1.5 0 0 1 2.5 9h3A1.5 1.5 0 0 1 7 10.5v3A1.5 1.5 0 0 1 5.5 15h-3A1.5 1.5 0 0 1 1 13.5v-3zm8 0A1.5 1.5 0 0 1 10.5 9h3A1.5 1.5 0 0 1 15 10.5v3A1.5 1.5 0 0 1 13.5 15h-3A1.5 1.5 0 0 1 9 13.5v-3z"/>
                     </svg>
                 </a>
@@ -94,7 +83,6 @@
 <div class="mob-drawer-overlay" id="mobDrawerOverlay"></div>
 <nav class="mob-drawer" id="mobDrawer">
 
-    {{-- Header do drawer --}}
     <div class="mob-drawer-header">
         <a href="/" class="mob-drawer-logo">
             @if ($siteSetting && $siteSetting->site_logo_light)
@@ -115,7 +103,6 @@
         </button>
     </div>
 
-    {{-- Menu do drawer --}}
     <ul class="mob-drawer-menu">
         @foreach ($menu as $item)
             <li class="mob-drawer-item {{ $item->activeChildren->isNotEmpty() ? 'has-children' : '' }}">
@@ -179,7 +166,8 @@
         </div>
         <div class="search-body">
             <form action="{{ route('frontend.search') }}" method="GET" class="search-input">
-                <input type="text" name="q" value="{{ request('q') }}" placeholder="O que você está procurando?" required>
+                <input type="text" name="q" value="{{ request('q') }}"
+                    placeholder="O que você está procurando?" required>
                 <button type="submit">
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
                         <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
@@ -191,7 +179,9 @@
                     <small>Pesquisas populares:</small>
                     <div class="search-tags mt-2">
                         @foreach($popularTags as $tag)
-                            <a href="{{ route('frontend.search') }}?q={{ urlencode($tag->name) }}">{{ $tag->name }}</a>
+                            <a href="{{ route('frontend.search') }}?q={{ urlencode($tag->name) }}">
+                                {{ $tag->name }}
+                            </a>
                         @endforeach
                     </div>
                 </div>
@@ -204,7 +194,6 @@
 
 {{-- ── CSS do Drawer ─────────────────────────────────────────────────────── --}}
 <style>
-/* Hamburguer */
 .mob-drawer-toggle {
     display: flex;
     flex-direction: column;
@@ -230,7 +219,6 @@
 .mob-drawer-toggle.active span:nth-child(2) { opacity: 0; }
 .mob-drawer-toggle.active span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
 
-/* Overlay */
 .mob-drawer-overlay {
     display: none;
     position: fixed;
@@ -241,7 +229,6 @@
 }
 .mob-drawer-overlay.active { display: block; }
 
-/* Drawer */
 .mob-drawer {
     position: fixed;
     top: 0;
@@ -259,7 +246,6 @@
 .mob-drawer.active { transform: translateX(0); }
 .dark .mob-drawer { background: #101213; }
 
-/* Header do drawer */
 .mob-drawer-header {
     display: flex;
     align-items: center;
@@ -283,7 +269,6 @@
 .dark .mob-drawer-close { color: #9ca3af; }
 .dark .mob-drawer-close:hover { background: #1e2130; }
 
-/* Menu */
 .mob-drawer-menu {
     list-style: none;
     margin: 0;
@@ -311,7 +296,6 @@
 .dark .mob-drawer-link { color: #e5e7eb; }
 .dark .mob-drawer-link:hover { color: #818cf8; }
 
-/* Seta submenu */
 .mob-drawer-arrow {
     background: none;
     border: none;
@@ -326,7 +310,6 @@
     color: #6366f1;
 }
 
-/* Submenu */
 .mob-drawer-submenu {
     list-style: none;
     margin: 0;
@@ -347,15 +330,11 @@
     text-decoration: none;
     transition: color .2s, padding .2s;
 }
-.mob-drawer-sublink:hover {
-    color: #6366f1;
-    padding-left: 42px;
-}
+.mob-drawer-sublink:hover { color: #6366f1; padding-left: 42px; }
 .dark .mob-drawer-sublink { color: #9ca3af; }
 .dark .mob-drawer-sublink:hover { color: #818cf8; }
 .mob-drawer-submenu-2 .mob-drawer-sublink { padding-left: 52px; }
 
-/* Footer do drawer */
 .mob-drawer-footer {
     padding: 16px 20px;
     border-top: 1px solid #e9ecef;
@@ -373,7 +352,6 @@
 }
 .mob-drawer-admin:hover { color: #4f46e5; }
 
-/* Esconde toggler no desktop */
 @media (min-width: 992px) {
     .mob-drawer-toggle { display: none; }
     .mob-drawer, .mob-drawer-overlay { display: none !important; }
@@ -398,7 +376,6 @@
     function closeDrawer() {
         drawer.classList.remove('active');
         overlay.classList.remove('active');
-        toggle.classList.add('active');
         toggle.classList.remove('active');
         document.body.style.overflow = '';
     }
@@ -413,21 +390,11 @@
     // Submenus
     document.querySelectorAll('.mob-drawer-arrow').forEach(function (btn) {
         btn.addEventListener('click', function () {
-            const item = this.closest('.mob-drawer-item');
-            item.classList.toggle('open');
+            this.closest('.mob-drawer-item').classList.toggle('open');
         });
     });
 
-    // Sincroniza dark mode com o checkbox do drawer
-    const cbDesktop = document.getElementById('checkbox');
-    const cbMobile  = document.getElementById('checkbox-mobile');
-    if (cbDesktop && cbMobile) {
-        cbMobile.checked = cbDesktop.checked;
-        cbDesktop.addEventListener('change', function () { cbMobile.checked = this.checked; });
-        cbMobile.addEventListener('change', function () { cbDesktop.checked = this.checked; cbDesktop.dispatchEvent(new Event('change')); });
-    }
-
-    // Atualiza logo do drawer no dark mode
+    // Logo do drawer segue o dark mode
     const darkLogoDrawer  = drawer.querySelector('.logo-white');
     const lightLogoDrawer = drawer.querySelector('.logo-dark');
     function updateDrawerLogo() {
@@ -437,8 +404,7 @@
             lightLogoDrawer.style.display = isDark ? 'none'  : 'block';
         }
     }
-    const observer = new MutationObserver(updateDrawerLogo);
-    observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+    new MutationObserver(updateDrawerLogo).observe(document.body, { attributes: true, attributeFilter: ['class'] });
     updateDrawerLogo();
 })();
 </script>
