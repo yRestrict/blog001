@@ -6095,6 +6095,18 @@ input:checked + .slider:before {
     .post-list-style0:hover {
         transform: none;
     }
+    .post-list-style0 .entry-meta {
+        flex-wrap: wrap;
+        gap: 4px 0;
+    }
+
+    .post-list-style0 .entry-meta li {
+        font-size: 0.75rem;
+    }
+
+    .post-list-style0 .entry-meta .line {
+        margin: 0 4px;
+    }
   
   .post-list-style1 .post-list-title {
     padding: 0px 15px;
