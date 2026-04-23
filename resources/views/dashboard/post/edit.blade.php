@@ -170,9 +170,6 @@
                                 <input class="ti-input" id="ti-real" placeholder="Ex: LARAVEL, PHP" autocomplete="off">
                             </div>
                             <div class="ti-suggestions" id="ti-suggestions"></div>
-                            <div id="tag-counter" style="font-size:.72rem;color:#9ca3af;margin-top:4px;">
-                                <span id="tag-count">0</span>/5 tags
-                            </div>
                             @error('tags')
                                 <span class="invalid-feedback" style="display:block;">{{ $message }}</span>
                             @enderror
