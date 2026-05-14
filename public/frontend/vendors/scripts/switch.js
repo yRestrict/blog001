@@ -73,15 +73,17 @@ document.addEventListener('DOMContentLoaded', function () {
     /**
      * 3. SEARCH OVERLAY LOGIC
      */
-    const searchToggle = document.querySelector('.search-toggle');
+    const searchToggles = document.querySelectorAll('.search-toggle');
     const searchOverlay = document.querySelector('.search-overlay');
     const searchClose = document.querySelector('.search-close');
     const searchInput = searchOverlay ? searchOverlay.querySelector('input') : null;
 
-    if (searchToggle && searchOverlay) {
-        searchToggle.addEventListener('click', () => {
-            searchOverlay.classList.remove('d-none');
-            if (searchInput) setTimeout(() => searchInput.focus(), 10);
+    if (searchToggles.length && searchOverlay) {
+        searchToggles.forEach(btn => {
+            btn.addEventListener('click', () => {
+                searchOverlay.classList.remove('d-none');
+                if (searchInput) setTimeout(() => searchInput.focus(), 10);
+            });
         });
 
         if (searchClose) {

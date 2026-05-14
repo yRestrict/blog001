@@ -1,5 +1,5 @@
 <div>
-    <div class="user-notification" wire:poll.30s="loadNotifications">
+    <div class="user-notification">
 
         <div class="dropdown">
 

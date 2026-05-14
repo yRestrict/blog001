@@ -32,21 +32,42 @@ class PostController extends Controller
         ]);
     }
 
-    public function postCreate()
+    public function postCreate(Request $request)
     {
         $this->authorize('create', Post::class);
 
+        $formErrors = new \Illuminate\Support\MessageBag();
+        $oldInput   = [];
+
+        if ($request->query('err')) {
+            $key    = 'post_errors_' . Auth::id();
+            $cached = cache()->pull($key);
+            if ($cached) {
+                $formErrors = new \Illuminate\Support\MessageBag($cached['errors']);
+                $oldInput   = $cached['input'];
+            }
+        }
+
         return view('dashboard.post.create', [
             'pageTitle'      => 'Criar Post',
-            'categorieshtml' => $this->buildCategoriesHtml(),
+            'categorieshtml' => $this->buildCategoriesHtml($oldInput['category_id'] ?? null),
+            'formErrors'     => $formErrors,
+            'oldInput'       => $oldInput,
         ]);
     }
 
     public function postStore(Request $request)
     {
+        //  try {
+        //     $data = $request->validate([
+        //         'title' => 'required|string|max:255',
+        //     ]);
+        // } catch (\Illuminate\Validation\ValidationException $e) {
+        //     dd(session()->all(), $e->errors());
+        // }
         $this->authorize('create', Post::class);
 
-        $data = $request->validate([
+        $validator = \Validator::make($request->all(), [
             'title'            => 'required|string|max:255',
             'content'          => 'required|string',
             'category_id'      => 'required|exists:categories,id',
@@ -57,14 +78,39 @@ class PostController extends Controller
             'status'           => 'required|in:draft,published,private',
             'meta_keywords'    => 'nullable|string|max:255',
             'meta_description' => 'nullable|string|max:500',
+        ], [
+            'title.required'       => 'O título é obrigatório.',
+            'title.max'            => 'O título pode ter no máximo 255 caracteres.',
+            'content.required'     => 'O conteúdo é obrigatório.',
+            'category_id.required' => 'Selecione uma categoria.',
+            'category_id.exists'   => 'A categoria selecionada é inválida.',
+            'thumbnail.image'      => 'O arquivo deve ser uma imagem.',
+            'thumbnail.mimes'      => 'A imagem deve ser JPG, JPEG ou PNG.',
+            'thumbnail.max'        => 'A imagem pode ter no máximo 10MB.',
+            'status.required'      => 'Selecione um status.',
+            'status.in'            => 'Status inválido.',
+            'meta_keywords.max'    => 'As palavras-chave podem ter no máximo 255 caracteres.',
+            'meta_description.max' => 'A meta descrição pode ter no máximo 500 caracteres.',
         ]);
 
         if ($request->filled('tags')) {
             $tags = array_filter(array_map('trim', explode(',', $request->tags)));
             if (count($tags) > 5) {
-                return back()->withErrors(['tags' => 'Máximo de 4 tags por post.'])->withInput();
+                $validator->errors()->add('tags', 'Máximo de 5 tags por post.');
             }
         }
+
+        if ($validator->fails()) {
+            $key = 'post_errors_' . Auth::id();
+            cache()->put($key, [
+                'errors' => $validator->errors()->toArray(),
+                'input'  => $request->except(['thumbnail', '_token', 'password']),
+            ], now()->addMinutes(5));
+
+            return redirect()->route('admin.posts.create', ['err' => 1]);
+        }
+
+        $data = $validator->validated();
 
         if ($request->hasFile('thumbnail')) {
         $filename = time() . '_' . $request->file('thumbnail')->getClientOriginalName();
@@ -102,15 +148,25 @@ class PostController extends Controller
         $post = Post::create($data);
         $post->tags()->sync($this->resolveTagIds($data['tags'] ?? ''));
 
-        if (session()->has('pending_downloads')) {
-            foreach (session()->pull('pending_downloads') as $i => $btn) {
-                // URL tem prioridade — igual à lógica do componente
+        if ($request->has('downloads')) {
+            foreach ($request->input('downloads', []) as $i => $dl) {
+                if (empty($dl['label'])) continue;
+
+                $filePath = null;
+
+                if (empty($dl['url']) && $request->hasFile("downloads.{$i}.file")) {
+                    $file     = $request->file("downloads.{$i}.file");
+                    $filename = Str::slug(pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME))
+                                . '-' . time() . '.' . $file->getClientOriginalExtension();
+                    $filePath = $file->storeAs('downloads', $filename, 'public');
+                }
+
                 PostDownload::create([
                     'post_id'  => $post->id,
-                    'label'    => $btn['label'],
-                    'url'      => $btn['url'] ?: null,
-                    'file'     => $btn['file'] ?? null,
-                    'position' => $btn['position'],
+                    'label'    => $dl['label'],
+                    'url'      => !empty($dl['url']) ? $dl['url'] : null,
+                    'file'     => $filePath,
+                    'position' => $dl['position'] ?? 'block',
                     'order'    => $i + 1,
                 ]);
             }
@@ -310,6 +366,9 @@ class PostController extends Controller
     private function sanitizeContent(string $html): string
     {
         $html = preg_replace('/<select[^>]*class="ql-ui"[^>]*>.*?<\/select>/is', '', $html);
+        
+        // Remove o span ql-ui que o Quill injeta nos itens de lista
+        $html = preg_replace('/<span[^>]*class="ql-ui"[^>]*>.*?<\/span>/is', '', $html);
 
         return $html;
     }

@@ -379,8 +379,8 @@ h6 {
   font-size: 18px;
 }
 
-p:first-letter,
-h5:first-letter {
+:not(.post-single-content) > p:first-letter,
+:not(.post-single-content) > h5:first-letter {
   text-transform: capitalize;
 }
 
@@ -6493,6 +6493,8 @@ input:checked + .slider:before {
 }
 
 
+
+
 /* ------------------------------
 		Customizade
 ------------------------------ */
@@ -7289,5 +7291,62 @@ input:checked + .slider:before {
     color: #d1d5db;
 }
 
+.post-single-content p {
+    margin-bottom: 0.25rem;
+        line-height: 1.0;
+
+}
 
 
+.post-single-content ul,
+.post-single-content ol {
+    padding-left: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.post-single-content ul li {
+    list-style: disc !important;
+    margin-bottom: 6px;
+    padding-left: 0;
+}
+
+.post-single-content ul li::before {
+    display: none !important;
+}
+
+.post-single-content ol li {
+    list-style: decimal !important;
+    margin-bottom: 6px;
+    padding-left: 0;
+}
+
+.post-single-content ol li::before {
+    display: none !important;
+}
+
+.post-single-content ol li[data-list="bullet"] {
+    list-style: disc !important;
+}
+
+.post-single-content ol li[data-list="ordered"] {
+    list-style: decimal !important;
+}
+
+/* Listas do Quill 2.x */
+.post-single-content ol li[data-list="bullet"] {
+    list-style: disc !important;
+}
+
+.post-single-content ol li[data-list="ordered"] {
+    list-style: decimal !important;
+}
+
+.post-single-content ol li[data-list="bullet"]::before,
+.post-single-content ol li[data-list="ordered"]::before {
+    display: none !important;
+}
+
+/* Remove o span .ql-ui que o Quill injeta no frontend */
+.post-single-content .ql-ui {
+    display: none !important;
+}

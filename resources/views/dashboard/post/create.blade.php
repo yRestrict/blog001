@@ -27,11 +27,11 @@
         </div>
     </div>
 
-    @if ($errors->any())
+    @if ($formErrors->any())
         <div class="warning-box" style="margin-bottom: 20px;">
             <strong><i class="fa fa-exclamation-triangle"></i> Corrija os erros abaixo:</strong>
             <ul>
-                @foreach ($errors->all() as $error)
+                @foreach ($formErrors->all() as $error)
                     <li>{{ $error }}</li>
                 @endforeach
             </ul>
@@ -63,18 +63,20 @@
                             <label class="mir-label">Título <span class="mir-required">*</span></label>
                             <input type="text"
                                    class="mir-input @error('title') is-invalid @enderror"
-                                   name="title" value="{{ old('title') }}"
+                                   name="title" value="{{ $oldInput['title'] ?? '' }}"
                                    placeholder="Digite o título do post">
-                            @error('title')<span class="invalid-feedback" style="display:block;">{{ $message }}</span>@enderror
+                            @if($formErrors->has('title'))
+                                <div class="text-danger small mt-1">{{ $formErrors->first('title') }}</div>
+                            @endif
                         </div>
 
                         <div class="form-group" style="margin-bottom: 0;">
                             <label class="mir-label">Conteúdo <span class="mir-required">*</span></label>
                             <input type="hidden" name="content" id="content-input">
-                            <div id="quill-editor">{!! old('content') !!}</div>
-                            @error('content')
-                                <div class="text-danger small mt-1">{{ $message }}</div>
-                            @enderror
+                            <div id="quill-editor">{!! $oldInput['content'] ?? '' !!}</div>
+                            @if($formErrors->has('content'))
+                                <div class="text-danger small mt-1">{{ $formErrors->first('content') }}</div>
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -124,16 +126,14 @@
                         <div class="form-group">
                             <label class="mir-label">Categoria <span class="mir-required">*</span></label>
 
-                            {{-- Select original oculto (fonte dos dados) --}}
                             <select id="cs-category-source" style="display:none">
                                 {!! $categorieshtml !!}
                             </select>
-                            {{-- Hidden que envia o valor junto com o form --}}
-                            <input type="hidden" name="category_id" id="cs-category-hidden"
-                                value="{{ old('category_id') }}">
 
-                            {{-- Custom Select UI --}}
-                            <div class="cs-wrap @error('category_id') cs-error @enderror" id="cs-category-wrap">
+                            <input type="hidden" name="category_id" id="cs-category-hidden"
+                                value="{{ $oldInput['category_id'] ?? '' }}">
+
+                            <div class="cs-wrap {{ $formErrors->has('category_id') ? 'cs-error' : '' }}" id="cs-category-wrap">
                                 <div class="cs-trigger" id="cs-category-trigger">
                                     <span class="cs-trigger-text placeholder" id="cs-category-text">-- Selecione uma Categoria --</span>
                                     <svg class="cs-arrow" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 6l4 4 4-4"/></svg>
@@ -146,7 +146,9 @@
                                     <div class="cs-list" id="cs-category-list"></div>
                                 </div>
                             </div>
-                            @error('category_id')<span class="invalid-feedback" style="display:block;">{{ $message }}</span>@enderror
+                            @if($formErrors->has('category_id'))
+                                <span class="invalid-feedback" style="display:block;">{{ $formErrors->first('category_id') }}</span>
+                            @endif
                         </div>
 
                         <div class="form-group" style="position: relative;">
@@ -155,14 +157,14 @@
                                 <span style="color:#9ca3af; font-weight:400;">(máximo 5, separe por vírgula)</span>
                             </label>
                             <input type="hidden" name="tags" id="tag-hidden"
-                                value="{{ old('tags', $currentTags ?? '') }}">
+                                value="{{ $oldInput['tags'] ?? ($currentTags ?? '') }}">
                             <div class="ti-wrap" id="ti-wrap">
                                 <input class="ti-input" id="ti-real" placeholder="Ex: LARAVEL, PHP" autocomplete="off">
                             </div>
                             <div class="ti-suggestions" id="ti-suggestions"></div>
-                            @error('tags')
-                                <span class="invalid-feedback" style="display:block;">{{ $message }}</span>
-                            @enderror
+                            @if($formErrors->has('tags'))
+                                <span class="invalid-feedback" style="display:block;">{{ $formErrors->first('tags') }}</span>
+                            @endif
                         </div>
 
                         <hr class="form-divider">
@@ -170,23 +172,25 @@
                         <div class="form-group">
                             <label class="mir-label">Status</label>
                             <div class="status-pills">
-                                <label class="status-pill {{ old('status', 'published') === 'draft' ? 'selected-draft' : '' }}">
+                                <label class="status-pill {{ ($oldInput['status'] ?? 'published') === 'draft' ? 'selected-draft' : '' }}">
                                     <input type="radio" name="status" value="draft"
-                                        {{ old('status', 'published') === 'draft' ? 'checked' : '' }}>
+                                        {{ ($oldInput['status'] ?? 'published') === 'draft' ? 'checked' : '' }}>
                                     <span class="status-pill-ring"></span> Rascunho
                                 </label>
-                                <label class="status-pill {{ old('status', 'published') === 'published' ? 'selected-published' : '' }}">
+                                <label class="status-pill {{ ($oldInput['status'] ?? 'published') === 'published' ? 'selected-published' : '' }}">
                                     <input type="radio" name="status" value="published"
-                                        {{ old('status', 'published') === 'published' ? 'checked' : '' }}>
+                                        {{ ($oldInput['status'] ?? 'published') === 'published' ? 'checked' : '' }}>
                                     <span class="status-pill-ring"></span> Publicado
                                 </label>
-                                <label class="status-pill {{ old('status', 'published') === 'private' ? 'selected-private' : '' }}">
+                                <label class="status-pill {{ ($oldInput['status'] ?? 'published') === 'private' ? 'selected-private' : '' }}">
                                     <input type="radio" name="status" value="private"
-                                        {{ old('status', 'published') === 'private' ? 'checked' : '' }}>
+                                        {{ ($oldInput['status'] ?? 'published') === 'private' ? 'checked' : '' }}>
                                     <span class="status-pill-ring"></span> Privado
                                 </label>
                             </div>
-                            @error('status')<span class="text-danger small">{{ $message }}</span>@enderror
+                            @if($formErrors->has('status'))
+                                <span class="text-danger small">{{ $formErrors->first('status') }}</span>
+                            @endif
                         </div>
 
                         <hr class="form-divider">
@@ -238,15 +242,16 @@
                             <div class="upload-text">Clique para enviar</div>
                             <div class="upload-hint">ou arraste uma imagem aqui</div>
                             <input type="file" name="thumbnail"
-                                class="@error('thumbnail') is-invalid @enderror"
+                                class="{{ $formErrors->has('thumbnail') ? 'is-invalid' : '' }}"
                                 id="featured-image-input" accept="image/*"
                                 style="display: none;">
                         </label>
-                        @error('thumbnail')<span class="text-danger small d-block mt-1">{{ $message }}</span>@enderror
+                        @if($formErrors->has('thumbnail'))
+                            <span class="text-danger small d-block mt-1">{{ $formErrors->first('thumbnail') }}</span>
+                        @endif
                     </div>
-                </div>
 
-                {{-- Downloads --}}
+                {{-- Downloads (JS puro — sem Livewire) --}}
                 <div class="post-section">
                     <div class="post-section-header">
                         <div class="section-icon-header">
@@ -258,7 +263,7 @@
                         </div>
                     </div>
                     <div style="padding: 20px;">
-                        <livewire:admin.post-downloads />
+                        @include('dashboard.post.inc.post-downloads-create')
                     </div>
                 </div>
 

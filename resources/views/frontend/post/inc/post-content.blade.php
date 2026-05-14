@@ -142,12 +142,9 @@
 
 @endsection
 
-{{--
-    Adicione no final do blade do post, fora do @section('content')
---}}
-
 @push('stylesheets')
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    {{-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css"> --}}
+    <link rel="stylesheet" href="{{ asset('frontend/vendors/styles/atom-one-dark.min.css') }}" />
 
     <style>
         /* ── Container do code-block (Quill 2.0) ───────────────────────── */
@@ -240,7 +237,8 @@
 @endpush
 
 @push('scripts')
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    {{-- <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script> --}}
+    <script src="{{ asset('frontend/vendors/scripts/highlight.min.js') }}"></script>
     <script>
     document.addEventListener('DOMContentLoaded', function () {
         // Quill 2.0 gera: <div class="ql-code-block" data-language="javascript">código</div>

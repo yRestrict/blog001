@@ -28,6 +28,7 @@ class HomeController extends Controller
         SEOTools::setTitle($title, false);
         SEOTools::setDescription($description);
         SEOMeta::setKeywords($keywords);
+        SEOMeta::setCanonical($currentUrl);
 
         SEOTools::opengraph()->setUrl($currentUrl);
         SEOTools::opengraph()->addProperty('type', 'website');
