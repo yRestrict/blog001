@@ -2,11 +2,6 @@
 @if(!empty($data['content']))
     <div class="sidebar-custom">
 
-        {{--
-            O conteúdo é renderizado dentro de um iframe via srcdoc.
-            Isso isola completamente CSS e JS do widget — nada vaza para o site.
-            A altura é ajustada automaticamente via ResizeObserver.
-        --}}
         <iframe
             id="widget-iframe-{{ $widget->id }}"
             scrolling="no"
@@ -18,6 +13,9 @@
         (function () {
             var iframe = document.getElementById('widget-iframe-{{ $widget->id }}');
             var content = {!! json_encode($data['content']) !!};
+
+            // Lê o tema do localStorage antes de qualquer coisa — igual ao site
+            var currentTheme = localStorage.getItem('theme') || 'light';
 
             iframe.addEventListener('load', function () {
                 try {
@@ -34,18 +32,28 @@
                         }, 50);
                     });
                 } catch (e) {}
+
+                // Envia o tema correto logo após o iframe carregar
+                iframe.contentWindow.postMessage({ theme: currentTheme }, '*');
             });
 
-            // Escreve o conteúdo no iframe via document.write
             iframe.contentDocument.open();
             iframe.contentDocument.write(content);
             iframe.contentDocument.close();
 
-            // Ajusta altura inicial
             setTimeout(function () {
                 iframe.style.height =
                     iframe.contentDocument.documentElement.scrollHeight + 'px';
             }, 100);
+
+            // Atualiza o tema do iframe quando o usuário trocar
+            var toggleSwitch = document.querySelector('.theme-switch input[type="checkbox"]');
+            if (toggleSwitch) {
+                toggleSwitch.addEventListener('change', function (e) {
+                    var newTheme = e.target.checked ? 'dark' : 'light';
+                    iframe.contentWindow.postMessage({ theme: newTheme }, '*');
+                });
+            }
         })();
         </script>
 
