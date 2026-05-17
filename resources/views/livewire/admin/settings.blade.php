@@ -203,7 +203,6 @@
         </div>
     </div>
 
-
     {{-- Thumbnail Padrão dos Posts --}}
     <div class="set-section-card set-section-full">
         <div class="set-section-header">
@@ -217,7 +216,7 @@
         </div>
         <div class="set-section-body">
             <form wire:submit.prevent="updateDefaultThumbnail">
-                <div class="set-logo-grid" style="grid-template-columns: 1fr 2fr;">
+                <div class="set-logo-grid">
 
                     {{-- Preview --}}
                     <div class="set-logo-card">
@@ -242,30 +241,26 @@
                             @endif
                         </div>
                         <div class="set-logo-footer">
-                            <div class="set-field-hint"><i class="fa-solid fa-circle-info"></i> Recomendado: 1280×720px · Máx 10MB</div>
+                            <div class="set-field-hint" style="margin-bottom:10px;">
+                                <i class="fa-solid fa-circle-info"></i> Recomendado: 1280×720px · Máx 10MB
+                            </div>
+                            <input type="file"
+                                class="set-file-input"
+                                wire:model="new_default_post_thumbnail"
+                                accept="image/*"
+                                onchange="previewImage(event,'preview_default_thumb','placeholder_default_thumb')">
+                            @error('new_default_post_thumbnail')
+                                <div class="set-field-error">{{ $message }}</div>
+                            @enderror
+                            <div wire:loading wire:target="new_default_post_thumbnail" class="set-field-hint mt-1">
+                                <span class="spinner-border spinner-border-sm"></span> Carregando...
+                            </div>
+                            <div class="set-field-hint" style="margin-top:8px;">
+                                <i class="fa-solid fa-lightbulb" style="color:#d97706;"></i>
+                                Ao criar um post sem enviar imagem, esta será usada automaticamente.
+                            </div>
                         </div>
                     </div>
-
-                    {{-- Upload --}}
-                    <div style="display:flex;flex-direction:column;justify-content:center;padding:8px 0;">
-                        <label class="mir-label" style="margin-bottom:8px;">Nova Thumbnail Padrão</label>
-                        <input type="file"
-                            class="set-file-input"
-                            wire:model="new_default_post_thumbnail"
-                            accept="image/*"
-                            onchange="previewImage(event,'preview_default_thumb','placeholder_default_thumb')">
-                        @error('new_default_post_thumbnail')
-                            <div class="set-field-error">{{ $message }}</div>
-                        @enderror
-                        <div wire:loading wire:target="new_default_post_thumbnail" class="set-field-hint mt-1">
-                            <span class="spinner-border spinner-border-sm"></span> Carregando...
-                        </div>
-                        <div class="set-field-hint" style="margin-top:10px;">
-                            <i class="fa-solid fa-lightbulb" style="color:#d97706;"></i>
-                            Ao criar um post sem enviar imagem, esta será usada automaticamente.
-                        </div>
-                    </div>
-
                 </div>
                 <div class="set-section-footer">
                     <button type="submit"
